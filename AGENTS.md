@@ -52,9 +52,13 @@ Sistema de monitoreo del desempeño organizacional para **Grupo Cordillera**, em
 | **Repository** | Todos los módulos (JPA Repository) | Abstracción de persistencia de datos |
 | **Factory Method** | `ms-datos-org`: `EmpleadoFactory` | Creación de empleados según tipo |
 | **Factory Method** | `ms-indicadores`: `CalculoIndicadorFactory` | Cálculo de KPIs según estrategia (VENTAS/INVENTARIO/RENTABILIDAD) |
+| **Strategy** | `ms-indicadores`: `CalculoStrategy` + 3 impls | Algoritmos intercambiables para KPIs |
+| **Observer** | `ms-ventas`: `VentaRegistradaEvent` + Listeners | Notificación de eventos de venta |
+| **Builder** | `ms-ventas`: `VentaBuilder` | Construcción paso a paso de objetos Venta |
 | **Circuit Breaker** | `api-gateway` + `bff` (Resilience4j) | Tolerancia a fallos en comunicación entre servicios |
 | **BFF (Backend For Frontend)** | `bff/` | Agregación de datos para el frontend |
 | **API Gateway** | `api-gateway/` | Punto único de entrada, enrutamiento |
+| **Custom Hook** | `frontend/src/hooks/useApi.js` | Abstracción de data fetching en React |
 
 ### Flujo de Datos
 
@@ -177,9 +181,11 @@ ms-ventas/
 │       └── service/     # DashboardService + clients
 ├── ms-ventas/           # Microservicio de ventas
 │   └── src/main/java/com/grupocordillera/ms_ventas/
+│       ├── builder/     # VentaBuilder (Builder Pattern)
 │       ├── controller/  # Venta, Producto, Sucursal, Reporte
 │       ├── dto/         # DTOs
 │       ├── entity/      # Venta, Producto, Sucursal, DetalleVenta
+│       ├── event/       # VentaRegistradaEvent + Listeners (Observer)
 │       ├── repository/  # JPA + Custom (SPs)
 │       └── service/     # Lógica de negocio
 ├── ms-datos-org/        # Microservicio datos organizacionales
@@ -196,11 +202,18 @@ ms-ventas/
 │       ├── repository/  # JPA Repositories
 │       ├── service/     # + CalculoIndicadorFactory
 │       └── exception/   # GlobalExceptionHandler
+├── archetypes/          # Arquetipos Maven
+│   ├── ms-service-archetype/  # Base para microservicios Spring Boot
+│   └── bff-archetype/         # Base para módulos BFF
+├── docs/                # Documentación
+│   ├── analisis-patrones-arquetipos.md
+│   └── plan-branching.md
 └── frontend/            # React 19 + Vite 8 + Tailwind CSS v4
     └── src/
         ├── api/         # Axios client + interceptors
-        ├── components/  # Sidebar, Layout, ProtectedRoute, etc.
-        ├── context/     # AuthContext (JWT management)
+        ├── components/  # Sidebar, Layout, ProtectedRoute, DetailModal
+        ├── context/     # AuthContext (JWT management - Provider Pattern)
+        ├── hooks/       # useApi, useMutation (Custom Hook Pattern)
         └── pages/       # Dashboard, Ventas, Productos, etc.
 ```
 
