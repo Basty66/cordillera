@@ -3,8 +3,10 @@ package com.grupocordillera.ms_ventas.service;
 import com.grupocordillera.ms_ventas.dto.DetalleRequestDTO;
 import com.grupocordillera.ms_ventas.dto.VentaRequestDTO;
 import com.grupocordillera.ms_ventas.entity.*;
+import com.grupocordillera.ms_ventas.event.VentaRegistradaEvent;
 import com.grupocordillera.ms_ventas.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ public class VentaService {
     private final VentaRepository ventaRepository;
     private final SucursalRepository sucursalRepository;
     private final ProductoRepository productoRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<Venta> obtenerTodas() {
         return ventaRepository.findAll();
@@ -79,6 +82,11 @@ public class VentaService {
         venta.setMontoTotal(totalVenta);
 
         // 6. Guardar todo (CascadeType.ALL guarda la Venta y todos sus Detalles automáticamente)
-        return ventaRepository.save(venta);
+        Venta savedVenta = ventaRepository.save(venta);
+
+        // 7. Publicar evento para los observers (listeners)
+        eventPublisher.publishEvent(new VentaRegistradaEvent(savedVenta));
+
+        return savedVenta;
     }
 }
