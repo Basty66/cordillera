@@ -1,16 +1,57 @@
-# React + Vite
+# Frontend - Grupo Cordillera
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Plataforma de monitoreo inteligente construida con React 19 + Vite 8 + Tailwind CSS v4.
 
-Currently, two official plugins are available:
+## Tecnologias
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19.2.5
+- Vite 8.0.10
+- Tailwind CSS 4.2.4
+- React Router DOM 7.15.0
+- Axios 1.16.0
+- Chart.js 4.5.1 + Recharts 3.8.1
+- Framer Motion 12.38.0
+- Lucide React 1.14.0
 
-## React Compiler
+## Componentes NPM
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Dependencias de Produccion
 
-## Expanding the ESLint configuration
+| Paquete | Version | Uso |
+|---------|---------|-----|
+| react | 19.2.5 | UI Framework |
+| react-dom | 19.2.5 | Renderizado DOM |
+| react-router-dom | 7.15.0 | Enrutamiento |
+| axios | 1.16.0 | Cliente HTTP |
+| chart.js | 4.5.1 | Graficos |
+| react-chartjs-2 | 5.3.1 | Wrapper Chart.js |
+| recharts | 3.8.1 | Graficos adicionales |
+| framer-motion | 12.38.0 | Animaciones |
+| lucide-react | 1.14.0 | Iconos |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Patrones de Diseno en Frontend
+
+- **Provider Pattern**: AuthContext para gestion de estado global de autenticacion
+- **Custom Hook Pattern**: useApi, useMutation hooks para data fetching
+- **Protected Route Pattern**: ProtectedRoute para control de acceso por roles
+- **Compound Components**: Layout + Sidebar + Outlet para estructura de pagina
+
+## Estructura
+
+```
+src/
+├── api/client.js       # Axios interceptors + API calls
+├── context/            # AuthContext (JWT management)
+├── components/         # Sidebar, Layout, ProtectedRoute, DetailModal
+├── hooks/              # useApi, useMutation (Custom Hook Pattern)
+└── pages/              # Dashboard, Ventas, Productos, etc.
+```
+
+## Ejecucion
+
+```bash
+npm install
+npm run dev
+```
+
+Puerto: 5173 (con proxy a api-gateway:8084)
