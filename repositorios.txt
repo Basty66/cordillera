@@ -2,36 +2,36 @@ REPOSITORIOS DEL PROYECTO - GRUPO CORDILLERA
 ===============================================
 
 Repositorio Principal (Proyecto Completo):
-https://github.com/Basty66/ms-ventas
+https://github.com/Basty66/cordillera
 
 Repositorios por Componente:
 
 1. Frontend (React 19 + Vite 8 + Tailwind CSS v4)
-   - Repositorio: https://github.com/Basty66/ms-ventas/tree/main/frontend
+   - Repositorio: https://github.com/Basty66/cordillera/tree/master/frontend
    - Descripcion: Componente frontend con paneles de monitoreo, graficos y gestion de datos
 
 2. BFF - Backend For Frontend (Spring Boot + JWT + Resilience4j)
-   - Repositorio: https://github.com/Basty66/ms-ventas/tree/main/bff
+   - Repositorio: https://github.com/Basty66/cordillera/tree/master/bff
    - Descripcion: Componente BFF que agrega datos de microservicios y gestiona autenticacion
 
 3. Microservicio ms-ventas (Spring Boot + JPA + PostgreSQL)
-   - Repositorio: https://github.com/Basty66/ms-ventas/tree/main/ms-ventas
+   - Repositorio: https://github.com/Basty66/cordillera/tree/master/ms-ventas
    - Descripcion: Gestion de ventas, productos y sucursales
 
 4. Microservicio ms-datos-org (Spring Boot + JPA + PostgreSQL)
-   - Repositorio: https://github.com/Basty66/ms-ventas/tree/main/ms-datos-org
+   - Repositorio: https://github.com/Basty66/cordillera/tree/master/ms-datos-org
    - Descripcion: Gestion de empleados y departamentos
 
 5. Microservicio ms-indicadores (Spring Boot + JPA + PostgreSQL)
-   - Repositorio: https://github.com/Basty66/ms-ventas/tree/main/ms-indicadores
+   - Repositorio: https://github.com/Basty66/cordillera/tree/master/ms-indicadores
    - Descripcion: Gestion y calculo de KPIs e indicadores
 
 6. API Gateway (Spring Cloud Gateway + Resilience4j)
-   - Repositorio: https://github.com/Basty66/ms-ventas/tree/main/api-gateway
+   - Repositorio: https://github.com/Basty66/cordillera/tree/master/api-gateway
    - Descripcion: Punto unico de entrada con enrutamiento y circuit breaker
 
 7. Arquetipos Maven
-   - Repositorio: https://github.com/Basty66/ms-ventas/tree/main/archetypes
+   - Repositorio: https://github.com/Basty66/cordillera/tree/master/archetypes
    - Descripcion: Arquetipos Maven para generar microservicios (ms-service-archetype) y BFF (bff-archetype)
 
 Ramas del Proyecto:
