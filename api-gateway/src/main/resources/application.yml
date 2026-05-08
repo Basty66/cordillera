@@ -1,0 +1,56 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      default-filters:
+        - name: Retry
+          args:
+            retries: 3
+            statuses: BAD_GATEWAY, SERVICE_UNAVAILABLE
+            methods: GET
+            backoff:
+              firstBackoff: 500ms
+              maxBackoff: 2s
+              factor: 2
+
+resilience4j:
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 10s
+    instances:
+      bff-cb:
+        base-config: default
+      ms-ventas-cb:
+        base-config: default
+      ms-datos-org-cb:
+        base-config: default
+      ms-indicadores-cb:
+        base-config: default
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10000
+        permitted-number-of-calls-in-half-open-state: 3
+    instances:
+      ms-ventas-cb:
+        base-config: default
+      ms-datos-org-cb:
+        base-config: default
+      ms-indicadores-cb:
+        base-config: default
+      bff-cb:
+        base-config: default
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,circuitbreakers
