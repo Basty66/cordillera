@@ -4,6 +4,10 @@ import com.grupocordillera.bff.dto.TicketResponse;
 import com.grupocordillera.bff.entity.Ticket;
 import com.grupocordillera.bff.repository.TicketRepository;
 import com.grupocordillera.bff.repository.UsuarioRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +15,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/reportes")
+@Tag(name = "Reportes BFF", description = "Reportes del sistema (tickets y usuarios)")
 public class ReportController {
 
     private final TicketRepository ticketRepository;
@@ -22,6 +27,10 @@ public class ReportController {
     }
 
     @GetMapping("/dashboard")
+    @Operation(summary = "Dashboard de reportes", description = "Retorna estadisticas de tickets y usuarios del sistema")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Reporte obtenido exitosamente")
+    })
     public ResponseEntity<Map<String, Object>> dashboardReport() {
         List<Ticket> todos = ticketRepository.findAll();
         Map<String, Object> report = new LinkedHashMap<>();
@@ -44,6 +53,10 @@ public class ReportController {
     }
 
     @GetMapping("/tickets")
+    @Operation(summary = "Exportar tickets", description = "Retorna todos los tickets para exportacion")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Tickets exportados exitosamente")
+    })
     public ResponseEntity<List<TicketResponse>> exportTickets() {
         return ResponseEntity.ok(
             ticketRepository.findAllByOrderByCreatedAtDesc().stream()

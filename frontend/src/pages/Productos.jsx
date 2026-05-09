@@ -14,10 +14,10 @@ const itemAnim = {
   show: { opacity: 1, y: 0 },
 };
 
-function getProductImage(id, nombre) {
-  const clean = (nombre || 'product').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const seed = clean.slice(0, 20) || `id${id}`;
-  return `https://picsum.photos/seed/${seed}/400/300`;
+function getProductImage(producto) {
+  if (producto.imagenUrl) return producto.imagenUrl;
+  const cat = (producto.nombre || '').split(' ')[0].toLowerCase();
+  return `https://picsum.photos/seed/${cat}${producto.id}/400/300`;
 }
 
 export default function Productos() {
@@ -68,7 +68,7 @@ export default function Productos() {
             className="glass-card rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer"
           >
             <div className="relative h-48 bg-slate-100 overflow-hidden">
-              <img src={getProductImage(p.id, p.nombre)} alt={p.nombre}
+              <img src={getProductImage(p)} alt={p.nombre}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               <div className="absolute top-3 right-3">
@@ -103,7 +103,7 @@ export default function Productos() {
         {selected && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="rounded-xl overflow-hidden bg-slate-100">
-              <img src={getProductImage(selected.id, selected.nombre)} alt={selected.nombre}
+              <img src={getProductImage(selected)} alt={selected.nombre}
                 className="w-full h-64 object-cover" />
             </div>
             <div className="space-y-4">

@@ -3,32 +3,40 @@ package com.grupocordillera.indicadores.service.factory;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CalculoInventarioStrategyTest {
 
-    private final CalculoInventarioStrategy strategy = new CalculoInventarioStrategy();
-
     @Test
     void testCalcular() {
-        Map<String, Object> params = Map.of(
-                "productosVendidos", 100,
-                "inventarioPromedio", 500
+        var strategy = new CalculoInventarioStrategy(
+                BigDecimal.valueOf(200),
+                BigDecimal.valueOf(1000)
         );
-        BigDecimal resultado = strategy.calcular(params);
+        BigDecimal resultado = strategy.calcular();
         assertNotNull(resultado);
         assertEquals(0, BigDecimal.valueOf(20.0).compareTo(resultado));
     }
 
     @Test
+    void testCalcularConInventarioCero() {
+        var strategy = new CalculoInventarioStrategy(
+                BigDecimal.ZERO,
+                BigDecimal.ZERO
+        );
+        assertEquals(BigDecimal.ZERO, strategy.calcular());
+    }
+
+    @Test
     void testGetNombre() {
-        assertEquals("Rotacion de Inventario", strategy.getNombre());
+        var strategy = new CalculoInventarioStrategy(BigDecimal.TEN, BigDecimal.valueOf(100));
+        assertEquals("Rotación de Inventario", strategy.getNombre());
     }
 
     @Test
     void testGetUnidad() {
+        var strategy = new CalculoInventarioStrategy(BigDecimal.TEN, BigDecimal.valueOf(100));
         assertEquals("%", strategy.getUnidad());
     }
 }

@@ -27,4 +27,7 @@ public class Producto {
 
     @Column(name = "stock", nullable = false)
     private Integer stock;
+
+    @Column(name = "imagen_url", length = 500)
+    private String imagenUrl;
 }
