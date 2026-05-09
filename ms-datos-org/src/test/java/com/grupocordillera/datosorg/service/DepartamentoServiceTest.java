@@ -24,9 +24,9 @@ class DepartamentoServiceTest {
     private DepartamentoService departamentoService;
 
     @Test
-    void testListarTodos() {
+    void testObtenerTodos() {
         when(departamentoRepository.findAll()).thenReturn(List.of(new Departamento()));
-        var result = departamentoService.listarTodos();
+        var result = departamentoService.obtenerTodos();
         assertEquals(1, result.size());
     }
 

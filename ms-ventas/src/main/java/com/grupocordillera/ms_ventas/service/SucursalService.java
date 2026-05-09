@@ -35,11 +35,15 @@ public class SucursalService {
             String calleRandom = calles[(int) (Math.random() * calles.length)];
             int numeroRandom = (int)(Math.random() * 9999) + 1;
 
+            String ciudadKey = ciudadRandom.toLowerCase()
+                    .replace(" ", "").replace("á","a").replace("é","e")
+                    .replace("í","i").replace("ó","o").replace("ú","u");
             s.setNombre("Sucursal " + ciudadRandom + " " + (i + 1));
             s.setCiudad(ciudadRandom);
             s.setDireccion(calleRandom + " " + numeroRandom);
+            s.setImagenUrl("https://picsum.photos/seed/" + ciudadKey + (i+1) + "/600/400");
 
-            nuevasSucursales.add(s); // Agregamos a la lista
+            nuevasSucursales.add(s);
         }
 
         // Guardamos todas las sucursales de una sola vez

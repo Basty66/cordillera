@@ -23,17 +23,17 @@ class SucursalServiceTest {
     private SucursalService sucursalService;
 
     @Test
-    void testListarTodas() {
+    void testObtenerTodas() {
         when(sucursalRepository.findAll()).thenReturn(List.of(new Sucursal(), new Sucursal()));
-        assertEquals(2, sucursalService.listarTodas().size());
+        assertEquals(2, sucursalService.obtenerTodas().size());
     }
 
     @Test
-    void testGuardar() {
+    void testGuardarSucursal() {
         Sucursal s = new Sucursal();
         s.setNombre("Sucursal Nueva");
         when(sucursalRepository.save(any())).thenReturn(s);
-        var result = sucursalService.guardar(s);
+        var result = sucursalService.guardarSucursal(s);
         assertEquals("Sucursal Nueva", result.getNombre());
     }
 }

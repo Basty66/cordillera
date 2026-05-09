@@ -29,4 +29,7 @@ public class Sucursal {
     // el valor sea gestionado automáticamente por la base de datos (DEFAULT)
     @Column(name = "fecha_creacion", insertable = false, updatable = false)
     private LocalDateTime fechaCreacion;
+
+    @Column(name = "imagen_url", length = 500)
+    private String imagenUrl;
 }

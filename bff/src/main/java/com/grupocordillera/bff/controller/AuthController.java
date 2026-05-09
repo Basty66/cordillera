@@ -6,6 +6,10 @@ import com.grupocordillera.bff.dto.UsuarioRequest;
 import com.grupocordillera.bff.entity.Usuario;
 import com.grupocordillera.bff.repository.UsuarioRepository;
 import com.grupocordillera.bff.security.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Autenticacion", description = "Operaciones de autenticacion y usuarios")
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
@@ -28,6 +33,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Iniciar sesion", description = "Autentica un usuario y devuelve un token JWT")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Inicio de sesion exitoso"),
+        @ApiResponse(responseCode = "401", description = "Credenciales invalidas o usuario inactivo")
+    })
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         var optUser = usuarioRepository.findByUsername(request.getUsername());
         if (optUser.isEmpty()) {
@@ -45,6 +55,11 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Registrar usuario", description = "Registra un nuevo usuario en el sistema")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "El usuario ya existe o datos invalidos")
+    })
     public ResponseEntity<?> register(@RequestBody UsuarioRequest request) {
         if (usuarioRepository.findByUsername(request.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body(Map.of("error", "El usuario ya existe"));
@@ -61,6 +76,11 @@ public class AuthController {
     }
 
     @GetMapping("/usuarios")
+    @Operation(summary = "Listar usuarios", description = "Retorna una lista de todos los usuarios registrados (solo ADMIN)")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida exitosamente"),
+        @ApiResponse(responseCode = "403", description = "Acceso denegado - se requiere rol ADMIN")
+    })
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         return ResponseEntity.ok(usuarioRepository.findAll());
     }

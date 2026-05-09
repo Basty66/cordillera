@@ -23,11 +23,14 @@ public class ProductoService {
         List<Producto> lista = new ArrayList<>();
 
         for (int i = 0; i < cantidad; i++) {
+            String nombre = nombres[(int)(Math.random()*nombres.length)] + " " + (i+1);
+            String categoria = nombre.split(" ")[0].toLowerCase();
             Producto p = new Producto();
-            p.setNombre(nombres[(int)(Math.random()*nombres.length)] + " " + (i+1));
+            p.setNombre(nombre);
             p.setDescripcion("Producto de alta calidad serie " + i);
             p.setPrecio(BigDecimal.valueOf(Math.random() * 1000));
             p.setStock((int)(Math.random() * 500));
+            p.setImagenUrl("https://picsum.photos/seed/" + categoria + (i+1) + "/400/300");
             lista.add(p);
         }
         productoRepository.saveAll(lista);

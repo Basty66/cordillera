@@ -14,9 +14,10 @@ const itemAnim = {
   show: { opacity: 1, y: 0 },
 };
 
-function getBranchImage(id, nombre) {
-  const clean = (nombre || 'branch').toLowerCase().replace(/[^a-z0-9]/g, '');
-  return `https://picsum.photos/seed/branch${clean}/600/400`;
+function getBranchImage(sucursal) {
+  if (sucursal.imagenUrl) return sucursal.imagenUrl;
+  const city = (sucursal.ciudad || 'chile').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
+  return `https://picsum.photos/seed/${city}${sucursal.id}/600/400`;
 }
 
 export default function Sucursales() {
@@ -54,7 +55,7 @@ export default function Sucursales() {
             className="glass-card rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
           >
             <div className="h-32 bg-slate-100 overflow-hidden">
-              <img src={getBranchImage(s.id, s.nombre)} alt={s.nombre}
+              <img src={getBranchImage(s)} alt={s.nombre}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
             </div>
             <div className="p-4">
@@ -78,7 +79,7 @@ export default function Sucursales() {
         {selected && (
           <div className="space-y-4">
             <div className="rounded-xl overflow-hidden bg-slate-100 h-48">
-              <img src={getBranchImage(selected.id, selected.nombre)} alt={selected.nombre}
+              <img src={getBranchImage(selected)} alt={selected.nombre}
                 className="w-full h-full object-cover" />
             </div>
             <div className="grid grid-cols-2 gap-3">
