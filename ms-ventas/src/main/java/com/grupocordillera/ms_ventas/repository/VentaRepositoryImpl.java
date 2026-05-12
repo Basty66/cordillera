@@ -44,15 +44,15 @@ public class VentaRepositoryImpl implements VentaRepositoryCustom {
 
     @Override
     public Map<String, Object> obtenerResumenVentas() {
-        Object resultado = entityManager
-                .createQuery("SELECT COUNT(v), COALESCE(SUM(v.montoTotal), 0), COALESCE(AVG(v.montoTotal), 0) FROM Venta v", Object[].class)
-                .getSingleResult();
+        List<Object[]> resultados = entityManager
+                .createQuery("SELECT COUNT(v), COALESCE(SUM(v.montoTotal), 0), AVG(v.montoTotal) FROM Venta v", Object[].class)
+                .getResultList();
 
-        Object[] fila = (Object[]) resultado;
+        Object[] fila = resultados.isEmpty() ? new Object[]{0L, BigDecimal.ZERO, 0.0} : resultados.get(0);
         Map<String, Object> resumen = new HashMap<>();
         resumen.put("totalVentas", fila[0]);
         resumen.put("montoTotal", fila[1]);
-        resumen.put("promedioVenta", fila[2]);
+        resumen.put("promedioVenta", fila[2] == null ? 0.0 : (Double) fila[2]);
         return resumen;
     }
 
@@ -79,11 +79,9 @@ public class VentaRepositoryImpl implements VentaRepositoryCustom {
         List<Object[]> resultados = entityManager
                 .createQuery("""
                     SELECT FUNCTION('TO_CHAR', v.fechaVenta, 'YYYY-MM'),
-                           FUNCTION('EXTRACT', 'YEAR', v.fechaVenta),
                            COUNT(v), SUM(v.montoTotal), AVG(v.montoTotal)
                     FROM Venta v
-                    GROUP BY FUNCTION('TO_CHAR', v.fechaVenta, 'YYYY-MM'),
-                             FUNCTION('EXTRACT', 'YEAR', v.fechaVenta)
+                    GROUP BY FUNCTION('TO_CHAR', v.fechaVenta, 'YYYY-MM')
                     ORDER BY FUNCTION('TO_CHAR', v.fechaVenta, 'YYYY-MM')
                     """, Object[].class)
                 .getResultList();
@@ -94,9 +92,9 @@ public class VentaRepositoryImpl implements VentaRepositoryCustom {
             return new VentaMensualDTO(
                 getNombreMes(Integer.parseInt(partes[1])),
                 Integer.parseInt(partes[0]),
-                (Long) r[2],
-                (BigDecimal) r[3],
-                (BigDecimal) r[4]
+                (Long) r[1],
+                (BigDecimal) r[2],
+                BigDecimal.valueOf((Double) r[3])
             );
         }).toList();
     }

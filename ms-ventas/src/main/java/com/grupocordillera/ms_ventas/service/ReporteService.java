@@ -38,7 +38,7 @@ public class ReporteService {
         return new ResumenVentasDTO(
                 (Long) resumen.get("totalVentas"),
                 (BigDecimal) resumen.get("montoTotal"),
-                (BigDecimal) resumen.get("promedioVenta")
+                BigDecimal.valueOf((Double) resumen.get("promedioVenta"))
         );
     }
 
