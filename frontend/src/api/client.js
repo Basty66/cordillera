@@ -54,3 +54,7 @@ export const deleteTicket = (id) => api.delete(`/tickets/${id}`).then(r => r.dat
 
 export const getReportesDashboard = () => api.get('/reportes/dashboard').then(r => r.data);
 export const getReportesTickets = () => api.get('/reportes/tickets').then(r => r.data);
+
+export const getVentasMensuales = () => api.get('/reportes/ventas-mensuales').then(r => r.data);
+export const getVentasPorCategoria = () => api.get('/reportes/ventas-por-categoria').then(r => r.data);
+export const getTopProductos = (limite = 10) => api.get(`/reportes/top-productos?limite=${limite}`).then(r => r.data);

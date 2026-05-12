@@ -2,6 +2,9 @@ package com.grupocordillera.ms_ventas.controller;
 
 import com.grupocordillera.ms_ventas.dto.ReporteVentasDTO;
 import com.grupocordillera.ms_ventas.dto.ResumenVentasDTO;
+import com.grupocordillera.ms_ventas.dto.TopProductoDTO;
+import com.grupocordillera.ms_ventas.dto.VentaCategoriaDTO;
+import com.grupocordillera.ms_ventas.dto.VentaMensualDTO;
 import com.grupocordillera.ms_ventas.service.ReporteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,25 +20,21 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/reportes")
 @RequiredArgsConstructor
-@Tag(name = "Reportes", description = "Reportes de ventas")
+@Tag(name = "Reportes", description = "Reportes de ventas, data warehouse")
 public class ReporteController {
 
     private final ReporteService reporteService;
 
     @GetMapping("/ventas-por-sucursal")
     @Operation(summary = "Ventas por sucursal", description = "Retorna un reporte de ventas agrupadas por sucursal")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Reporte obtenido exitosamente")
-    })
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Reporte obtenido exitosamente") })
     public ResponseEntity<List<ReporteVentasDTO>> reporteVentasPorSucursal() {
         return ResponseEntity.ok(reporteService.reporteVentasPorSucursal());
     }
 
     @GetMapping("/resumen-ventas")
     @Operation(summary = "Resumen de ventas", description = "Retorna un resumen con totales de ventas")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Resumen obtenido exitosamente")
-    })
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Resumen obtenido exitosamente") })
     public ResponseEntity<ResumenVentasDTO> resumenVentas() {
         return ResponseEntity.ok(reporteService.resumenVentas());
     }
@@ -50,9 +49,28 @@ public class ReporteController {
             @RequestParam String inicio,
             @RequestParam String fin) {
         BigDecimal total = reporteService.calcularVentasPorPeriodo(inicio, fin);
-        if (total == null) {
-            return ResponseEntity.ok(BigDecimal.ZERO);
-        }
-        return ResponseEntity.ok(total);
+        return ResponseEntity.ok(total == null ? BigDecimal.ZERO : total);
+    }
+
+    @GetMapping("/ventas-mensuales")
+    @Operation(summary = "Ventas mensuales", description = "Data warehouse: ventas agregadas por mes para gráficos de tendencia")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Datos mensuales obtenidos") })
+    public ResponseEntity<List<VentaMensualDTO>> ventasMensuales() {
+        return ResponseEntity.ok(reporteService.ventasMensuales());
+    }
+
+    @GetMapping("/ventas-por-categoria")
+    @Operation(summary = "Ventas por categoría", description = "Data warehouse: ventas agrupadas por categoría de producto")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Datos por categoría obtenidos") })
+    public ResponseEntity<List<VentaCategoriaDTO>> ventasPorCategoria() {
+        return ResponseEntity.ok(reporteService.ventasPorCategoria());
+    }
+
+    @GetMapping("/top-productos")
+    @Operation(summary = "Top productos", description = "Data warehouse: ranking de productos más vendidos")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Ranking obtenido") })
+    public ResponseEntity<List<TopProductoDTO>> topProductos(
+            @RequestParam(defaultValue = "10") int limite) {
+        return ResponseEntity.ok(reporteService.topProductos(limite));
     }
 }
