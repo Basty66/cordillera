@@ -12,18 +12,34 @@ export default function SplashScreen({ onFinish }) {
           setTimeout(onFinish, 200);
         }}
       >
+        {/* Animated background orbs */}
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-[150px]" />
+
         <motion.div
-          className="splash-content"
+          className="splash-content relative"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
         >
+          {/* Animated logo with neon rings */}
           <div className="splash-logo">
             <div className="splash-logo-ring" />
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              animate={{ boxShadow: ['0 0 10px rgba(16,185,129,0.2)', '0 0 30px rgba(16,185,129,0.4)', '0 0 10px rgba(16,185,129,0.2)'] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            />
             <div className="splash-logo-inner">
-              <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <motion.svg
+                className="w-8 h-8 text-emerald-400"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-              </svg>
+              </motion.svg>
             </div>
           </div>
 
@@ -37,7 +53,7 @@ export default function SplashScreen({ onFinish }) {
           </motion.h1>
 
           <motion.p
-            className="text-emerald-400/80 text-sm mb-8"
+            className="text-emerald-400/80 text-sm mb-8 tracking-wide neon-text"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.5 }}
@@ -55,7 +71,7 @@ export default function SplashScreen({ onFinish }) {
           </motion.div>
 
           <motion.p
-            className="text-slate-500 text-xs mt-6"
+            className="text-slate-500 text-xs mt-6 tracking-wider uppercase"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}

@@ -2,6 +2,9 @@ package com.grupocordillera.ms_ventas.service;
 
 import com.grupocordillera.ms_ventas.dto.ReporteVentasDTO;
 import com.grupocordillera.ms_ventas.dto.ResumenVentasDTO;
+import com.grupocordillera.ms_ventas.dto.TopProductoDTO;
+import com.grupocordillera.ms_ventas.dto.VentaCategoriaDTO;
+import com.grupocordillera.ms_ventas.dto.VentaMensualDTO;
 import com.grupocordillera.ms_ventas.repository.VentaRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -41,5 +44,17 @@ public class ReporteService {
 
     public BigDecimal calcularVentasPorPeriodo(String inicio, String fin) {
         return ventaRepositoryCustom.calcularTotalVentasPorPeriodo(inicio, fin);
+    }
+
+    public List<VentaMensualDTO> ventasMensuales() {
+        return ventaRepositoryCustom.ventasMensuales();
+    }
+
+    public List<VentaCategoriaDTO> ventasPorCategoria() {
+        return ventaRepositoryCustom.ventasPorCategoria();
+    }
+
+    public List<TopProductoDTO> topProductos(int limite) {
+        return ventaRepositoryCustom.topProductos(limite);
     }
 }

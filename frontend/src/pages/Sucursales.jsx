@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getSucursales } from '../api/client';
-import { MapPin, Building2, Navigation, Hash, Globe } from 'lucide-react';
+import { MapPin, Building2, Navigation, Hash, Globe, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import DetailModal from '../components/DetailModal';
 
@@ -30,15 +30,17 @@ export default function Sucursales() {
   }, []);
 
   if (error) return (
-    <div className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-xl">
-      <MapPin className="w-5 h-5" /><span>{error}</span>
-    </div>
+    <motion.div initial={{ opacity: 0 }} className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-xl border border-red-200">
+      <AlertCircle className="w-5 h-5" /><span className="font-medium">{error}</span>
+    </motion.div>
   );
 
   return (
     <motion.div variants={container} initial="hidden" animate="show">
       <motion.div variants={itemAnim} className="flex items-center gap-3 mb-6">
-        <div className="p-2.5 bg-rose-100 rounded-xl"><Building2 className="w-6 h-6 text-rose-600" /></div>
+        <div className="p-2.5 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl shadow-lg shadow-rose-500/20">
+          <Building2 className="w-6 h-6 text-white" />
+        </div>
         <div>
           <h2 className="text-2xl font-bold text-slate-800">Sucursales <span className="text-slate-400 text-lg font-normal">({sucursales.length})</span></h2>
           <p className="text-sm text-slate-400">Nuestras ubicaciones — haz clic para ver detalles</p>
@@ -50,17 +52,18 @@ export default function Sucursales() {
           <motion.div
             key={s.id}
             variants={itemAnim}
-            whileHover={{ y: -5, transition: { type: 'spring', stiffness: 200 } }}
+            whileHover={{ y: -6, transition: { type: 'spring', stiffness: 200 } }}
             onClick={() => setSelected(s)}
-            className="glass-card rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
+            className="glass-card-neon rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group"
           >
-            <div className="h-32 bg-slate-100 overflow-hidden">
+            <div className="h-32 bg-slate-100 overflow-hidden relative">
               <img src={getBranchImage(s)} alt={s.nombre}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             </div>
             <div className="p-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl shadow-lg shrink-0">
+                <div className="p-2 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl shadow-lg shrink-0 group-hover:scale-110 transition-transform">
                   <MapPin className="w-4 h-4 text-white" />
                 </div>
                 <div className="min-w-0">
@@ -74,33 +77,25 @@ export default function Sucursales() {
         ))}
       </motion.div>
 
-      {/* Detail Modal */}
       <DetailModal open={!!selected} onClose={() => setSelected(null)} title={selected?.nombre} size="max-w-lg">
         {selected && (
           <div className="space-y-4">
-            <div className="rounded-xl overflow-hidden bg-slate-100 h-48">
-              <img src={getBranchImage(selected)} alt={selected.nombre}
-                className="w-full h-full object-cover" />
+            <div className="rounded-xl overflow-hidden bg-slate-100 h-48 shadow-inner">
+              <img src={getBranchImage(selected)} alt={selected.nombre} className="w-full h-full object-cover" />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-slate-50 rounded-xl">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <Hash className="w-3.5 h-3.5" /> ID
+              {[
+                { icon: Hash, label: 'ID', value: selected.id, colSpan: '' },
+                { icon: Globe, label: 'Ciudad', value: selected.ciudad, colSpan: '' },
+                { icon: Navigation, label: 'Dirección', value: selected.direccion || 'No registrada', colSpan: 'col-span-2' },
+              ].map((item, i) => (
+                <div key={i} className={`p-3 bg-slate-50 rounded-xl border border-slate-100 ${item.colSpan}`}>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
+                    <item.icon className="w-3.5 h-3.5" /> {item.label}
+                  </div>
+                  <p className="font-medium text-slate-800">{item.value}</p>
                 </div>
-                <p className="font-medium text-slate-800">{selected.id}</p>
-              </div>
-              <div className="p-3 bg-slate-50 rounded-xl">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <Globe className="w-3.5 h-3.5" /> Ciudad
-                </div>
-                <p className="font-medium text-slate-800">{selected.ciudad}</p>
-              </div>
-              <div className="p-3 bg-slate-50 rounded-xl col-span-2">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <Navigation className="w-3.5 h-3.5" /> Dirección
-                </div>
-                <p className="font-medium text-slate-800">{selected.direccion || 'No registrada'}</p>
-              </div>
+              ))}
             </div>
           </div>
         )}

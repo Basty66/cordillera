@@ -12,7 +12,9 @@ public class RouteConfig {
     public RouteLocator customRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("ms-ventas", r -> r
-                        .path("/api/ventas/**", "/api/productos/**", "/api/sucursales/**")
+                        .path("/api/ventas/**", "/api/productos/**", "/api/sucursales/**",
+                              "/api/reportes/ventas-*", "/api/reportes/resumen-*",
+                              "/api/reportes/top-*")
                         .filters(f -> f.circuitBreaker(cb -> cb
                                 .setName("ms-ventas-cb")
                                 .setFallbackUri("forward:/fallback/ventas")))
