@@ -91,7 +91,7 @@ pid = 0
 for cat, items in cats:
     for name, desc, price, stock in items:
         pid += 1
-        img = f"https://picsum.photos/seed/{cat_keys[cat]}{pid}/400/300"
+        img = f"/images/productos/producto-{pid}.png" if pid <= 10 else f"https://picsum.photos/seed/{cat_keys[cat]}{pid}/400/300"
         prod_rows.append((name, desc, price, stock, img))
 
 cur.executemany(

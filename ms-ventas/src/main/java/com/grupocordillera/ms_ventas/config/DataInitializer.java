@@ -83,7 +83,11 @@ public class DataInitializer implements CommandLineRunner {
                 p.setPrecio(precios[i]);
                 p.setStock(stocks[i]);
                 String catKey = cat.name().toLowerCase();
-                p.setImagenUrl("https://picsum.photos/seed/" + catKey + id + "/400/300");
+                if (id <= 10) {
+                    p.setImagenUrl("/images/productos/producto-" + id + ".png");
+                } else {
+                    p.setImagenUrl("https://picsum.photos/seed/" + catKey + id + "/400/300");
+                }
                 lista.add(p);
             }
         }
