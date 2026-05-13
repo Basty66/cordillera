@@ -2,12 +2,13 @@ package com.grupocordillera.datosorg.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "empleados", schema = "datos_org")
 public class Empleado {
 
@@ -27,8 +28,9 @@ public class Empleado {
     @Column(name = "cargo", length = 100)
     private String cargo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "departamento_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Departamento departamento;
 
     @Column(name = "fecha_contratacion")

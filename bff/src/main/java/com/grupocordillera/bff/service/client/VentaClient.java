@@ -31,24 +31,27 @@ public class VentaClient {
 
     @CircuitBreaker(name = "ventas-client", fallbackMethod = "ventasFallback")
     public ResumenVentasDTO obtenerResumenVentas() {
-        List<Map<String, Object>> ventas = restTemplate.exchange(
-                baseUrl + "/api/ventas",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
-        ).getBody();
+        try {
+            Map<String, Object> resumen = restTemplate.getForObject(
+                    baseUrl + "/api/reportes/resumen-ventas",
+                    Map.class);
 
-        if (ventas == null || ventas.isEmpty()) {
-            return new ResumenVentasDTO(0, BigDecimal.ZERO, BigDecimal.ZERO);
+            if (resumen == null || resumen.isEmpty()) {
+                return new ResumenVentasDTO(0, BigDecimal.ZERO, BigDecimal.ZERO);
+            }
+
+            Long total = resumen.get("totalVentas") != null
+                    ? ((Number) resumen.get("totalVentas")).longValue() : 0L;
+            BigDecimal montoTotal = resumen.get("montoTotal") != null
+                    ? new BigDecimal(resumen.get("montoTotal").toString()) : BigDecimal.ZERO;
+            BigDecimal promedio = resumen.get("promedioVenta") != null
+                    ? new BigDecimal(resumen.get("promedioVenta").toString()) : BigDecimal.ZERO;
+
+            return new ResumenVentasDTO(total, montoTotal, promedio);
+        } catch (Exception e) {
+            log.warn("Error al obtener resumen de ventas: {}", e.getMessage());
+            throw e;
         }
-
-        long total = ventas.size();
-        BigDecimal montoTotal = ventas.stream()
-                .map(v -> new BigDecimal(v.get("montoTotal").toString()))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal promedio = montoTotal.divide(BigDecimal.valueOf(total), 2, java.math.RoundingMode.HALF_UP);
-
-        return new ResumenVentasDTO(total, montoTotal, promedio);
     }
 
     @SuppressWarnings("unused")

@@ -4,6 +4,7 @@ import com.grupocordillera.ms_ventas.entity.DetalleVenta;
 import com.grupocordillera.ms_ventas.entity.Producto;
 import com.grupocordillera.ms_ventas.entity.Sucursal;
 import com.grupocordillera.ms_ventas.entity.Venta;
+import com.grupocordillera.ms_ventas.repository.DetalleVentaRepository;
 import com.grupocordillera.ms_ventas.repository.ProductoRepository;
 import com.grupocordillera.ms_ventas.repository.SucursalRepository;
 import com.grupocordillera.ms_ventas.repository.VentaRepository;
@@ -30,6 +31,7 @@ public class DataInitializer implements CommandLineRunner {
     private final ProductoRepository productoRepository;
     private final SucursalRepository sucursalRepository;
     private final VentaRepository ventaRepository;
+    private final DetalleVentaRepository detalleVentaRepository;
 
     @Override
     public void run(String... args) {
@@ -39,6 +41,17 @@ public class DataInitializer implements CommandLineRunner {
         }
         log.info("=== INICIANDO CARGA MASIVA DE DATOS ===");
         long start = System.currentTimeMillis();
+        seedData();
+        long elapsed = (System.currentTimeMillis() - start) / 1000;
+        log.info("=== CARGA COMPLETADA en {}s ===", elapsed);
+    }
+
+    @Transactional
+    protected void seedData() {
+        detalleVentaRepository.deleteAllInBatch();
+        ventaRepository.deleteAllInBatch();
+        productoRepository.deleteAllInBatch();
+        sucursalRepository.deleteAllInBatch();
 
         List<Producto> productos = crearProductos();
         productoRepository.saveAll(productos);
@@ -52,9 +65,6 @@ public class DataInitializer implements CommandLineRunner {
 
         long ventasCreadas = crearVentasHistoricas(productos, sucursales);
         log.info("{} ventas históricas creadas", ventasCreadas);
-
-        long elapsed = (System.currentTimeMillis() - start) / 1000;
-        log.info("=== CARGA COMPLETADA en {}s ===", elapsed);
     }
 
     private List<Producto> crearProductos() {
@@ -110,7 +120,6 @@ public class DataInitializer implements CommandLineRunner {
         return lista;
     }
 
-    @Transactional
     protected long crearVentasHistoricas(List<Producto> productos, List<Sucursal> sucursales) {
         long count = 0;
         ThreadLocalRandom rnd = ThreadLocalRandom.current();

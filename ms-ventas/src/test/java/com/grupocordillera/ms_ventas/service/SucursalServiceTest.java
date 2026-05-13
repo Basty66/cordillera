@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,5 +37,15 @@ class SucursalServiceTest {
         when(sucursalRepository.save(any())).thenReturn(s);
         var result = sucursalService.guardarSucursal(s);
         assertEquals("Sucursal Nueva", result.getNombre());
+    }
+
+    @Test
+    void testGenerarDatosMasivos() {
+        when(sucursalRepository.saveAll(anyList())).thenReturn(null);
+
+        String result = sucursalService.generarDatosMasivos(5);
+
+        assertEquals("¡Se insertaron 5 sucursales falsas con éxito!", result);
+        verify(sucursalRepository, times(1)).saveAll(anyList());
     }
 }
