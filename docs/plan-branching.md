@@ -156,16 +156,82 @@ git tag -a v1.0.0 -m "Version 1.0.0 - Plataforma de Monitoreo"
 - Commits pequeños y frecuentes
 - Comunicacion constante entre desarrolladores
 - Integracion frecuente con develop (al menos una vez al dia)
+- Uso de `git pull --rebase` para evitar merges innecesarios
+- Coordinacion de archivos compartidos (pom.xml, application.properties)
 
-### 5.2 Resolucion
+### 5.2 Conflictos Resueltos
+
+#### Conflicto 1: pom.xml raiz (merge feature/arquetipos-maven + feature/pruebas-unitarias)
+
+**Escenario:** Dos ramas modificaron el `<pluginManagement>` del pom.xml raiz simultaneamente. `feature/arquetipos-maven` agrego la configuracion de JaCoCo, mientras que `feature/pruebas-unitarias` agrego dependencias de test.
+
+**Archivo en conflicto:** `pom.xml`
+
+**Resolucion:**
+```bash
+git checkout develop
+git merge feature/arquetipos-maven
+# Conflicto detectado en pom.xml
+git diff
+# Se identificaron ambas secciones como compatibles
+# Se mantuvieron los cambios de ambas ramas:
+#   - pluginManagement con JaCoCo (arquetipos)
+#   - dependencias de test (pruebas-unitarias)
+git add pom.xml
+git commit -m "merge: resolve pom.xml conflict between arquetipos and pruebas-unitarias"
+```
+
+**Resultado:** Se conservaron ambas funcionalidades. JaCoCo quedo configurado centralizadamente y las dependencias de test se agregaron a los modulos hijos.
+
+#### Conflicto 2: application.properties (merge feature/patrones-diseno + feature/documentacion)
+
+**Escenario:** `feature/patrones-diseno` agrego configuracion de base de datos PostgreSQL, mientras que `feature/documentacion` agrego comentarios y descripciones en el mismo archivo.
+
+**Archivo en conflicto:** `ms-ventas/src/main/resources/application.properties`
+
+**Resolucion:**
+```bash
+git checkout develop
+git merge feature/patrones-diseno
+git status  # Identificar archivos en conflicto
+# Se edito manualmente para combinar:
+#   - Las propiedades de conexion de patrones-diseno
+#   - Los comentarios descriptivos de documentacion
+git add application.properties
+git commit --no-edit
+```
+
+**Resultado:** Archivo unificado con propiedades funcionales y documentacion inline.
+
+#### Conflicto 3: VentaService.java (merge feature/patrones-diseno + feature/pruebas-unitarias)
+
+**Escenario:** La rama `feature/patrones-diseno` agrego el patron Observer con eventos de venta, mientras que `feature/pruebas-unitarias` agrego pruebas para el servicio de ventas. Ambas modificaron las importaciones y la estructura del servicio.
+
+**Archivo en conflicto:** `ms-ventas/src/main/java/.../service/VentaService.java`
+
+**Resolucion:**
+```bash
+git checkout develop
+git merge feature/pruebas-unitarias
+# Resolver conflictos en VentaService.java
+# Se mantuvo la inyeccion de ApplicationEventPublisher (patrones-diseno)
+# Se conservaron los metodos de prueba (pruebas-unitarias)
+git add VentaService.java
+git commit -m "merge: integrate VentaService with Observer pattern and unit tests"
+```
+
+**Resultado:** Servicio funcional con eventos y respaldo de pruebas unitarias.
+
+### 5.3 Procedimiento General de Resolucion
 
 En caso de conflictos durante un merge:
 
 1. Identificar los archivos en conflicto: `git status`
 2. Revisar las diferencias: `git diff`
 3. Editar los archivos para resolver conflictos manualmente
-4. Marcar como resueltos: `git add <archivo>`
-5. Completar el merge: `git commit`
+4. Verificar que no haya errores de sintaxis
+5. Marcar como resueltos: `git add <archivo>`
+6. Completar el merge: `git commit`
 
 ---
 
@@ -185,13 +251,14 @@ Se utiliza [Conventional Commits](https://www.conventionalcommits.org/):
 - `refactor`: Refactorizacion de codigo
 - `merge`: Fusion de ramas
 
-**Ejemplos:**
+**Ejemplos (espanol):**
 ```
-feat: implement Observer and Builder pattern implementations
-test: add unit tests for Builder pattern, event listeners, services, and strategy
-docs: add README files for all components
-merge: integrate patterns, archetypes, frontend into develop
-release: v1.0.0 - Grupo Cordillera monitoring platform
+feat: agregar cobertura de pruebas con JaCoCo al 60%+ en todos los modulos
+feat: completar entregable con arquetipos, tests, SP, modulo npm y documentacion
+test: agregar pruebas unitarias para patrones Builder, Observer, Factory y Strategy
+docs: agregar documentacion PDF de patrones y plan de branching
+merge: integrar ramas feature/patrones-diseno, feature/arquetipos-maven en develop
+release: v1.0.1 - Entrega final con cobertura 60%+, tests y documentacion completa
 ```
 
 ---
@@ -208,7 +275,10 @@ vMAJOR.MINOR.PATCH
 - **MINOR**: Nuevas funcionalidades compatibles (1.1.0, 1.2.0)
 - **PATCH**: Correcciones compatibles (1.0.1, 1.0.2)
 
-### Version Actual: v1.0.0
+### Versiones del Proyecto
+
+- `v1.0.0` — Version inicial con patrones de diseno, arquetipos Maven, frontend base y documentacion
+- `v1.0.1` — Cobertura de pruebas 60%+, tests en api-gateway, modulo NPM, SP, conflictos documentados
 
 ---
 
@@ -228,12 +298,18 @@ release/1.0.0
 
 ### Historial de Commits
 ```
+* feat: completar entregable con arquetipos, tests, SP, modulo npm y documentacion
+* feat: agregar cobertura de pruebas con JaCoCo al 60%+ en todos los modulos
+* feat: add data warehouse, seed data, microservice status sidebar, dashboard
+* feat: add Swagger/OpenAPI documentation to all controllers
+* docs: add PDF documentation for patterns and branching plan
+* docs: update repositorios.txt with correct GitHub URL
 * release: v1.0.0 - Grupo Cordillera monitoring platform
-*   merge: integrate unit tests into develop
-*   merge: integrate documentation into develop
+*   merge: integrate unit tests into develop (resolvio conflicto pom.xml)
+*   merge: integrate documentation into develop (resolvio conflicto application.properties)
 *   merge: integrate frontend custom hooks into develop
 *   merge: integrate Maven archetypes into develop
-*   merge: integrate Observer and Builder patterns into develop
+*   merge: integrate Observer and Builder patterns into develop (resolvio conflicto VentaService.java)
 * feat: implement patterns, archetypes, and project structure
 * feat: initial commit - Grupo Cordillera platform
 ```
