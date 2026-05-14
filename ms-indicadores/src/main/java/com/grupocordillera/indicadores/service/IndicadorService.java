@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,8 +38,9 @@ public class IndicadorService {
     }
 
     @Cacheable("indicadores")
+    @Transactional(readOnly = true)
     public List<Indicador> obtenerTodos() {
-        return indicadorRepository.findAll();
+        return indicadorRepository.findAllWithCategoria();
     }
 
     @CacheEvict(value = "indicadores", allEntries = true)
@@ -47,8 +49,9 @@ public class IndicadorService {
     }
 
     @Cacheable("valoresIndicadores")
+    @Transactional(readOnly = true)
     public List<ValorIndicador> obtenerValoresActuales() {
-        return valorIndicadorRepository.findAll();
+        return valorIndicadorRepository.findAllWithRelations();
     }
 
     @CacheEvict(value = "valoresIndicadores", allEntries = true)
