@@ -1,6 +1,9 @@
 package com.grupocordillera.bff.service.client;
 
 import com.grupocordillera.bff.dto.ResumenVentasDTO;
+import com.grupocordillera.bff.dto.TopProductoDTO;
+import com.grupocordillera.bff.dto.VentaCategoriaDTO;
+import com.grupocordillera.bff.dto.VentaMensualDTO;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +77,69 @@ public class VentaClient {
     @SuppressWarnings("unused")
     private List<Map<String, Object>> sucursalesFallback(Throwable t) {
         log.warn("Circuit Breaker activado para sucursales: {}", t.getMessage());
+        return Collections.emptyList();
+    }
+
+    @CircuitBreaker(name = "ventas-client", fallbackMethod = "contarSucursalesFallback")
+    public long contarSucursales() {
+        Long count = restTemplate.getForObject(baseUrl + "/api/sucursales/count", Long.class);
+        return count != null ? count : 0L;
+    }
+
+    @SuppressWarnings("unused")
+    private long contarSucursalesFallback(Throwable t) {
+        log.warn("Circuit Breaker activado para conteo de sucursales: {}", t.getMessage());
+        return 0L;
+    }
+
+    @CircuitBreaker(name = "ventas-client", fallbackMethod = "ventasMensualesFallback")
+    public List<VentaMensualDTO> obtenerVentasMensuales() {
+        List<VentaMensualDTO> result = restTemplate.exchange(
+                baseUrl + "/api/reportes/ventas-mensuales",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<VentaMensualDTO>>() {}
+        ).getBody();
+        return result != null ? result : Collections.emptyList();
+    }
+
+    @SuppressWarnings("unused")
+    private List<VentaMensualDTO> ventasMensualesFallback(Throwable t) {
+        log.warn("Circuit Breaker activado para ventas mensuales: {}", t.getMessage());
+        return Collections.emptyList();
+    }
+
+    @CircuitBreaker(name = "ventas-client", fallbackMethod = "ventasCategoriaFallback")
+    public List<VentaCategoriaDTO> obtenerVentasPorCategoria() {
+        List<VentaCategoriaDTO> result = restTemplate.exchange(
+                baseUrl + "/api/reportes/ventas-por-categoria",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<VentaCategoriaDTO>>() {}
+        ).getBody();
+        return result != null ? result : Collections.emptyList();
+    }
+
+    @SuppressWarnings("unused")
+    private List<VentaCategoriaDTO> ventasCategoriaFallback(Throwable t) {
+        log.warn("Circuit Breaker activado para ventas por categoria: {}", t.getMessage());
+        return Collections.emptyList();
+    }
+
+    @CircuitBreaker(name = "ventas-client", fallbackMethod = "topProductosFallback")
+    public List<TopProductoDTO> obtenerTopProductos(int limite) {
+        List<TopProductoDTO> result = restTemplate.exchange(
+                baseUrl + "/api/reportes/top-productos?limite=" + limite,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<TopProductoDTO>>() {}
+        ).getBody();
+        return result != null ? result : Collections.emptyList();
+    }
+
+    @SuppressWarnings("unused")
+    private List<TopProductoDTO> topProductosFallback(Throwable t) {
+        log.warn("Circuit Breaker activado para top productos: {}", t.getMessage());
         return Collections.emptyList();
     }
 }

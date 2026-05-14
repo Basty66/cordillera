@@ -29,6 +29,13 @@ public class EmpleadoController {
         return ResponseEntity.ok(empleadoService.obtenerTodos());
     }
 
+    @GetMapping("/count")
+    @Operation(summary = "Contar empleados", description = "Retorna el total de empleados activos")
+    @ApiResponses({ @ApiResponse(responseCode = "200", description = "Total obtenido exitosamente") })
+    public ResponseEntity<Long> contar() {
+        return ResponseEntity.ok(empleadoService.contarActivos());
+    }
+
     @PostMapping
     @Operation(summary = "Crear empleado", description = "Crea un nuevo empleado en el sistema")
     @ApiResponses({

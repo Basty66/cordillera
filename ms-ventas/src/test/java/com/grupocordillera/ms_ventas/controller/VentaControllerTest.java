@@ -42,7 +42,9 @@ class VentaControllerTest {
     void testListarTodas() throws Exception {
         when(ventaService.obtenerTodas()).thenReturn(List.of(new Venta(), new Venta()));
 
-        mockMvc.perform(get("/api/ventas"))
+        mockMvc.perform(get("/api/ventas")
+                        .param("pagina", "0")
+                        .param("tamaño", "2147483647"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }

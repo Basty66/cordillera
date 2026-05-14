@@ -19,6 +19,10 @@ public class EmpleadoService {
         return empleadoRepository.findAll();
     }
 
+    public long contarActivos() {
+        return empleadoRepository.countByActivoTrue();
+    }
+
     public Empleado guardar(Empleado empleado) {
         return empleadoRepository.save(empleado);
     }

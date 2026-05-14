@@ -54,6 +54,11 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(token, user.getUsername(), user.getRol(), user.getNombre()));
     }
 
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, Object>> health() {
+        return ResponseEntity.ok(Map.of("status", "UP", "service", "bff"));
+    }
+
     @PostMapping("/register")
     @Operation(summary = "Registrar usuario", description = "Registra un nuevo usuario en el sistema")
     @ApiResponses({

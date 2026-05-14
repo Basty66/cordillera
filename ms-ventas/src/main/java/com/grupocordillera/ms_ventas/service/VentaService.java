@@ -7,6 +7,8 @@ import com.grupocordillera.ms_ventas.event.VentaRegistradaEvent;
 import com.grupocordillera.ms_ventas.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,10 @@ public class VentaService {
 
     public List<Venta> obtenerTodas() {
         return ventaRepository.findAll();
+    }
+
+    public Page<Venta> obtenerPaginadas(int pagina, int tamaño) {
+        return ventaRepository.findAll(PageRequest.of(pagina, tamaño));
     }
 
     @Transactional

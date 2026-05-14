@@ -6,16 +6,16 @@ import com.grupocordillera.bff.dto.ResumenVentasDTO;
 import com.grupocordillera.bff.service.client.DatosOrgClient;
 import com.grupocordillera.bff.service.client.IndicadorClient;
 import com.grupocordillera.bff.service.client.VentaClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -30,8 +30,17 @@ class DashboardServiceTest {
     @Mock
     private DatosOrgClient datosOrgClient;
 
-    @InjectMocks
     private DashboardService dashboardService;
+    private ThreadPoolTaskExecutor executor;
+
+    @BeforeEach
+    void setUp() {
+        executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.initialize();
+        dashboardService = new DashboardService(ventaClient, indicadorClient, datosOrgClient, executor);
+    }
 
     @Test
     void testObtenerDashboard() {
@@ -39,18 +48,11 @@ class DashboardServiceTest {
         List<KpiResumenDTO> kpis = List.of(
                 new KpiResumenDTO(1, "Ticket Promedio", "CLP", BigDecimal.valueOf(50000), "2026-05")
         );
-        List<Map<String, Object>> empleados = List.of(
-                Map.of("id", 1, "nombre", "Juan"),
-                Map.of("id", 2, "nombre", "María")
-        );
-        List<Map<String, Object>> sucursales = List.of(
-                Map.of("id", 1, "nombre", "Sucursal 1")
-        );
 
         when(ventaClient.obtenerResumenVentas()).thenReturn(ventas);
         when(indicadorClient.obtenerIndicadores()).thenReturn(kpis);
-        when(datosOrgClient.obtenerEmpleados()).thenReturn(empleados);
-        when(ventaClient.obtenerSucursales()).thenReturn(sucursales);
+        when(datosOrgClient.contarEmpleados()).thenReturn(2L);
+        when(ventaClient.contarSucursales()).thenReturn(1L);
 
         DashboardDTO dashboard = dashboardService.obtenerDashboard();
 
@@ -66,8 +68,8 @@ class DashboardServiceTest {
         when(ventaClient.obtenerResumenVentas())
                 .thenReturn(new ResumenVentasDTO(0, BigDecimal.ZERO, BigDecimal.ZERO));
         when(indicadorClient.obtenerIndicadores()).thenReturn(Collections.emptyList());
-        when(datosOrgClient.obtenerEmpleados()).thenReturn(Collections.emptyList());
-        when(ventaClient.obtenerSucursales()).thenReturn(Collections.emptyList());
+        when(datosOrgClient.contarEmpleados()).thenReturn(0L);
+        when(ventaClient.contarSucursales()).thenReturn(0L);
 
         DashboardDTO dashboard = dashboardService.obtenerDashboard();
 
