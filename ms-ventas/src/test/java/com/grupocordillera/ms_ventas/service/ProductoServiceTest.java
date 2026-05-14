@@ -29,7 +29,7 @@ class ProductoServiceTest {
 
         String resultado = productoService.generarProductosMasivos(5);
 
-        assertEquals("¡Se inyectaron 5 productos con éxito!", resultado);
+        assertEquals("Se inyectaron 5 productos con exito!", resultado);
         verify(productoRepository, times(1)).saveAll(any());
     }
 }
