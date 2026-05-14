@@ -84,7 +84,7 @@ public class DataInitializer implements CommandLineRunner {
                 p.setStock(stocks[i]);
                 p.setCategoria(cat.getNombre());
                 String catKey = cat.name().toLowerCase();
-                if (id <= 20) {
+                if (id <= 30) {
                     p.setImagenUrl("/images/productos/producto-" + id + ".png");
                 } else {
                     p.setImagenUrl("https://picsum.photos/seed/" + catKey + id + "/400/300");
