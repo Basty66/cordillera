@@ -231,9 +231,12 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         String getNombre() {
-            String n = name();
-            return n.charAt(0) + n.substring(1).toLowerCase();
+            return NOMBRES_MAP.getOrDefault(this, name().charAt(0) + name().substring(1).toLowerCase());
         }
+
+        private static final java.util.Map<Categoria, String> NOMBRES_MAP = java.util.Map.of(
+            ELECTRONICA, "Electrónica"
+        );
 
         BigDecimal[] getPrecios() {
             String[] parts = preciosCsv.split(",");
