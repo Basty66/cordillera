@@ -2,8 +2,10 @@ package com.grupocordillera.ms_ventas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
+@EnableCaching
 public class MsVentasApplication {
 
 	public static void main(String[] args) {

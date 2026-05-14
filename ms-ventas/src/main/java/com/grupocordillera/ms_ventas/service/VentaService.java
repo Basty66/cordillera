@@ -6,6 +6,8 @@ import com.grupocordillera.ms_ventas.entity.*;
 import com.grupocordillera.ms_ventas.event.VentaRegistradaEvent;
 import com.grupocordillera.ms_ventas.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,10 +30,13 @@ public class VentaService {
         return ventaRepository.findAll();
     }
 
+    @Cacheable(value = "ventas", key = "#pagina + '-' + #tamano")
+    @Transactional(readOnly = true)
     public Page<Venta> obtenerPaginadas(int pagina, int tamaño) {
         return ventaRepository.findAll(PageRequest.of(pagina, tamaño));
     }
 
+    @CacheEvict(value = "ventas", allEntries = true)
     @Transactional
     public Venta registrarVenta(VentaRequestDTO request) {
         // 1. Validaciones iniciales
