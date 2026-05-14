@@ -9,6 +9,8 @@ import com.grupocordillera.indicadores.repository.ValorIndicadorRepository;
 import com.grupocordillera.indicadores.service.factory.CalculoIndicadorFactory;
 import com.grupocordillera.indicadores.service.factory.CalculoStrategy;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,26 +26,32 @@ public class IndicadorService {
     private final CategoriaIndicadorRepository categoriaIndicadorRepository;
     private final CalculoIndicadorFactory calculoFactory;
 
+    @Cacheable("categorias")
     public List<CategoriaIndicador> obtenerCategorias() {
         return categoriaIndicadorRepository.findAll();
     }
 
+    @CacheEvict(value = "categorias", allEntries = true)
     public CategoriaIndicador guardarCategoria(CategoriaIndicador categoria) {
         return categoriaIndicadorRepository.save(categoria);
     }
 
+    @Cacheable("indicadores")
     public List<Indicador> obtenerTodos() {
         return indicadorRepository.findAll();
     }
 
+    @CacheEvict(value = "indicadores", allEntries = true)
     public Indicador guardar(Indicador indicador) {
         return indicadorRepository.save(indicador);
     }
 
+    @Cacheable("valoresIndicadores")
     public List<ValorIndicador> obtenerValoresActuales() {
         return valorIndicadorRepository.findAll();
     }
 
+    @CacheEvict(value = "valoresIndicadores", allEntries = true)
     public ValorIndicador calcularValorIndicador(Integer indicadorId, String tipo, Object... params) {
         Indicador indicador = indicadorRepository.findById(indicadorId)
                 .orElseThrow(() -> new RuntimeException("Indicador no encontrado: " + indicadorId));

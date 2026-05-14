@@ -3,6 +3,8 @@ package com.grupocordillera.ms_ventas.service;
 import com.grupocordillera.ms_ventas.entity.Sucursal;
 import com.grupocordillera.ms_ventas.repository.SucursalRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,18 +16,22 @@ public class SucursalService {
 
     private final SucursalRepository sucursalRepository;
 
+    @Cacheable("sucursales")
     public List<Sucursal> obtenerTodas() {
         return sucursalRepository.findAll();
     }
 
+    @Cacheable("sucursalesCount")
     public long contarSucursales() {
         return sucursalRepository.count();
     }
 
+    @CacheEvict(value = {"sucursales", "sucursalesCount"}, allEntries = true)
     public Sucursal guardarSucursal(Sucursal sucursal) {
         return sucursalRepository.save(sucursal);
     }
 
+    @CacheEvict(value = {"sucursales", "sucursalesCount"}, allEntries = true)
     public String generarDatosMasivos(int cantidad) {
         String[] ciudades = {"Santiago", "Valparaíso", "Concepción", "La Serena", "Antofagasta", "Temuco", "Rancagua", "Iquique", "Puerto Montt", "Talca"};
         String[] calles = {"Av. Principal", "Calle Los Leones", "Av. Libertad", "Paseo Ahumada", "Gran Avenida", "Calle Prat", "Av. Brasil", "Calle Caupolicán"};

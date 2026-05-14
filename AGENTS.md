@@ -76,6 +76,7 @@ Sistema de monitoreo del desempeño organizacional para **Grupo Cordillera**, em
 - Node.js 20+
 - Maven (o usar `mvnw.cmd` / `mvnw`)
 - PostgreSQL (o usar Neon.tech remoto)
+- Docker (opcional, para contenedores)
 
 ### Backend
 
@@ -95,6 +96,32 @@ cd frontend
 npm install
 npm run dev  # Puerto 5173
 ```
+
+### Docker
+
+```bash
+# Construir imágenes
+docker compose build
+
+# Iniciar todos los servicios
+docker compose up -d
+
+# Ver logs
+docker compose logs -f
+
+# Detener servicios
+docker compose down
+```
+
+**Variables de entorno requeridas** (crear `.env` basado en `.env.example`):
+
+| Variable | Descripción |
+|----------|-------------|
+| `DB_HOST` | Host de PostgreSQL (ej: `ep-xxx.us-east-2.aws.neon.tech`) |
+| `DB_PORT` | Puerto (default: `5432`) |
+| `DB_NAME` | Nombre de la base de datos (ej: `neondb`) |
+| `DB_USER` | Usuario de PostgreSQL |
+| `DB_PASSWORD` | Contraseña de PostgreSQL |
 
 ### Pruebas
 

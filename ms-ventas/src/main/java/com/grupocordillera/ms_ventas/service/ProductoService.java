@@ -4,6 +4,8 @@ import com.grupocordillera.ms_ventas.entity.Producto;
 import com.grupocordillera.ms_ventas.repository.ProductoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -16,20 +18,24 @@ public class ProductoService {
 
     private final ProductoRepository productoRepository;
 
+    @Cacheable("productos")
     public List<Producto> obtenerTodos() {
         return productoRepository.findAll();
     }
 
+    @Cacheable(value = "productos", key = "#id")
     public Producto obtenerPorId(Integer id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Producto con ID " + id + " no encontrado"));
     }
 
+    @CacheEvict(value = "productos", allEntries = true)
     @Transactional
     public Producto crearProducto(Producto producto) {
         return productoRepository.save(producto);
     }
 
+    @CacheEvict(value = "productos", allEntries = true)
     @Transactional
     public Producto actualizarProducto(Integer id, Producto datos) {
         Producto existente = obtenerPorId(id);
@@ -42,6 +48,7 @@ public class ProductoService {
         return productoRepository.save(existente);
     }
 
+    @CacheEvict(value = "productos", allEntries = true)
     @Transactional
     public void eliminarProducto(Integer id) {
         if (!productoRepository.existsById(id)) {
@@ -50,6 +57,7 @@ public class ProductoService {
         productoRepository.deleteById(id);
     }
 
+    @CacheEvict(value = "productos", allEntries = true)
     public String generarProductosMasivos(int cantidad) {
         String[] nombres = {"Laptop", "Mouse", "Teclado", "Monitor", "Impresora", "Webcam", "Auriculares"};
         List<Producto> lista = new ArrayList<>();
