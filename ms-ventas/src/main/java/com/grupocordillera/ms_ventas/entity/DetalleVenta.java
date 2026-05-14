@@ -8,7 +8,10 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = "detalle_ventas", schema = "ventas")
+@Table(name = "detalle_ventas", schema = "ventas", indexes = {
+    @Index(name = "idx_detalle_ventas_producto", columnList = "producto_id"),
+    @Index(name = "idx_detalle_ventas_venta", columnList = "venta_id")
+})
 // Evita que Swagger/Jackson explote al intentar leer los proxies de Hibernate (Lazy Loading)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class DetalleVenta {

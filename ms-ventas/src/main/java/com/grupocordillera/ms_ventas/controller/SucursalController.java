@@ -29,6 +29,12 @@ public class SucursalController {
         return ResponseEntity.ok(sucursalService.obtenerTodas());
     }
 
+    @GetMapping("/count")
+    @Operation(summary = "Contar sucursales", description = "Retorna el número total de sucursales")
+    public ResponseEntity<Long> contarSucursales() {
+        return ResponseEntity.ok(sucursalService.contarSucursales());
+    }
+
     @PostMapping
     @Operation(summary = "Crear sucursal", description = "Crea una nueva sucursal manualmente")
     @ApiResponses({

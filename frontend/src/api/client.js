@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '/api' });
+const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
 
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
@@ -25,7 +25,8 @@ export const login = (username, password) =>
 
 export const getDashboard = () => api.get('/bff/dashboard').then(r => r.data);
 
-export const getVentas = () => api.get('/ventas').then(r => r.data);
+export const getVentas = () => api.get('/ventas?pagina=0&tamaño=20').then(r => r.data);
+export const getVentasPaginadas = (pagina = 0, tamaño = 20) => api.get(`/ventas?pagina=${pagina}&tamaño=${tamaño}`).then(r => r.data);
 export const createVenta = (data) => api.post('/ventas', data).then(r => r.data);
 
 export const getProductos = () => api.get('/productos').then(r => r.data);

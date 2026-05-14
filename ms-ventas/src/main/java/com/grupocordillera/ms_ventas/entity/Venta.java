@@ -11,7 +11,11 @@ import java.util.List;
 @Data
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "transacciones_venta", schema = "ventas")
+@Table(name = "transacciones_venta", schema = "ventas", indexes = {
+    @Index(name = "idx_ventas_fecha", columnList = "fecha_venta"),
+    @Index(name = "idx_ventas_sucursal", columnList = "sucursal_id"),
+    @Index(name = "idx_ventas_fecha_monto", columnList = "fecha_venta, monto_total")
+})
 public class Venta {
 
     @Id

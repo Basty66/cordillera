@@ -8,12 +8,14 @@ import {
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const API = import.meta.env.VITE_API_URL || '/api';
+
 const services = [
-  { id: 'ventas', name: 'ms-ventas', port: 8081, icon: ShoppingCart },
-  { id: 'datos-org', name: 'ms-datos-org', port: 8082, icon: Users },
-  { id: 'indicadores', name: 'ms-indicadores', port: 8083, icon: BarChart3 },
-  { id: 'bff', name: 'bff', port: 8090, icon: Activity },
-  { id: 'gateway', name: 'api-gateway', port: 8084, icon: Wifi },
+  { id: 'ventas', name: 'ms-ventas', endpoint: `${API}/productos`, icon: ShoppingCart },
+  { id: 'datos-org', name: 'ms-datos-org', endpoint: `${API}/empleados/count`, icon: Users },
+  { id: 'indicadores', name: 'ms-indicadores', endpoint: `${API}/indicadores/categorias`, icon: BarChart3 },
+  { id: 'bff', name: 'bff', endpoint: `${API}/auth/health`, icon: Activity },
+  { id: 'gateway', name: 'api-gateway', endpoint: `${API.replace('/api', '')}/health`, icon: Wifi },
 ];
 
 const navGroups = [
@@ -75,9 +77,9 @@ export default function Sidebar({ onClose }) {
         try {
           const ctrl = new AbortController();
           const tid = setTimeout(() => ctrl.abort(), 3000);
-          await fetch(`http://localhost:${s.port}/`, { mode: 'no-cors', signal: ctrl.signal });
+          const res = await fetch(s.endpoint, { signal: ctrl.signal });
           clearTimeout(tid);
-          results[s.id] = 'online';
+          results[s.id] = res.ok ? 'online' : 'offline';
         } catch {
           results[s.id] = 'offline';
         }
@@ -217,7 +219,6 @@ export default function Sidebar({ onClose }) {
                       }`} />
                       <Icon className="w-3 h-3 text-slate-500 shrink-0" />
                       <span className="text-[11px] text-slate-400 flex-1 truncate">{s.name}</span>
-                      <span className="text-[9px] font-mono text-slate-600 shrink-0">:{s.port}</span>
                     </div>
                   );
                 })}

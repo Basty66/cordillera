@@ -27,20 +27,15 @@ public class DatosOrgClient {
         this.restTemplate = restTemplate;
     }
 
-    @CircuitBreaker(name = "datos-org-client", fallbackMethod = "empleadosFallback")
-    public List<Map<String, Object>> obtenerEmpleados() {
-        List<Map<String, Object>> empleados = restTemplate.exchange(
-                baseUrl + "/api/empleados",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Map<String, Object>>>() {}
-        ).getBody();
-        return empleados != null ? empleados : Collections.emptyList();
+    @CircuitBreaker(name = "datos-org-client", fallbackMethod = "contarFallback")
+    public long contarEmpleados() {
+        Long count = restTemplate.getForObject(baseUrl + "/api/empleados/count", Long.class);
+        return count != null ? count : 0L;
     }
 
     @SuppressWarnings("unused")
-    private List<Map<String, Object>> empleadosFallback(Throwable t) {
+    private long contarFallback(Throwable t) {
         log.warn("Circuit Breaker activado para ms-datos-org: {}", t.getMessage());
-        return Collections.emptyList();
+        return 0L;
     }
 }

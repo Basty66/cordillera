@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getDashboard, getVentasMensuales, getTopProductos, getVentasPorCategoria } from '../api/client';
+import { getDashboard } from '../api/client';
 import { ShoppingCart, DollarSign, Users, Store, TrendingUp, AlertCircle, RefreshCw, BarChart3, Package, Server, Database, Globe, Activity, Wifi } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
@@ -64,25 +64,14 @@ function LoadingSkeleton() {
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
-  const [ventasMensuales, setVentasMensuales] = useState([]);
-  const [topProductos, setTopProductos] = useState([]);
-  const [ventasCategoria, setVentasCategoria] = useState([]);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = async () => {
     try {
       setRefreshing(true);
-      const [d, vm, tp, vc] = await Promise.all([
-        getDashboard(),
-        getVentasMensuales().catch(() => []),
-        getTopProductos(10).catch(() => []),
-        getVentasPorCategoria().catch(() => []),
-      ]);
+      const d = await getDashboard();
       setData(d);
-      setVentasMensuales(vm);
-      setTopProductos(tp);
-      setVentasCategoria(vc);
       setError(null);
     } catch (e) {
       setError(e.response?.data?.message || e.message);
@@ -109,6 +98,10 @@ export default function Dashboard() {
   if (!data) return <LoadingSkeleton />;
 
   const monthColors = ['#3b82f6','#60a5fa','#818cf8','#a78bfa','#c084fc','#e879f9','#f472b6','#fb7185','#f87171','#fbbf24','#34d399','#10b981'];
+
+  const ventasMensuales = data.ventasMensuales || [];
+  const ventasCategoria = data.ventasPorCategoria || [];
+  const topProductos = data.topProductos || [];
 
   const monthlyBarData = ventasMensuales.length ? {
     labels: ventasMensuales.map(v => v.mes.substring(0, 3) + ' ' + v.anio),

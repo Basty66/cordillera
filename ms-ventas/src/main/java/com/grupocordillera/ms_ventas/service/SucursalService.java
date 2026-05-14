@@ -18,6 +18,10 @@ public class SucursalService {
         return sucursalRepository.findAll();
     }
 
+    public long contarSucursales() {
+        return sucursalRepository.count();
+    }
+
     public Sucursal guardarSucursal(Sucursal sucursal) {
         return sucursalRepository.save(sucursal);
     }
