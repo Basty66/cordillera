@@ -28,8 +28,9 @@ export default function Ventas() {
     setLoading(true);
     getVentasPaginadas(pagina, tamaño)
       .then(r => {
-        setVentas(r.content || r);
-        setTotal(r.totalElements ?? r.length);
+        const items = Array.isArray(r) ? r : (r?.content ?? []);
+        setVentas(items);
+        setTotal(r?.totalElements ?? (Array.isArray(r) ? r.length : items.length));
       })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
@@ -37,7 +38,7 @@ export default function Ventas() {
 
   const totalPaginas = Math.ceil(total / tamaño);
 
-  const filtered = ventas.filter(v =>
+  const filtered = (ventas ?? []).filter(v =>
     String(v.id).includes(search) ||
     v.sucursal?.nombre?.toLowerCase().includes(search.toLowerCase())
   );
