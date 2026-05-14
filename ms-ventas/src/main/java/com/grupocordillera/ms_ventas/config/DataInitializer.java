@@ -36,6 +36,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (productoRepository.count() > 0) {
+            migrarImagenesExistentes();
             log.info("Datos ya existen — omitiendo inicialización");
             return;
         }
@@ -44,6 +45,22 @@ public class DataInitializer implements CommandLineRunner {
         seedData();
         long elapsed = (System.currentTimeMillis() - start) / 1000;
         log.info("=== CARGA COMPLETADA en {}s ===", elapsed);
+    }
+
+    @Transactional
+    protected void migrarImagenesExistentes() {
+        List<Producto> productos = productoRepository.findAll();
+        boolean modificado = false;
+        for (Producto p : productos) {
+            if (p.getId() <= 30 && p.getImagenUrl() != null && p.getImagenUrl().startsWith("https://picsum")) {
+                p.setImagenUrl("/images/productos/producto-" + p.getId() + ".png");
+                modificado = true;
+            }
+        }
+        if (modificado) {
+            productoRepository.saveAll(productos);
+            log.info("Imágenes locales actualizadas para productos 1-30");
+        }
     }
 
     @Transactional
