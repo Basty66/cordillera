@@ -21,7 +21,7 @@ function getProductImage(producto) {
   return `https://picsum.photos/seed/${cat}${producto.id}/400/300`;
 }
 
-const categorias = ['Todas', 'Electronica', 'Hogar', 'Ropa', 'Deportes', 'Alimentos', 'Juguetes'];
+const categorias = ['Todas', 'Electrónica', 'Hogar', 'Ropa', 'Deportes', 'Alimentos', 'Libros'];
 
 export default function Productos() {
   const { hasRole } = useAuth();
@@ -42,7 +42,7 @@ export default function Productos() {
 
   const filtered = productos.filter(p => {
     const matchSearch = !search || p.nombre?.toLowerCase().includes(search.toLowerCase()) || p.descripcion?.toLowerCase().includes(search.toLowerCase());
-    const matchCat = catFilter === 'Todas' || (p.nombre || '').toLowerCase().includes(catFilter.toLowerCase());
+    const matchCat = catFilter === 'Todas' || (p.categoria || '').toLowerCase() === catFilter.toLowerCase();
     return matchSearch && matchCat;
   });
 

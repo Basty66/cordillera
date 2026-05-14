@@ -82,6 +82,7 @@ public class DataInitializer implements CommandLineRunner {
                 p.setDescripcion(cat.descripciones[i]);
                 p.setPrecio(precios[i]);
                 p.setStock(stocks[i]);
+                p.setCategoria(cat.getNombre());
                 String catKey = cat.name().toLowerCase();
                 if (id <= 20) {
                     p.setImagenUrl("/images/productos/producto-" + id + ".png");
@@ -227,6 +228,11 @@ public class DataInitializer implements CommandLineRunner {
             this.descripciones = descripciones;
             this.preciosCsv = preciosCsv;
             this.stocksCsv = stocksCsv;
+        }
+
+        String getNombre() {
+            String n = name();
+            return n.charAt(0) + n.substring(1).toLowerCase();
         }
 
         BigDecimal[] getPrecios() {

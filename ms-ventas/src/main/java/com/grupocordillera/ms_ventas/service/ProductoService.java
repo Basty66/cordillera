@@ -38,6 +38,7 @@ public class ProductoService {
         if (datos.getPrecio() != null) existente.setPrecio(datos.getPrecio());
         if (datos.getStock() != null) existente.setStock(datos.getStock());
         if (datos.getImagenUrl() != null) existente.setImagenUrl(datos.getImagenUrl());
+        if (datos.getCategoria() != null) existente.setCategoria(datos.getCategoria());
         return productoRepository.save(existente);
     }
 
