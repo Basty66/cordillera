@@ -22,7 +22,7 @@ export default function DetailModal({ open, onClose, children, title, size = 'ma
           >
             {title && (
               <div className="flex items-center justify-between p-5 pb-3 border-b border-emerald-500/10">
-                <h3 className="text-lg font-bold text-slate-800">{title}</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">{title}</h3>
                 <motion.button
                   whileHover={{ rotate: 90, scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}

@@ -29,6 +29,10 @@ export const getVentas = () => api.get('/ventas').then(r => r.data);
 export const createVenta = (data) => api.post('/ventas', data).then(r => r.data);
 
 export const getProductos = () => api.get('/productos').then(r => r.data);
+export const getProducto = (id) => api.get(`/productos/${id}`).then(r => r.data);
+export const createProducto = (data) => api.post('/productos', data).then(r => r.data);
+export const updateProducto = (id, data) => api.put(`/productos/${id}`, data).then(r => r.data);
+export const deleteProducto = (id) => api.delete(`/productos/${id}`).then(r => r.data);
 
 export const getSucursales = () => api.get('/sucursales').then(r => r.data);
 
@@ -58,3 +62,24 @@ export const getReportesTickets = () => api.get('/reportes/tickets').then(r => r
 export const getVentasMensuales = () => api.get('/reportes/ventas-mensuales').then(r => r.data);
 export const getVentasPorCategoria = () => api.get('/reportes/ventas-por-categoria').then(r => r.data);
 export const getTopProductos = (limite = 10) => api.get(`/reportes/top-productos?limite=${limite}`).then(r => r.data);
+
+export const exportJSON = (data, filename) => {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+export const exportCSV = (rows, filename) => {
+  if (!rows.length) return;
+  const keys = Object.keys(rows[0]);
+  const csv = [keys.join(','), ...rows.map(r => keys.map(k => `"${String(r[k] ?? '').replace(/"/g, '""')}"`).join(','))].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+};

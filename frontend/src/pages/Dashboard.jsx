@@ -30,12 +30,12 @@ function StatCard({ label, value, icon: Icon, color }) {
     <motion.div variants={itemAnim} whileHover={{ y: -6, scale: 1.02, transition: { type: 'spring', stiffness: 300 } }}
       className="glass-card-neon rounded-xl p-5 transition-all duration-300 group">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-medium text-slate-500">{label}</span>
+        <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</span>
         <div className={`p-2.5 rounded-lg bg-gradient-to-br ${color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
           <Icon className="w-4 h-4 text-white" />
         </div>
       </div>
-      <p className="text-2xl font-bold text-slate-800 transition-all">{value}</p>
+      <p className="text-2xl font-bold text-slate-800 dark:text-white transition-all">{value}</p>
     </motion.div>
   );
 }

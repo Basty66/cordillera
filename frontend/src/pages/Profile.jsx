@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { User, Lock, Save, CheckCircle, AtSign } from 'lucide-react';
+import { User, Lock, Save, CheckCircle, AtSign, AlertCircle } from 'lucide-react';
 
 const container = {
   hidden: { opacity: 0 },
@@ -24,6 +24,7 @@ export default function Profile() {
   const [pw, setPw] = useState({ current: '', new: '', confirm: '' });
   const [saved, setSaved] = useState(false);
   const [pwSaved, setPwSaved] = useState(false);
+  const [pwError, setPwError] = useState('');
 
   const rm = roleMeta[user?.rol] || { label: 'Usuario', color: 'from-slate-500 to-slate-600', bg: 'bg-slate-100' };
 
@@ -35,13 +36,20 @@ export default function Profile() {
 
   const handlePw = (e) => {
     e.preventDefault();
+    setPwError('');
+
+    if (!pw.current.trim()) { setPwError('Ingresa tu contraseña actual'); return; }
+    if (!pw.new.trim()) { setPwError('Ingresa una nueva contraseña'); return; }
+    if (pw.new.length < 6) { setPwError('Mínimo 6 caracteres'); return; }
+    if (pw.new !== pw.confirm) { setPwError('Las contraseñas no coinciden'); return; }
+
     setPwSaved(true);
+    setPw({ current: '', new: '', confirm: '' });
     setTimeout(() => setPwSaved(false), 2500);
   };
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="max-w-3xl mx-auto space-y-6">
-      {/* Header */}
       <motion.div variants={itemAnim} className="flex items-center gap-3 mb-2">
         <div className="p-2.5 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg shadow-emerald-500/20">
           <User className="w-6 h-6 text-white" />
@@ -52,7 +60,6 @@ export default function Profile() {
         </div>
       </motion.div>
 
-      {/* Avatar + Role */}
       <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-6">
         <div className="flex flex-col sm:flex-row items-center gap-5">
           <div className="relative">
@@ -79,7 +86,6 @@ export default function Profile() {
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Personal Info */}
         <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <User className="w-4 h-4 text-emerald-500" />
@@ -102,19 +108,24 @@ export default function Profile() {
             </motion.button>
             {saved && (
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="text-xs text-emerald-600 flex items-center gap-1">
+                className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                 <CheckCircle className="w-3 h-3" /> Cambios guardados
               </motion.p>
             )}
           </form>
         </motion.div>
 
-        {/* Password */}
         <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Lock className="w-4 h-4 text-emerald-500" />
             <h3 className="font-semibold text-[var(--text-primary)]">Cambiar Contraseña</h3>
           </div>
+          {pwError && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="flex items-center gap-2 text-xs text-red-500 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg mb-3 border border-red-200 dark:border-red-500/20">
+              <AlertCircle className="w-3.5 h-3.5" />{pwError}
+            </motion.div>
+          )}
           <form onSubmit={handlePw} className="space-y-3">
             <div>
               <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Contraseña Actual</label>
@@ -137,7 +148,7 @@ export default function Profile() {
             </motion.button>
             {pwSaved && (
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="text-xs text-emerald-600 flex items-center gap-1">
+                className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                 <CheckCircle className="w-3 h-3" /> Contraseña actualizada
               </motion.p>
             )}

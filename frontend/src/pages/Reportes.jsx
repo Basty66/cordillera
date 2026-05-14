@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getReportesDashboard, getDashboard, getVentasMensuales, getVentasPorCategoria, getTopProductos } from '../api/client';
+import { getReportesDashboard, getDashboard, getVentasMensuales, getVentasPorCategoria, getTopProductos, exportCSV } from '../api/client';
 import { motion } from 'framer-motion';
 import {
   FileText, Download, BarChart3, TicketCheck, Users, AlertTriangle,
@@ -48,6 +48,44 @@ export default function Reportes() {
     URL.revokeObjectURL(url);
   };
 
+  const handleExportGeneralCSV = () => {
+    const rows = [
+      { Metrica: 'Total Ventas', Valor: dashboardData?.ventas?.totalVentas || 0 },
+      { Metrica: 'Total Empleados', Valor: dashboardData?.totalEmpleados || 0 },
+      { Metrica: 'Total Sucursales', Valor: dashboardData?.totalSucursales || 0 },
+      { Metrica: 'Total Tickets', Valor: reportData?.totalTickets || 0 },
+      { Metrica: 'Usuarios Registrados', Valor: reportData?.totalUsuarios || 0 },
+      { Metrica: 'Tickets Criticos', Valor: reportData?.ticketsCriticos || 0 },
+      { Metrica: 'Tickets Resueltos', Valor: reportData?.ticketsResueltos || 0 },
+    ];
+    exportCSV(rows, 'resumen-general.csv');
+  };
+
+  const handleExportTicketsCSV = () => {
+    const rows = [
+      { Estado: 'Abiertos', Cantidad: reportData?.ticketsAbiertos || 0 },
+      { Estado: 'En Progreso', Cantidad: reportData?.ticketsEnProgreso || 0 },
+      { Estado: 'Resueltos', Cantidad: reportData?.ticketsResueltos || 0 },
+      { Estado: 'Cerrados', Cantidad: reportData?.ticketsCerrados || 0 },
+    ];
+    if (reportData?.porPrioridad) {
+      Object.entries(reportData.porPrioridad).forEach(([pri, count]) => {
+        rows.push({ Estado: 'Prioridad: ' + pri, Cantidad: count });
+      });
+    }
+    exportCSV(rows, 'reporte-tickets.csv');
+  };
+
+  const handleExportVentasCSV = () => {
+    const v = dashboardData?.ventas || {};
+    const rows = [
+      { Metrica: 'Total Ventas', Valor: v.totalVentas || 0 },
+      { Metrica: 'Monto Total', Valor: v.montoTotal || 0 },
+      { Metrica: 'Ticket Promedio', Valor: v.promedioVenta || 0 },
+    ];
+    exportCSV(rows, 'reporte-ventas.csv');
+  };
+
   if (loading) return (
     <div className="flex justify-center py-20">
       <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
@@ -76,8 +114,8 @@ export default function Reportes() {
           <FileText className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-slate-800">Reportes</h2>
-          <p className="text-sm text-slate-400">Análisis, tendencias y exportación de datos</p>
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Reportes</h2>
+          <p className="text-sm text-slate-400 dark:text-slate-500">Análisis, tendencias y exportación de datos</p>
         </div>
       </motion.div>
 
@@ -95,7 +133,7 @@ export default function Reportes() {
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
               activeTab === tab.id
                 ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg shadow-emerald-600/20'
-                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
             }`}>
             <tab.icon className="w-4 h-4" />{tab.label}
           </motion.button>
@@ -107,11 +145,17 @@ export default function Reportes() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-slate-800">Resumen General</h3>
-              <button onClick={() => exportJSON(dashboardData, 'resumen-general.json')}
-                className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-500 font-medium">
-                <Download className="w-3.5 h-3.5" /> Exportar
-              </button>
+              <h3 className="font-semibold text-slate-800 dark:text-white">Resumen General</h3>
+              <div className="flex gap-1.5">
+                <button onClick={handleExportGeneralCSV}
+                  className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-500 font-medium">
+                  <Download className="w-3.5 h-3.5" /> CSV
+                </button>
+                <button onClick={() => exportJSON(dashboardData, 'resumen-general.json')}
+                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-500 font-medium">
+                  <Download className="w-3.5 h-3.5" /> JSON
+                </button>
+              </div>
             </div>
             <div className="h-[250px]">
               <Bar data={{
@@ -124,7 +168,7 @@ export default function Reportes() {
 
           {reportData && (
             <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-              <h3 className="font-semibold text-slate-800 mb-4">Estadísticas del Sistema</h3>
+              <h3 className="font-semibold text-slate-800 dark:text-white mb-4">Estadísticas del Sistema</h3>
               <div className="space-y-3">
                 {[
                   { icon: TicketCheck, label: 'Total Tickets', value: reportData.totalTickets, color: 'from-violet-500 to-violet-600' },
@@ -132,12 +176,12 @@ export default function Reportes() {
                   { icon: AlertTriangle, label: 'Tickets Críticos', value: reportData.ticketsCriticos, color: 'from-red-500 to-red-600' },
                   { icon: TrendingUp, label: 'Tickets Resueltos', value: reportData.ticketsResueltos, color: 'from-emerald-500 to-emerald-600' },
                 ].map(s => (
-                  <div key={s.label} className="flex items-center justify-between p-3 bg-white/60 rounded-xl border border-slate-100 hover:shadow-sm transition-shadow">
+                  <div key={s.label} className="flex items-center justify-between p-3 bg-white/60 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-700 hover:shadow-sm transition-shadow">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-lg bg-gradient-to-br ${s.color} shadow-md`}><s.icon className="w-4 h-4 text-white" /></div>
-                      <span className="text-sm font-medium text-slate-600">{s.label}</span>
+                      <span className="text-sm font-medium text-slate-600 dark:text-slate-400">{s.label}</span>
                     </div>
-                    <span className="text-lg font-bold text-slate-800">{s.value}</span>
+                    <span className="text-lg font-bold text-slate-800 dark:text-white">{s.value}</span>
                   </div>
                 ))}
               </div>
@@ -151,11 +195,17 @@ export default function Reportes() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-slate-800">Tickets por Estado</h3>
-              <button onClick={() => exportJSON(reportData, 'reporte-tickets.json')}
-                className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-500 font-medium">
-                <Download className="w-3.5 h-3.5" /> JSON
-              </button>
+              <h3 className="font-semibold text-slate-800 dark:text-white">Tickets por Estado</h3>
+              <div className="flex gap-1.5">
+                <button onClick={handleExportTicketsCSV}
+                  className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-500 font-medium">
+                  <Download className="w-3.5 h-3.5" /> CSV
+                </button>
+                <button onClick={() => exportJSON(reportData, 'reporte-tickets.json')}
+                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-500 font-medium">
+                  <Download className="w-3.5 h-3.5" /> JSON
+                </button>
+              </div>
             </div>
             <div className="h-[250px]">
               <Bar data={{
@@ -168,7 +218,7 @@ export default function Reportes() {
 
           {reportData?.porPrioridad && (
             <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-              <h3 className="font-semibold text-slate-800 mb-4">Distribución por Prioridad</h3>
+              <h3 className="font-semibold text-slate-800 dark:text-white mb-4">Distribución por Prioridad</h3>
               <div className="h-[250px] flex items-center justify-center">
                 <Doughnut data={{
                   labels: Object.keys(reportData.porPrioridad).map(p => ({ CRITICA: 'Crítica', ALTA: 'Alta', MEDIA: 'Media', BAJA: 'Baja' })[p] || p),
@@ -185,11 +235,17 @@ export default function Reportes() {
         <div className="space-y-6">
           <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-slate-800">Resumen de Ventas</h3>
-              <button onClick={() => exportJSON(dashboardData.ventas, 'reporte-ventas.json')}
-                className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-500 font-medium">
-                <Download className="w-3.5 h-3.5" /> Exportar
-              </button>
+              <h3 className="font-semibold text-slate-800 dark:text-white">Resumen de Ventas</h3>
+              <div className="flex gap-1.5">
+                <button onClick={handleExportVentasCSV}
+                  className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-500 font-medium">
+                  <Download className="w-3.5 h-3.5" /> CSV
+                </button>
+                <button onClick={() => exportJSON(dashboardData.ventas, 'reporte-ventas.json')}
+                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-500 font-medium">
+                  <Download className="w-3.5 h-3.5" /> JSON
+                </button>
+              </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
@@ -197,10 +253,10 @@ export default function Reportes() {
                 { label: 'Monto Total', value: formatCLP(dashboardData.ventas.montoTotal), icon: TrendingUp },
                 { label: 'Ticket Promedio', value: formatCLP(dashboardData.ventas.promedioVenta), icon: BarChart3 },
               ].map(s => (
-                <div key={s.label} className="p-4 bg-white/60 rounded-xl text-center border border-slate-100 hover:shadow-md transition-shadow">
-                  <s.icon className="w-5 h-5 mx-auto mb-2 text-emerald-600" />
-                  <p className="text-2xl font-bold text-slate-800">{s.value}</p>
-                  <p className="text-xs text-slate-500 mt-1">{s.label}</p>
+                <div key={s.label} className="p-4 bg-white/60 dark:bg-slate-800/60 rounded-xl text-center border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
+                  <s.icon className="w-5 h-5 mx-auto mb-2 text-emerald-600 dark:text-emerald-400" />
+                  <p className="text-2xl font-bold text-slate-800 dark:text-white">{s.value}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -208,7 +264,7 @@ export default function Reportes() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-              <h3 className="font-semibold text-slate-800 mb-4">Ventas por Categoría</h3>
+              <h3 className="font-semibold text-slate-800 dark:text-white mb-4">Ventas por Categoría</h3>
               {categoryDoughnutData ? (
                 <div className="h-[280px] flex items-center justify-center">
                   <Doughnut data={categoryDoughnutData} options={{
@@ -221,7 +277,7 @@ export default function Reportes() {
             </motion.div>
 
             <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-              <h3 className="font-semibold text-slate-800 mb-4">Ventas por Sucursal</h3>
+              <h3 className="font-semibold text-slate-800 dark:text-white mb-4">Ventas por Sucursal</h3>
               {dashboardData?.ventas?.totalVentas > 0 ? (
                 <div className="h-[280px]">
                   <Bar data={{
@@ -241,7 +297,7 @@ export default function Reportes() {
       {activeTab === 'productos' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-            <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <h3 className="font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
               <Package className="w-4 h-4 text-amber-500" /> Top 10 Productos
             </h3>
             {topProductos.length > 0 ? (
@@ -255,10 +311,10 @@ export default function Reportes() {
                       'bg-gradient-to-br from-blue-400 to-blue-600'
                     }`}>{i + 1}</div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-700 truncate">{p.nombre}</p>
-                      <p className="text-xs text-slate-400">{p.totalVendido} unidades</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{p.nombre}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">{p.totalVendido} unidades</p>
                     </div>
-                    <span className="text-sm font-bold text-slate-800">{formatCLP(p.montoTotal)}</span>
+                    <span className="text-sm font-bold text-slate-800 dark:text-white">{formatCLP(p.montoTotal)}</span>
                   </div>
                 ))}
               </div>
@@ -266,7 +322,7 @@ export default function Reportes() {
           </motion.div>
 
           <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-            <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <h3 className="font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
               <Store className="w-4 h-4 text-rose-500" /> Ventas por Sucursal
             </h3>
             {dashboardData?.ventas?.totalVentas > 0 ? (
@@ -285,9 +341,9 @@ export default function Reportes() {
       {activeTab === 'tendencias' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-            <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <h3 className="font-semibold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-emerald-500" /> Tendencia Mensual de Ventas
-              <span className="text-[10px] font-normal text-slate-400 ml-auto">Data Warehouse</span>
+              <span className="text-[10px] font-normal text-slate-400 dark:text-slate-500 ml-auto">Data Warehouse</span>
             </h3>
             {monthlyBarData ? (
               <div className="h-[300px]">
@@ -301,7 +357,7 @@ export default function Reportes() {
           </motion.div>
 
           <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-            <h3 className="font-semibold text-slate-800 mb-4">Distribución por Categoría</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-white mb-4">Distribución por Categoría</h3>
             {categoryDoughnutData ? (
               <div className="h-[300px] flex items-center justify-center">
                 <Doughnut data={categoryDoughnutData} options={{

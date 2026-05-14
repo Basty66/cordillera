@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -28,6 +30,39 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.obtenerTodos());
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener producto por ID")
+    public ResponseEntity<Producto> obtener(@PathVariable Integer id) {
+        return ResponseEntity.ok(productoService.obtenerPorId(id));
+    }
+
+    @PostMapping
+    @Operation(summary = "Crear producto")
+    public ResponseEntity<Producto> crear(@RequestBody Producto producto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productoService.crearProducto(producto));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar producto", description = "Actualiza los campos enviados de un producto existente")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Producto actualizado"),
+        @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
+    public ResponseEntity<Producto> actualizar(@PathVariable Integer id, @RequestBody Producto datos) {
+        return ResponseEntity.ok(productoService.actualizarProducto(id, datos));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar producto")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Producto eliminado"),
+        @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
+        productoService.eliminarProducto(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/generar/{cantidad}")
     @Operation(summary = "Generar productos masivos", description = "Genera una cantidad especifica de productos de forma automatica")
     @ApiResponses({
@@ -36,5 +71,10 @@ public class ProductoController {
     })
     public ResponseEntity<String> generar(@PathVariable int cantidad) {
         return ResponseEntity.ok(productoService.generarProductosMasivos(cantidad));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> notFound(EntityNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }

@@ -18,6 +18,7 @@ const items = [
 export default function SearchBar({ isAdmin }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [selectedIdx, setSelectedIdx] = useState(0);
   const navigate = useNavigate();
 
   const filtered = items
@@ -38,12 +39,21 @@ export default function SearchBar({ isAdmin }) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setOpen(o => !o);
+        return;
       }
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') { setOpen(false); return; }
+      if (!open) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); setSelectedIdx(i => Math.min(i + 1, filtered.length - 1)); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); setSelectedIdx(i => Math.max(i - 1, 0)); }
+      if (e.key === 'Enter' && filtered[selectedIdx]) { e.preventDefault(); handleSelect(filtered[selectedIdx].to); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [open, filtered, selectedIdx, handleSelect]);
+
+  useEffect(() => {
+    setSelectedIdx(0);
+  }, [query]);
 
   useEffect(() => {
     if (open) {
@@ -109,9 +119,12 @@ export default function SearchBar({ isAdmin }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.03 }}
                     onClick={() => handleSelect(item.to)}
-                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group"
+                    onMouseEnter={() => setSelectedIdx(i)}
+                    className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm transition-all group ${
+                      i === selectedIdx ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-300'
+                    }`}
                   >
-                    <item.icon className="w-4 h-4 text-slate-400 group-hover:text-emerald-500 transition-colors" />
+                    <item.icon className={`w-4 h-4 ${i === selectedIdx ? 'text-emerald-500' : 'text-slate-400'} transition-colors`} />
                     <span className="font-medium">{item.label}</span>
                   </motion.button>
                 ))}

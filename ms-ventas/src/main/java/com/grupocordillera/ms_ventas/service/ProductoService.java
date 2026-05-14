@@ -2,8 +2,10 @@ package com.grupocordillera.ms_ventas.service;
 
 import com.grupocordillera.ms_ventas.entity.Producto;
 import com.grupocordillera.ms_ventas.repository.ProductoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,35 @@ public class ProductoService {
 
     public List<Producto> obtenerTodos() {
         return productoRepository.findAll();
+    }
+
+    public Producto obtenerPorId(Integer id) {
+        return productoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Producto con ID " + id + " no encontrado"));
+    }
+
+    @Transactional
+    public Producto crearProducto(Producto producto) {
+        return productoRepository.save(producto);
+    }
+
+    @Transactional
+    public Producto actualizarProducto(Integer id, Producto datos) {
+        Producto existente = obtenerPorId(id);
+        if (datos.getNombre() != null) existente.setNombre(datos.getNombre());
+        if (datos.getDescripcion() != null) existente.setDescripcion(datos.getDescripcion());
+        if (datos.getPrecio() != null) existente.setPrecio(datos.getPrecio());
+        if (datos.getStock() != null) existente.setStock(datos.getStock());
+        if (datos.getImagenUrl() != null) existente.setImagenUrl(datos.getImagenUrl());
+        return productoRepository.save(existente);
+    }
+
+    @Transactional
+    public void eliminarProducto(Integer id) {
+        if (!productoRepository.existsById(id)) {
+            throw new EntityNotFoundException("Producto con ID " + id + " no encontrado");
+        }
+        productoRepository.deleteById(id);
     }
 
     public String generarProductosMasivos(int cantidad) {
@@ -34,6 +65,6 @@ public class ProductoService {
             lista.add(p);
         }
         productoRepository.saveAll(lista);
-        return "¡Se inyectaron " + cantidad + " productos con éxito!";
+        return "Se inyectaron " + cantidad + " productos con exito!";
     }
 }

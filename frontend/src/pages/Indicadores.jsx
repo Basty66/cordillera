@@ -86,13 +86,13 @@ export default function Indicadores() {
             <BarChart3 className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">Indicadores KPI</h2>
-            <p className="text-sm text-slate-400">Monitoreo de rendimiento y métricas clave</p>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Indicadores KPI</h2>
+            <p className="text-sm text-slate-400 dark:text-slate-500">Monitoreo de rendimiento y métricas clave</p>
           </div>
         </div>
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }}
           onClick={load} disabled={loading}
-          className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-all shadow-sm hover:shadow-md">
+          className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm hover:shadow-md">
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           {loading ? 'Cargando...' : 'Actualizar'}
         </motion.button>
@@ -127,10 +127,10 @@ export default function Indicadores() {
                       const v = getValor(ind.id);
                       return (
                         <motion.div key={ind.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                          className="p-3 bg-white/80 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                          className="p-3 bg-white/80 dark:bg-slate-800/80 rounded-xl shadow-sm hover:shadow-md transition-shadow"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-slate-700">{ind.nombre}</span>
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{ind.nombre}</span>
                             {v ? (
                               <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}
                                 className="text-lg font-bold text-emerald-600">
@@ -155,7 +155,7 @@ export default function Indicadores() {
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4">Comparativa de Indicadores</h3>
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Comparativa de Indicadores</h3>
               <div className="h-[250px]">
                 <Bar data={barData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }} />
               </div>
@@ -163,7 +163,7 @@ export default function Indicadores() {
 
             {lineData && (
               <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Evolución de Valores</h3>
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Evolución de Valores</h3>
                 <div className="h-[250px]">
                   <Line data={lineData} options={{
                     responsive: true, maintainAspectRatio: false,
@@ -178,7 +178,7 @@ export default function Indicadores() {
           {/* Historial */}
           {valores.length > 0 && (
             <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4">Historial de Valores <span className="text-slate-400 text-sm font-normal">({valores.length} registros)</span></h3>
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Historial de Valores <span className="text-slate-400 dark:text-slate-500 text-sm font-normal">({valores.length} registros)</span></h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm table-neon">
                   <thead>

@@ -1,0 +1,10 @@
+.git/
+.gitignore
+**/target/
+**/node_modules/
+**/__pycache__/
+**/*.pyc
+.env
+*.md
+archetypes/
+docs/

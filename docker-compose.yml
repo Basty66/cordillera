@@ -1,0 +1,83 @@
+version: "3.8"
+
+services:
+  ms-ventas:
+    build:
+      context: .
+      dockerfile: Dockerfile.ms-ventas
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST:?DB_HOST required}:${DB_PORT:-5432}/${DB_NAME:?DB_NAME required}?currentSchema=ventas
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:?DB_USER required}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?DB_PASSWORD required}
+      - SERVER_PORT=8081
+    restart: unless-stopped
+
+  ms-datos-org:
+    build:
+      context: .
+      dockerfile: Dockerfile.ms-datos-org
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST:?DB_HOST required}:${DB_PORT:-5432}/${DB_NAME:?DB_NAME required}?currentSchema=datos_org
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:?DB_USER required}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?DB_PASSWORD required}
+      - SERVER_PORT=8082
+    restart: unless-stopped
+
+  ms-indicadores:
+    build:
+      context: .
+      dockerfile: Dockerfile.ms-indicadores
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://${DB_HOST:?DB_HOST required}:${DB_PORT:-5432}/${DB_NAME:?DB_NAME required}?currentSchema=indicadores
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:?DB_USER required}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?DB_PASSWORD required}
+      - SERVER_PORT=8083
+    restart: unless-stopped
+
+  bff:
+    build:
+      context: .
+      dockerfile: Dockerfile.bff
+    ports:
+      - "8090:8090"
+    environment:
+      - SERVER_PORT=8090
+      - MS-VENTAS_URL=http://ms-ventas:8081
+      - MS-DATOS-ORG_URL=http://ms-datos-org:8082
+      - MS-INDICADORES_URL=http://ms-indicadores:8083
+    depends_on:
+      - ms-ventas
+      - ms-datos-org
+      - ms-indicadores
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.api-gateway
+    ports:
+      - "8084:8084"
+    environment:
+      - SERVER_PORT=8084
+    depends_on:
+      - ms-ventas
+      - ms-datos-org
+      - ms-indicadores
+      - bff
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
