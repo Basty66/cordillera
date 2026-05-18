@@ -40,7 +40,8 @@ export default function Productos() {
     getProductos().then(setProductos).catch(e => setError(e.message)).finally(() => setLoading(false));
   }, []);
 
-  const filtered = productos.filter(p => {
+  const sorted = [...productos].sort((a, b) => a.id - b.id);
+  const filtered = sorted.filter(p => {
     const matchSearch = !search || p.nombre?.toLowerCase().includes(search.toLowerCase()) || p.descripcion?.toLowerCase().includes(search.toLowerCase());
     const matchCat = catFilter === 'Todas' || (p.categoria || '').toLowerCase() === catFilter.toLowerCase();
     return matchSearch && matchCat;
