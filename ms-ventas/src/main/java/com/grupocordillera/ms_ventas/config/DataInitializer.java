@@ -52,7 +52,7 @@ public class DataInitializer implements CommandLineRunner {
         List<Producto> productos = productoRepository.findAll();
         boolean modificado = false;
         for (Producto p : productos) {
-            if (p.getId() <= 30 && p.getImagenUrl() != null && p.getImagenUrl().startsWith("https://picsum")) {
+            if (p.getId() <= 60 && p.getImagenUrl() != null && p.getImagenUrl().startsWith("https://picsum")) {
                 p.setImagenUrl("/images/productos/producto-" + p.getId() + ".png");
                 modificado = true;
             }
@@ -101,7 +101,7 @@ public class DataInitializer implements CommandLineRunner {
                 p.setStock(stocks[i]);
                 p.setCategoria(cat.getNombre());
                 String catKey = cat.name().toLowerCase();
-                if (id <= 30) {
+                if (id <= 60) {
                     p.setImagenUrl("/images/productos/producto-" + id + ".png");
                 } else {
                     p.setImagenUrl("https://picsum.photos/seed/" + catKey + id + "/400/300");
