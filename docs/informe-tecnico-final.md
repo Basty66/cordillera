@@ -9,7 +9,7 @@
 **Carrera:** Ingenieria en Informatica  
 **Integrantes:** Cristian Cerda, Gonzalo Berrios, Jaime Manzo  
 **Fecha:** 2026  
-**Version del sistema:** 1.0.1  
+**Version del sistema:** 1.0.2  
 **Repositorio:** https://github.com/Basty66/cordillera
 
 ---
@@ -479,45 +479,84 @@ DB_PASSWORD=your_password
 
 ## 11. ESTRATEGIA DE PRUEBAS
 
-### 11.1 Pruebas Unitarias
+### 11.1 Resumen de Tests
 
-- **Framework**: JUnit 5 + Mockito
-- **Cobertura minima**: 60% (validado con JaCoCo)
-- **Modulos probados**:
-  - `ms-ventas`: Builder Pattern, Observer/Event listeners, servicios de ventas
-  - `ms-datos-org`: EmpleadoService, DepartamentoService, EmpleadoFactory
-  - `ms-indicadores`: CalculoStrategy, CalculoIndicadorFactory, IndicadorService
-  - `bff`: DashboardService, AuthController
-  - `api-gateway`: RouteConfig, FallbackController
+| Modulo | Tests Unitarios | Tests Integracion | Total | Estado |
+|--------|:---------------:|:-----------------:|:-----:|:------:|
+| ms-ventas | 46 | 1 | **47** | ✅ |
+| ms-datos-org | 12 | 1 | **13** | ✅ |
+| ms-indicadores | 29 | 1 | **30** | ✅ |
+| bff | 18 | 10 | **28** | ✅ |
+| api-gateway | 5 | 1 | **6** | ✅ |
+| **Total** | **110** | **14** | **124** | ✅ |
 
-### 11.2 Configuracion JaCoCo
+### 11.2 Framework y Herramientas
 
-```xml
-<plugin>
-  <groupId>org.jacoco</groupId>
-  <artifactId>jacoco-maven-plugin</artifactId>
-  <version>0.8.12</version>
-  <configuration>
-    <rules>
-      <rule><element>PACKAGE</element><limits><limit><counter>LINE</counter><value>COVEREDRATIO</value><minimum>0.60</minimum></limit></limits></rule>
-    </rules>
-  </configuration>
-</plugin>
+- **JUnit 5** (`@Test`, `@ExtendWith(MockitoExtension.class)`)
+- **Mockito** (`@Mock`, `@InjectMocks`, `when`, `verify`)
+- **MockMvc** (controladores REST con `@WebMvcTest` y standalone setup)
+- **WebTestClient** (controladores WebFlux en api-gateway)
+- **JaCoCo 0.8.12** (cobertura minima 60% por paquete)
+
+### 11.3 Patrones de Diseno Probados
+
+| Patron | Test | Archivo |
+|--------|------|---------|
+| **Builder** | Construccion completa, validacion de campos | `VentaBuilderTest.java` |
+| **Factory Method** | Creacion de empleados y estrategias | `EmpleadoFactoryTest.java`, `CalculoIndicadorFactoryTest.java` |
+| **Strategy** | Calculo VENTAS, INVENTARIO, RENTABILIDAD | `CalculoVentasStrategyTest.java`, `CalculoInventarioStrategyTest.java`, `CalculoRentabilidadStrategyTest.java` |
+| **Observer** | Listeners de evento VentaRegistradaEvent | `VentaEventListenerTest.java`, `StockUpdateListenerTest.java` |
+| **Circuit Breaker** | Fallbacks en VentaClient, DatosOrgClient, IndicadorClient | `VentaClientTest.java`, `DatosOrgClientTest.java`, `IndicadorClientTest.java` |
+
+### 11.4 Casos de Prueba por Modulo
+
+**ms-ventas (47 tests):**
+- VentaService: registro exitoso, sin detalles, stock insuficiente, cantidad cero, sucursal inexistente
+- ProductoService: generacion masiva
+- SucursalService: listar, guardar, generar masivos
+- ReporteService: 6 tipos de reportes con datos mock
+- Controller: VentaController, ProductoController, SucursalController, ReporteController
+- Builder: VentaBuilder construccion y validaciones
+- Event: VentaEventListener, StockUpdateListener
+- Repository: VentaRepositoryImpl (JPQL + stored procedure)
+- Exception: GlobalExceptionHandler (400, 404)
+
+**ms-datos-org (13 tests):**
+- EmpleadoService: generar masivos
+- DepartamentoService: listar, guardar
+- Controller: EmpleadoController, DepartamentoController
+- Factory: EmpleadoFactory individual y masivo
+
+**ms-indicadores (30 tests):**
+- IndicadorService: calcular valor, generar indicadores por defecto
+- Factory: CalculoIndicadorFactory (VENTAS, INVENTARIO, RENTABILIDAD, tipo no soportado)
+- Strategy: CalculoVentasStrategy, CalculoInventarioStrategy, CalculoRentabilidadStrategy
+- Controller: IndicadorController (7 endpoints)
+
+**bff (28 tests):**
+- DashboardService: con datos reales y con fallbacks
+- Controller: AuthController (login, health, errores), TicketController (CRUD), ReportController
+- Security: JwtUtil (generar, validar, extraer claims, token expirado)
+- Client: VentaClient, DatosOrgClient, IndicadorClient (con fallbacks)
+
+**api-gateway (6 tests):**
+- HealthController: health check endpoint
+- FallbackController: 4 fallbacks (ventas, datos-org, indicadores, bff)
+
+### 11.5 Ejecucion
+
+```bash
+# Todos los modulos pasan 124 tests
+cd ms-ventas && .\mvnw.cmd test        # 47 tests ✅
+cd ms-datos-org && .\mvnw.cmd test      # 13 tests ✅
+cd ms-indicadores && .\mvnw.cmd test    # 30 tests ✅
+cd bff && .\mvnw.cmd test              # 28 tests ✅
+cd api-gateway && .\mvnw.cmd test       # 6 tests ✅
 ```
 
-### 11.3 Stored Procedures
+### 11.6 Plan de Pruebas
 
-Se implemento un stored procedure en PostgreSQL para calculo de ventas en periodo:
-
-```sql
-CREATE FUNCTION ventas.calcular_ventas_periodo(fecha_inicio TEXT, fecha_fin TEXT)
-RETURNS NUMERIC AS $$
-  SELECT COALESCE(SUM(v.monto_total), 0)
-  FROM ventas.transacciones_venta v
-  WHERE v.fecha_venta >= fecha_inicio::DATE
-    AND v.fecha_venta <= fecha_fin::DATE;
-$$ LANGUAGE plpgsql;
-```
+El plan detallado se encuentra en `docs/plan-pruebas.md` con la lista completa de casos de prueba, cobertura esperada y estrategia por capa.
 
 ---
 

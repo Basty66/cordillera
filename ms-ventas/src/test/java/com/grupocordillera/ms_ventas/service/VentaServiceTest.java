@@ -96,4 +96,28 @@ class VentaServiceTest {
         ventaService.obtenerTodas();
         verify(ventaRepository, times(1)).findAll();
     }
+
+    @Test
+    void testRegistrarVenta_CantidadCero_Error() {
+        Sucursal sucursal = new Sucursal();
+        sucursal.setId(1);
+        sucursal.setNombre("Sucursal Test");
+
+        when(sucursalRepository.findById(1)).thenReturn(Optional.of(sucursal));
+
+        VentaRequestDTO request = new VentaRequestDTO(1, 1,
+                List.of(new DetalleRequestDTO(1, 0)));
+
+        assertThrows(IllegalArgumentException.class, () -> ventaService.registrarVenta(request));
+    }
+
+    @Test
+    void testRegistrarVenta_SucursalInexistente_Error() {
+        when(sucursalRepository.findById(99)).thenReturn(Optional.empty());
+
+        VentaRequestDTO request = new VentaRequestDTO(99, 1,
+                List.of(new DetalleRequestDTO(1, 2)));
+
+        assertThrows(RuntimeException.class, () -> ventaService.registrarVenta(request));
+    }
 }
