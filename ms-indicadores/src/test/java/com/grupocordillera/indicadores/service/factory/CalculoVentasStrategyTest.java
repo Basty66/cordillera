@@ -31,4 +31,36 @@ class CalculoVentasStrategyTest {
 
         assertEquals(0, strategy.calcular().compareTo(BigDecimal.ZERO));
     }
+
+    @Test
+    void testCalcularTicketPromedioConCeroTransacciones() {
+        CalculoVentasStrategy strategy = new CalculoVentasStrategy(
+                BigDecimal.valueOf(500000), 0L);
+
+        assertEquals(BigDecimal.ZERO, strategy.calcular());
+    }
+
+    @Test
+    void testCalcularConValoresAltos() {
+        CalculoVentasStrategy strategy = new CalculoVentasStrategy(
+                BigDecimal.valueOf(999999999), 3L);
+
+        assertEquals(BigDecimal.valueOf(333333333).setScale(2), strategy.calcular());
+    }
+
+    @Test
+    void testGetNombre() {
+        CalculoVentasStrategy strategy = new CalculoVentasStrategy(
+                BigDecimal.TEN, 1L);
+
+        assertEquals("Ticket Promedio", strategy.getNombre());
+    }
+
+    @Test
+    void testGetUnidad() {
+        CalculoVentasStrategy strategy = new CalculoVentasStrategy(
+                BigDecimal.TEN, 1L);
+
+        assertEquals("CLP", strategy.getUnidad());
+    }
 }

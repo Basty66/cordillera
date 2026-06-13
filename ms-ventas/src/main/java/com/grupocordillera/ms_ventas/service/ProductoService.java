@@ -32,6 +32,21 @@ public class ProductoService {
     @CacheEvict(value = "productos", allEntries = true)
     @Transactional
     public Producto crearProducto(Producto producto) {
+        if (producto.getNombre() == null || producto.getNombre().isBlank()) {
+            throw new IllegalArgumentException("El nombre del producto es obligatorio.");
+        }
+        if (producto.getPrecio() == null) {
+            throw new IllegalArgumentException("El precio del producto es obligatorio.");
+        }
+        if (producto.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("El precio del producto debe ser mayor a cero.");
+        }
+        if (producto.getStock() == null) {
+            throw new IllegalArgumentException("El stock del producto es obligatorio.");
+        }
+        if (producto.getStock() < 0) {
+            throw new IllegalArgumentException("El stock del producto no puede ser negativo.");
+        }
         return productoRepository.save(producto);
     }
 
@@ -39,6 +54,12 @@ public class ProductoService {
     @Transactional
     public Producto actualizarProducto(Integer id, Producto datos) {
         Producto existente = obtenerPorId(id);
+        if (datos.getPrecio() != null && datos.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("El precio del producto debe ser mayor a cero.");
+        }
+        if (datos.getStock() != null && datos.getStock() < 0) {
+            throw new IllegalArgumentException("El stock del producto no puede ser negativo.");
+        }
         if (datos.getNombre() != null) existente.setNombre(datos.getNombre());
         if (datos.getDescripcion() != null) existente.setDescripcion(datos.getDescripcion());
         if (datos.getPrecio() != null) existente.setPrecio(datos.getPrecio());

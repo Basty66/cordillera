@@ -16,7 +16,6 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
     @EntityGraph(attributePaths = {"sucursal", "detalles", "detalles.producto"})
     List<Venta> findAll();
 
-    @Query(value = "SELECT v FROM Venta v LEFT JOIN FETCH v.sucursal",
-           countQuery = "SELECT COUNT(v) FROM Venta v")
+    @EntityGraph(attributePaths = {"sucursal", "detalles", "detalles.producto"})
     Page<Venta> findAll(Pageable pageable);
 }

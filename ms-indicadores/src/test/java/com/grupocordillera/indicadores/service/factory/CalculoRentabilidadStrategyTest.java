@@ -38,6 +38,24 @@ class CalculoRentabilidadStrategyTest {
     }
 
     @Test
+    void testCalcularMargenCero() {
+        var strategy = new CalculoRentabilidadStrategy(
+                BigDecimal.valueOf(100000),
+                BigDecimal.valueOf(100000)
+        );
+        assertEquals(0, strategy.calcular().compareTo(BigDecimal.ZERO));
+    }
+
+    @Test
+    void testCalcularMargenCienPorciento() {
+        var strategy = new CalculoRentabilidadStrategy(
+                BigDecimal.valueOf(100000),
+                BigDecimal.ZERO
+        );
+        assertEquals(0, BigDecimal.valueOf(100).compareTo(strategy.calcular()));
+    }
+
+    @Test
     void testGetNombre() {
         var strategy = new CalculoRentabilidadStrategy(BigDecimal.TEN, BigDecimal.ONE);
         assertEquals("Margen de Rentabilidad", strategy.getNombre());

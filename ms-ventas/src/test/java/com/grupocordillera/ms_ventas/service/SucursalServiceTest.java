@@ -31,12 +31,56 @@ class SucursalServiceTest {
     }
 
     @Test
-    void testGuardarSucursal() {
+    void testGuardarSucursal_DatosValidos_Correcto() {
         Sucursal s = new Sucursal();
-        s.setNombre("Sucursal Nueva");
+        s.setNombre("Sucursal Centro");
+        s.setCiudad("Santiago");
+        s.setDireccion("Av. Principal 123");
+
         when(sucursalRepository.save(any())).thenReturn(s);
+
         var result = sucursalService.guardarSucursal(s);
-        assertEquals("Sucursal Nueva", result.getNombre());
+
+        assertEquals("Sucursal Centro", result.getNombre());
+        assertEquals("Santiago", result.getCiudad());
+    }
+
+    @Test
+    void testGuardarSucursal_SinNombre_Error() {
+        Sucursal s = new Sucursal();
+        s.setCiudad("Santiago");
+
+        assertThrows(IllegalArgumentException.class, () -> sucursalService.guardarSucursal(s));
+        verify(sucursalRepository, never()).save(any());
+    }
+
+    @Test
+    void testGuardarSucursal_NombreVacio_Error() {
+        Sucursal s = new Sucursal();
+        s.setNombre("   ");
+        s.setCiudad("Santiago");
+
+        assertThrows(IllegalArgumentException.class, () -> sucursalService.guardarSucursal(s));
+        verify(sucursalRepository, never()).save(any());
+    }
+
+    @Test
+    void testGuardarSucursal_SinCiudad_Error() {
+        Sucursal s = new Sucursal();
+        s.setNombre("Sucursal Test");
+
+        assertThrows(IllegalArgumentException.class, () -> sucursalService.guardarSucursal(s));
+        verify(sucursalRepository, never()).save(any());
+    }
+
+    @Test
+    void testGuardarSucursal_CiudadVacia_Error() {
+        Sucursal s = new Sucursal();
+        s.setNombre("Sucursal Test");
+        s.setCiudad("");
+
+        assertThrows(IllegalArgumentException.class, () -> sucursalService.guardarSucursal(s));
+        verify(sucursalRepository, never()).save(any());
     }
 
     @Test

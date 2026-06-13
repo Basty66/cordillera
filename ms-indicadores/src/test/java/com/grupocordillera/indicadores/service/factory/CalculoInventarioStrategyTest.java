@@ -29,6 +29,24 @@ class CalculoInventarioStrategyTest {
     }
 
     @Test
+    void testCalcularRotacionCienPorciento() {
+        var strategy = new CalculoInventarioStrategy(
+                BigDecimal.valueOf(1000),
+                BigDecimal.valueOf(1000)
+        );
+        assertEquals(0, BigDecimal.valueOf(100).compareTo(strategy.calcular()));
+    }
+
+    @Test
+    void testCalcularConCostosVentasMayores() {
+        var strategy = new CalculoInventarioStrategy(
+                BigDecimal.valueOf(500),
+                BigDecimal.valueOf(200)
+        );
+        assertEquals(0, BigDecimal.valueOf(250).compareTo(strategy.calcular()));
+    }
+
+    @Test
     void testGetNombre() {
         var strategy = new CalculoInventarioStrategy(BigDecimal.TEN, BigDecimal.valueOf(100));
         assertEquals("Rotación de Inventario", strategy.getNombre());

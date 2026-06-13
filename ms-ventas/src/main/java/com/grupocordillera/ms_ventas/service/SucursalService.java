@@ -28,6 +28,12 @@ public class SucursalService {
 
     @CacheEvict(value = {"sucursales", "sucursalesCount"}, allEntries = true)
     public Sucursal guardarSucursal(Sucursal sucursal) {
+        if (sucursal.getNombre() == null || sucursal.getNombre().isBlank()) {
+            throw new IllegalArgumentException("El nombre de la sucursal es obligatorio.");
+        }
+        if (sucursal.getCiudad() == null || sucursal.getCiudad().isBlank()) {
+            throw new IllegalArgumentException("La ciudad de la sucursal es obligatoria.");
+        }
         return sucursalRepository.save(sucursal);
     }
 

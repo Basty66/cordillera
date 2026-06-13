@@ -26,6 +26,7 @@ public class VentaService {
     private final ProductoRepository productoRepository;
     private final ApplicationEventPublisher eventPublisher;
 
+    @Transactional(readOnly = true)
     public List<Venta> obtenerTodas() {
         return ventaRepository.findAll();
     }
