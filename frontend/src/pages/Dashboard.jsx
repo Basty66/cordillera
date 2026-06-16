@@ -64,25 +64,41 @@ function AnimatedCounter({ value, suffix = '', prefix = '' }) {
 
 function HeroSection({ date }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl hero-gradient p-6 sm:p-8 mb-6 animate-border-glow">
-      <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(16,185,129,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.06) 0%, transparent 50%)'}} />
-      <div className="absolute inset-0 card-pattern-dots opacity-30" />
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent" />
-      <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-400/10 rounded-full blur-[100px] animate-float-slow" />
-      <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-blue-400/10 rounded-full blur-[100px] animate-float-slow" style={{animationDelay: '-4s'}} />
-      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="p-1 bg-emerald-400/20 rounded-lg"><Sparkles className="w-3.5 h-3.5 text-emerald-400" /></div>
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300/80">Panel de Control</span>
+    <div className="relative overflow-hidden rounded-2xl p-6 sm:p-8 mb-6 group"
+      style={{background: 'linear-gradient(135deg, #020617 0%, #0f172a 40%, #064e3b 70%, #047857 100%)'}}>
+      {/* Animated aurora */}
+      <motion.div className="absolute -top-40 -right-20 w-[500px] h-[500px] rounded-full pointer-events-none"
+        style={{background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 60%)'}}
+        animate={{ x: [0, 20, -10, 0], y: [0, -15, 10, 0] }}
+        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <motion.div className="absolute -bottom-40 -left-20 w-[400px] h-[400px] rounded-full pointer-events-none"
+        style={{background: 'radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 60%)'}}
+        animate={{ x: [0, -20, 15, 0], y: [0, 15, -10, 0] }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <div className="absolute inset-0 card-pattern-dots opacity-20" />
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent" />
+      <div className="relative">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 3, repeat: Infinity }}
+                className="p-1 bg-emerald-400/20 rounded-lg">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              </motion.div>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300/80">Panel de Control</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Dashboard Corporativo</h1>
+            <p className="text-sm text-white/50 mt-1 capitalize">{date}</p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Dashboard Corporativo</h1>
-          <p className="text-sm text-white/50 mt-1 capitalize">{date}</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-400/10 rounded-xl border border-emerald-400/20 backdrop-blur-sm">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50 animate-pulse" />
-            <span className="text-xs font-medium text-emerald-300">En Vivo</span>
+          <div className="flex items-center gap-3">
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-400/10 rounded-xl border border-emerald-400/20 backdrop-blur-sm">
+              <motion.div animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 2, repeat: Infinity }}
+                className="w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50" />
+              <span className="text-xs font-medium text-emerald-300">En Vivo</span>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -224,25 +240,30 @@ export default function Dashboard() {
 
       <HeroSection date={new Date().toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} />
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <BadgePercent className="w-4 h-4 text-emerald-500" />
-          <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Indicadores Económicos</h3>
-          <span className="text-[10px] text-slate-400 font-mono">mindicador.cl</span>
-          {economico?.fecha === 'Simulado' && (
-            <span className="text-[10px] text-amber-500 flex items-center gap-1"><Cloud className="w-3 h-3" /> Simulado</span>
-          )}
-        </div>
-        <div className="flex items-center gap-3">
-          {economico?.fecha && economico.fecha !== 'Simulado' && (
-            <span className="text-[10px] text-slate-400">{new Date(economico.fecha).toLocaleDateString('es-CL')}</span>
-          )}
-          <motion.button whileHover={{ rotate: 180 }} transition={{ duration: 0.4 }}
-            onClick={load} disabled={refreshing}
-            className="p-2 rounded-xl text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all active:scale-95 disabled:opacity-50"
-            title="Actualizar datos">
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-          </motion.button>
+      <div className="relative pt-2">
+        <div className="divider-gradient mb-4" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg shadow-lg shadow-emerald-500/20">
+              <BadgePercent className="w-3.5 h-3.5 text-white" />
+            </div>
+            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Indicadores Económicos</h3>
+            <span className="text-[10px] text-slate-400 font-mono">mindicador.cl</span>
+            {economico?.fecha === 'Simulado' && (
+              <span className="text-[10px] text-amber-500 flex items-center gap-1"><Cloud className="w-3 h-3" /> Simulado</span>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            {economico?.fecha && economico.fecha !== 'Simulado' && (
+              <span className="text-[10px] text-slate-400">{new Date(economico.fecha).toLocaleDateString('es-CL')}</span>
+            )}
+            <motion.button whileHover={{ rotate: 180 }} transition={{ duration: 0.4 }}
+              onClick={load} disabled={refreshing}
+              className="p-2 rounded-xl text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all active:scale-95 disabled:opacity-50"
+              title="Actualizar datos">
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+            </motion.button>
+          </div>
         </div>
       </div>
 
@@ -278,8 +299,11 @@ export default function Dashboard() {
         })}
       </motion.div>
 
+      <div className="divider-gradient my-2" />
       <div className="flex items-center gap-2">
-        <Hexagon className="w-4 h-4 text-emerald-500" />
+        <div className="p-1.5 bg-gradient-to-br from-violet-500 to-violet-600 rounded-lg shadow-lg shadow-violet-500/20">
+          <Hexagon className="w-3.5 h-3.5 text-white" />
+        </div>
         <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Arquitectura de Microservicios</h3>
       </div>
 
@@ -300,9 +324,10 @@ export default function Dashboard() {
         ))}
       </motion.div>
 
+      <div className="divider-gradient my-2" />
       <motion.div variants={container} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        <KpiCard label="Total Ventas" value={data.ventas.totalVentas} icon={ShoppingCart} color="from-blue-500 to-blue-600" />
-        <KpiCard label="Monto Total" value={formatCLP(data.ventas.montoTotal)} icon={DollarSign} color="from-emerald-500 to-emerald-600" />
+        <KpiCard label="Total Ventas" value={data.ventas.totalVentas} icon={ShoppingCart} color="from-blue-500 to-blue-600" trend={12} />
+        <KpiCard label="Monto Total" value={formatCLP(data.ventas.montoTotal)} icon={DollarSign} color="from-emerald-500 to-emerald-600" trend={8} />
         <KpiCard label="Ticket Promedio" value={formatCLP(data.ventas.promedioVenta)} icon={TrendingUp} color="from-violet-500 to-violet-600" />
         <KpiCard label="Empleados" value={data.totalEmpleados} icon={Users} color="from-amber-500 to-amber-600" />
         <KpiCard label="Sucursales" value={data.totalSucursales} icon={Store} color="from-rose-500 to-rose-600" />
@@ -466,17 +491,19 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-5">
           <div className="flex items-center gap-2 mb-3">
-            <BarChart3 className="w-4 h-4 text-blue-500" />
+            <div className="p-1.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg shadow-blue-500/20">
+              <BarChart3 className="w-3.5 h-3.5 text-white" />
+            </div>
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Ventas por Categoría</h3>
             <span className="ml-auto text-[9px] font-mono text-slate-400">Distribución</span>
           </div>
           {ventasCategoria.length > 0 ? (
             <div className="flex items-center gap-4">
-              <div className="h-[120px] w-[120px] shrink-0">
+              <div className="h-[130px] w-[130px] shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={ventasCategoria.map((c, i) => ({ ...c, fill: monthColors[i % 12] }))}
-                      cx="50%" cy="50%" innerRadius={30} outerRadius={55} dataKey="montoTotal" paddingAngle={2}
+                      cx="50%" cy="50%" innerRadius={32} outerRadius={58} dataKey="montoTotal" paddingAngle={3}
                     >
                       {ventasCategoria.map((_, i) => (
                         <Cell key={i} fill={monthColors[i % 12]} />
@@ -507,7 +534,9 @@ export default function Dashboard() {
 
         <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Target className="w-4 h-4 text-violet-500" />
+            <div className="p-1.5 bg-gradient-to-br from-violet-500 to-violet-600 rounded-lg shadow-lg shadow-violet-500/20">
+              <Target className="w-3.5 h-3.5 text-white" />
+            </div>
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Indicadores Clave</h3>
             <span className="ml-auto text-[9px] font-mono text-slate-400">ms-indicadores</span>
           </div>
@@ -515,10 +544,13 @@ export default function Dashboard() {
             <div className="space-y-2.5">
               {indicadoresList.map((ind, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{ind.nombre}</p>
-                    <p className="text-[10px] text-slate-400 font-mono">{ind.unidad}</p>
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 shadow-lg shadow-violet-500/30 group-hover:scale-125 transition-transform" />
+                    <div>
+                      <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{ind.nombre}</p>
+                      <p className="text-[10px] text-slate-400 font-mono">{ind.unidad}</p>
+                    </div>
                   </div>
                   <div className="text-right">
                     <span className={`text-lg font-extrabold ${ind.unidad === 'CLP' ? 'text-emerald-600' : 'text-violet-600'}`}>

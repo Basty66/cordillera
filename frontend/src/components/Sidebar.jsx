@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, ShoppingCart, Package, Store, Users, BarChart3,
   Shield, LogOut, ChevronDown, TicketCheck, FileText, Server,
-  Activity, UserCircle, Wifi
+  Activity, UserCircle, Wifi, ChevronRight, Hexagon
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -55,10 +55,10 @@ const navGroups = [
 ];
 
 const badgeColors = {
-  'ms-ventas': 'bg-blue-500/15 text-blue-400 border-blue-500/25',
-  'ms-datos-org': 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-  'ms-indicadores': 'bg-violet-500/15 text-violet-400 border-violet-500/25',
-  'BFF': 'bg-cyan-500/15 text-cyan-400 border-cyan-500/25',
+  'ms-ventas': 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+  'ms-datos-org': 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+  'ms-indicadores': 'bg-violet-500/20 text-violet-300 border-violet-500/30',
+  'BFF': 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
 };
 
 export default function Sidebar({ onClose }) {
@@ -105,20 +105,20 @@ export default function Sidebar({ onClose }) {
   }
 
   return (
-    <aside className="h-full w-64 bg-slate-900 text-white flex flex-col shrink-0 border-r border-slate-700/30 relative">
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent animate-shimmer" />
+    <aside className="h-full w-64 flex flex-col shrink-0 relative overflow-hidden bg-slate-900/95 backdrop-blur-2xl border-r border-white/[0.05]">
+      {/* Gradient line top */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
       {/* Logo */}
-      <div className="px-4 py-3.5 border-b border-slate-700/30">
+      <div className="px-4 py-3.5 border-b border-white/[0.05] relative">
         <div className="flex items-center gap-2.5">
-          <div className="p-1.5 bg-emerald-500/15 rounded-lg neon-glow-sm shrink-0">
-            <LayoutDashboard className="w-4 h-4 text-emerald-400" />
-          </div>
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1, rotate: [0, 10, -10, 0] }} transition={{ duration: 0.5, rotate: { delay: 0.3, duration: 0.5 } }}
+            className="p-1.5 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg shadow-lg shadow-emerald-500/20 shrink-0">
+            <Hexagon className="w-4 h-4 text-white" />
+          </motion.div>
           <div className="min-w-0">
-            <h1 className="text-sm font-semibold tracking-tight truncate">Grupo Cordillera</h1>
-            <p className="text-[9px] text-emerald-500/50 font-medium tracking-widest uppercase" style={{textShadow:'0 0 8px rgba(16,185,129,0.3)'}}>
-              Monitoreo Inteligente
-            </p>
+            <h1 className="text-sm font-bold text-white tracking-tight">Grupo Cordillera</h1>
+            <p className="text-[9px] text-emerald-400/50 font-semibold tracking-widest uppercase">Monitoreo Inteligente</p>
           </div>
         </div>
       </div>
@@ -128,20 +128,14 @@ export default function Sidebar({ onClose }) {
         {filteredGroups.map(group => (
           <div key={group.section}>
             <div className="flex items-center justify-between px-2 py-1">
-              <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">
-                {group.section}
-              </span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{group.section}</span>
               <span className={`text-[7px] font-mono px-1.5 py-[2px] rounded border ${badgeColors[group.serviceLabel] || 'bg-slate-700/40 text-slate-400 border-slate-600/30'}`}>
                 {group.serviceLabel}
               </span>
             </div>
             <div className="space-y-[2px]">
               {group.items.map(item => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.end}
-                  onClick={onClose}
+                <NavLink key={item.to} to={item.to} end={item.end} onClick={onClose}
                   className={({ isActive }) =>
                     `group relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
                       isActive ? 'text-white' : 'text-slate-400 hover:text-white'
@@ -151,29 +145,23 @@ export default function Sidebar({ onClose }) {
                   {({ isActive }) => (
                     <>
                       {isActive && (
-                        <motion.div
-                          layoutId="activeNav"
-                          className="absolute inset-0 bg-gradient-to-r from-emerald-600/90 to-emerald-500/80 rounded-lg neon-glow-sm"
+                        <motion.div layoutId="navActive"
+                          className="absolute inset-0 bg-gradient-to-r from-emerald-600/80 to-emerald-500/60 rounded-lg shadow-lg shadow-emerald-500/10"
                           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                         />
                       )}
                       {!isActive && (
-                        <div className="absolute inset-0 rounded-lg transition-all duration-200 hover:bg-slate-800/60" />
+                        <div className="absolute inset-0 rounded-lg transition-all duration-200 hover:bg-white/[0.04]" />
                       )}
-                      <div className={`relative z-10 transition-transform duration-200 group-hover:scale-110 ${
+                      <div className={`relative z-10 transition-all duration-200 group-hover:scale-110 ${
                         isActive ? 'text-white' : 'text-slate-500 group-hover:text-emerald-400'
                       }`}>
                         <item.icon className="w-4 h-4" />
                       </div>
-                      <span className={`relative z-10 ${isActive ? 'font-semibold' : ''}`}>
-                        {item.label}
-                      </span>
+                      <span className={`relative z-10 ${isActive ? 'font-semibold' : ''}`}>{item.label}</span>
                       {isActive && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="relative z-10 ml-auto w-1.5 h-1.5 rounded-full bg-emerald-300 shadow-lg shadow-emerald-400/50"
-                        />
+                        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                          className="relative z-10 ml-auto w-1.5 h-1.5 rounded-full bg-emerald-300 shadow-lg shadow-emerald-400/50" />
                       )}
                     </>
                   )}
@@ -185,11 +173,9 @@ export default function Sidebar({ onClose }) {
       </nav>
 
       {/* Services Status */}
-      <div className="border-t border-slate-700/30">
-        <button
-          onClick={() => setShowServices(!showServices)}
-          className="flex items-center justify-between w-full px-4 py-2.5 text-[11px] text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 transition-all"
-        >
+      <div className="border-t border-white/[0.05]">
+        <button onClick={() => setShowServices(!showServices)}
+          className="flex items-center justify-between w-full px-4 py-2.5 text-[11px] text-slate-500 hover:text-slate-300 hover:bg-white/[0.03] transition-all">
           <span className="flex items-center gap-2">
             <Server className="w-3.5 h-3.5" />
             Microservicios
@@ -200,30 +186,22 @@ export default function Sidebar({ onClose }) {
         </button>
         <AnimatePresence>
           {showServices && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
               <div className="px-3 pb-2 space-y-[2px]">
                 {services.map(s => {
                   const status = svcStatus[s.id];
                   const Icon = s.icon;
                   return (
-                    <div key={s.id} className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-slate-800/40 transition-colors">
-                      <div className={`w-2 h-2 rounded-full shrink-0 ${
-                        status === 'online' ? 'bg-emerald-400 shadow-lg shadow-emerald-400/30' :
-                        status === 'offline' ? 'bg-red-400' : 'bg-slate-600 animate-pulse'
-                      }`} />
+                    <div key={s.id} className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-white/[0.03] transition-colors">
+                      <div className={`badge-dot ${status === 'online' ? 'online' : status === 'offline' ? 'offline' : ''} ${!status ? 'bg-slate-600 animate-pulse' : ''}`} />
                       <Icon className="w-3 h-3 text-slate-500 shrink-0" />
                       <span className="text-[11px] text-slate-400 flex-1 truncate">{s.name}</span>
                     </div>
                   );
                 })}
                 <div className="flex items-center gap-1.5 pt-1.5 px-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/30" />
+                  <div className="badge-dot online" />
                   <span className="text-[9px] text-emerald-500/60 font-medium">Todos los servicios activos</span>
                 </div>
               </div>
@@ -232,13 +210,11 @@ export default function Sidebar({ onClose }) {
         </AnimatePresence>
       </div>
 
-      {/* User Menu */}
-      <div className="relative border-t border-slate-700/30">
-        <button
-          onClick={() => setShowUserMenu(!showUserMenu)}
-          className="group flex items-center gap-2.5 w-full px-3 py-2.5 text-xs text-slate-400 hover:bg-slate-800/60 hover:text-white transition-all duration-200"
-        >
-          <div className="w-7 h-7 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center text-white font-bold text-[11px] shrink-0 shadow-lg shadow-emerald-600/20 group-hover:shadow-emerald-600/40 transition-shadow">
+      {/* User */}
+      <div className="relative border-t border-white/[0.05]">
+        <button onClick={() => setShowUserMenu(!showUserMenu)}
+          className="group flex items-center gap-2.5 w-full px-3 py-2.5 text-xs text-slate-400 hover:bg-white/[0.03] hover:text-white transition-all duration-200">
+          <div className="w-7 h-7 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-full flex items-center justify-center text-white font-bold text-[11px] shrink-0 shadow-lg shadow-emerald-600/20 group-hover:shadow-emerald-600/40 transition-all">
             {user?.nombre?.charAt(0)?.toUpperCase() || 'U'}
           </div>
           <div className="flex-1 text-left min-w-0">
@@ -254,28 +230,22 @@ export default function Sidebar({ onClose }) {
           {showUserMenu && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)} />
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute bottom-full left-0 right-0 mb-2 bg-slate-800/95 backdrop-blur-xl rounded-xl border border-slate-700/50 shadow-2xl overflow-hidden z-20"
-              >
-                <div className="px-4 py-3 border-b border-slate-700/50">
+                className="absolute bottom-full left-2 right-2 mb-2 bg-slate-800/95 backdrop-blur-2xl rounded-xl border border-white/[0.08] shadow-2xl overflow-hidden z-20">
+                <div className="px-4 py-3 border-b border-white/[0.05]">
                   <p className="text-sm font-medium text-white">{user?.nombre}</p>
                   <p className="text-xs text-slate-400">{user?.email || user?.username}</p>
                 </div>
-                <button
-                  onClick={() => { navigate('/profile'); setShowUserMenu(false); }}
-                  className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-300 hover:bg-slate-700/50 transition-colors group"
-                >
+                <button onClick={() => { navigate('/profile'); setShowUserMenu(false); }}
+                  className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-300 hover:bg-white/[0.04] transition-colors group">
                   <UserCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   Perfil
                 </button>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors group border-t border-slate-700/30"
-                >
+                <button onClick={handleLogout}
+                  className="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors group border-t border-white/[0.03]">
                   <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   Cerrar Sesión
                 </button>
