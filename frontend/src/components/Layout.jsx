@@ -16,15 +16,16 @@ export default function Layout() {
   const [mobileSidebar, setMobileSidebar] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[var(--bg-primary)] relative">
-      {/* Animated background */}
+    <div className="flex h-screen bg-[var(--bg-primary)] relative noise">
+      {/* Ambient floating orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-500/5 rounded-full blur-[100px] animate-float" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/5 rounded-full blur-[100px] animate-float" style={{animationDelay: '-2s'}} />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-violet-500/3 rounded-full blur-[120px] animate-float" style={{animationDelay: '-4s'}} />
-        <div className="absolute inset-0 opacity-[0.02]" style={{
-          backgroundImage: 'linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.05) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
+        <div className="orb orb-1 animate-float-slow" style={{animationDelay: '0s'}} />
+        <div className="orb orb-2 animate-float-slow" style={{animationDelay: '-3s'}} />
+        <div className="orb orb-3 animate-float-slow" style={{animationDelay: '-6s'}} />
+        <div className="orb orb-4 animate-float" style={{animationDelay: '-2s'}} />
+        <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.02]" style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
         }} />
       </div>
 
@@ -51,24 +52,26 @@ export default function Layout() {
       {/* Main content */}
       <main className="flex-1 overflow-auto relative">
         {/* Top bar */}
-        <div className="sticky top-0 z-20 bg-[var(--bg-primary)]/80 backdrop-blur-xl border-b border-[var(--border-color)]">
+        <div className="sticky top-0 z-20 bg-[var(--bg-primary)]/70 backdrop-blur-2xl border-b border-[var(--border-color)]">
+          <div className="divider-gradient absolute bottom-0 left-0 right-0" />
           <div className="flex items-center justify-between px-4 sm:px-6 py-3">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setMobileSidebar(true)}
-                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all lg:hidden"
+                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-300 transition-all duration-200 active:scale-95 lg:hidden"
+                aria-label="Abrir menú"
               >
                 <Menu className="w-5 h-5" />
               </button>
               <SearchBar isAdmin={hasRole('ADMIN')} />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button
                 onClick={toggle}
-                className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300 transition-all"
+                className="p-2.5 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300 transition-all duration-200 active:scale-95"
                 title={dark ? 'Modo claro' : 'Modo oscuro'}
               >
-                {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                {dark ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
               </button>
               <NotificationBell />
             </div>

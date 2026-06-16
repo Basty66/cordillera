@@ -7,7 +7,8 @@ import {
   AlertCircle, Users, Store, Server, Sun, Cloud, CloudRain,
   Thermometer, Droplets, TrendingDown, Wallet, BadgePercent,
   TicketCheck, Clock, Target, Zap, HelpCircle, Activity, Wifi,
-  BarChart3, ArrowUpRight, ArrowDownRight, ChevronRight, Sparkles
+  BarChart3, ArrowUpRight, ArrowDownRight, ChevronRight, Sparkles,
+  Layers, Hexagon, Globe
 } from 'lucide-react';
 
 function formatCLP(n) {
@@ -63,10 +64,12 @@ function AnimatedCounter({ value, suffix = '', prefix = '' }) {
 
 function HeroSection({ date }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl hero-gradient p-6 sm:p-8 mb-6">
-      <div className="absolute inset-0 card-pattern-dots opacity-50" />
-      <div className="absolute -top-20 -right-20 w-60 h-60 bg-emerald-400/10 rounded-full blur-[80px]" />
-      <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-blue-400/10 rounded-full blur-[80px]" />
+    <div className="relative overflow-hidden rounded-2xl hero-gradient p-6 sm:p-8 mb-6 animate-border-glow">
+      <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(16,185,129,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(59,130,246,0.06) 0%, transparent 50%)'}} />
+      <div className="absolute inset-0 card-pattern-dots opacity-30" />
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/30 to-transparent" />
+      <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-400/10 rounded-full blur-[100px] animate-float-slow" />
+      <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-blue-400/10 rounded-full blur-[100px] animate-float-slow" style={{animationDelay: '-4s'}} />
       <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -77,7 +80,7 @@ function HeroSection({ date }) {
           <p className="text-sm text-white/50 mt-1 capitalize">{date}</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-400/10 rounded-xl border border-emerald-400/20">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-400/10 rounded-xl border border-emerald-400/20 backdrop-blur-sm">
             <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50 animate-pulse" />
             <span className="text-xs font-medium text-emerald-300">En Vivo</span>
           </div>
@@ -89,7 +92,7 @@ function HeroSection({ date }) {
 
 function KpiCard({ label, value, icon: Icon, color, trend, delay = 0 }) {
   return (
-    <motion.div variants={itemAnim} custom={delay} whileHover={{ y: -4, scale: 1.01 }} className="glass-card-neon rounded-xl p-5 transition-all duration-200 group relative overflow-hidden">
+    <motion.div variants={itemAnim} custom={delay} whileHover={{ y: -4, scale: 1.01 }} className="premium-card-neon rounded-xl p-5 transition-all duration-200 group relative overflow-hidden">
       <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${color} opacity-3 rounded-full -translate-y-8 translate-x-8 group-hover:opacity-5 transition-opacity`} />
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{label}</span>
@@ -116,7 +119,7 @@ function LoadingSkeleton() {
       <div className="skeleton h-40 w-full rounded-2xl" />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="glass-card rounded-xl p-5">
+          <div key={i} className="premium-card rounded-xl p-5">
             <div className="flex justify-between mb-3"><div className="skeleton h-4 w-20" /><div className="skeleton h-8 w-8 rounded-lg" /></div>
             <div className="skeleton h-8 w-28" />
           </div>
@@ -124,7 +127,7 @@ function LoadingSkeleton() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {[...Array(2)].map((_, i) => (
-          <div key={i} className="glass-card rounded-xl p-5">
+          <div key={i} className="premium-card rounded-xl p-5">
             <div className="skeleton h-5 w-40 mb-4" /><div className="skeleton h-[250px] w-full" />
           </div>
         ))}
@@ -159,13 +162,16 @@ export default function Dashboard() {
   useEffect(() => { load(); }, []);
 
   if (error) return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
-      <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} className="p-5 bg-red-50 dark:bg-red-500/10 rounded-2xl">
-        <AlertCircle className="w-10 h-10 text-red-400" />
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center min-h-[50vh] gap-5">
+      <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} className="p-6 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-500/10 dark:to-red-500/5 rounded-3xl shadow-xl">
+        <AlertCircle className="w-12 h-12 text-red-400" />
       </motion.div>
-      <p className="text-sm font-medium text-red-500">{error}</p>
+      <div className="text-center">
+        <p className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">Error al cargar datos</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md">{error}</p>
+      </div>
       <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-        onClick={load} className="flex items-center gap-2 px-5 py-2.5 bg-red-50 dark:bg-red-500/10 text-red-600 rounded-xl text-sm font-medium border border-red-200 dark:border-red-500/20 hover:bg-red-100 dark:hover:bg-red-500/20 transition-all">
+        onClick={load} className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl text-sm font-medium shadow-lg shadow-red-500/20 hover:shadow-red-500/30 transition-all">
         <RefreshCw className="w-4 h-4" /> Reintentar
       </motion.button>
     </motion.div>
@@ -227,9 +233,17 @@ export default function Dashboard() {
             <span className="text-[10px] text-amber-500 flex items-center gap-1"><Cloud className="w-3 h-3" /> Simulado</span>
           )}
         </div>
-        {economico?.fecha && economico.fecha !== 'Simulado' && (
-          <span className="text-[10px] text-slate-400">{new Date(economico.fecha).toLocaleDateString('es-CL')}</span>
-        )}
+        <div className="flex items-center gap-3">
+          {economico?.fecha && economico.fecha !== 'Simulado' && (
+            <span className="text-[10px] text-slate-400">{new Date(economico.fecha).toLocaleDateString('es-CL')}</span>
+          )}
+          <motion.button whileHover={{ rotate: 180 }} transition={{ duration: 0.4 }}
+            onClick={load} disabled={refreshing}
+            className="p-2 rounded-xl text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all active:scale-95 disabled:opacity-50"
+            title="Actualizar datos">
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          </motion.button>
+        </div>
       </div>
 
       <motion.div variants={itemAnim} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -238,7 +252,7 @@ export default function Dashboard() {
           if (!ind) return null;
           const isPositive = ind.valor >= 0;
           return (
-            <motion.div key={key} whileHover={{ y: -3 }} className="glass-card-neon rounded-xl p-4 relative overflow-hidden group">
+            <motion.div key={key} whileHover={{ y: -3 }} className="premium-card-neon rounded-xl p-4 relative overflow-hidden group">
               <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-[0.03] group-hover:opacity-[0.06] transition-opacity`} />
               <div className="relative">
                 <div className="flex items-center justify-between mb-2">
@@ -265,24 +279,24 @@ export default function Dashboard() {
       </motion.div>
 
       <div className="flex items-center gap-2">
-        <Server className="w-4 h-4 text-emerald-500" />
+        <Hexagon className="w-4 h-4 text-emerald-500" />
         <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Arquitectura de Microservicios</h3>
       </div>
 
       <motion.div variants={itemAnim} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
         {microservices.map((ms, i) => (
-          <motion.div key={ms.name} whileHover={{ y: -2, scale: 1.01 }}
-            className="glass-card-neon rounded-lg p-3 flex items-center gap-2.5 group relative overflow-hidden">
+          <motion.div key={ms.name} whileHover={{ y: -3, scale: 1.02 }}
+            className="premium-card-neon rounded-lg p-3 flex items-center gap-2.5 group relative overflow-hidden">
             <div className={`absolute inset-0 bg-gradient-to-br ${ms.color} opacity-[0.02] group-hover:opacity-[0.06] transition-opacity`} />
-            <div className={`p-2 rounded-lg bg-gradient-to-br ${ms.color} shadow-md shrink-0`}>
+            <div className={`p-2 rounded-lg bg-gradient-to-br ${ms.color} shadow-lg shrink-0 group-hover:scale-110 transition-transform duration-300`}>
               <ms.icon className="w-3.5 h-3.5 text-white" />
             </div>
             <div className="min-w-0 relative">
               <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{ms.name}</p>
               <p className="text-[9px] text-slate-400 truncate leading-tight">{ms.desc}</p>
             </div>
-            <ChevronRight className="w-3 h-3 text-slate-300 dark:text-slate-600 ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </motion.div>
+            <ChevronRight className="w-3 h-3 text-emerald-400 ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1" />
+      </motion.div>
         ))}
       </motion.div>
 
@@ -295,20 +309,20 @@ export default function Dashboard() {
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-4 lg:col-span-1">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-4 lg:col-span-1">
           <div className="flex items-center gap-2 mb-3">
-            <Sun className="w-4 h-4 text-amber-500" />
+            <Globe className="w-4 h-4 text-amber-500" />
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Clima · Sucursales</span>
             <span className="ml-auto text-[9px] font-mono text-slate-400">OpenWeatherMap</span>
           </div>
           <div className="space-y-2 max-h-[340px] overflow-y-auto pr-1 scrollbar-thin">
             {climaList.length > 0 ? climaList.map((c, i) => (
               <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
-                className="flex items-center gap-3 p-2.5 rounded-xl bg-white/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all">
-                <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-700/50">{weatherIcon(c.descripcion)}</div>
+                className="flex items-center gap-3 p-2.5 rounded-xl bg-white/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 dark:from-slate-700 dark:to-slate-700/50 group-hover:scale-110 transition-transform">{weatherIcon(c.descripcion)}</div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{c.ciudad}</p>
-                  <p className="text-[11px] text-slate-400 capitalize">{c.descripcion || '—'}</p>
+                  <p className="text-[11px] text-slate-400 capitalize truncate">{c.descripcion || '—'}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-extrabold text-slate-800 dark:text-white">{c.temperatura?.toFixed(0) || '—'}°</p>
@@ -323,7 +337,7 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-4 lg:col-span-2">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-4 lg:col-span-2">
           <div className="flex items-center gap-2 mb-3">
             <TicketCheck className="w-4 h-4 text-violet-500" />
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Analytics · Tickets</span>
@@ -384,7 +398,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="w-4 h-4 text-emerald-500" />
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Tendencia de Ventas Mensuales</h3>
@@ -410,7 +424,7 @@ export default function Dashboard() {
           )}
         </motion.div>
 
-        <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Package className="w-4 h-4 text-violet-500" />
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Top Productos Más Vendidos</h3>
@@ -450,7 +464,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-5">
           <div className="flex items-center gap-2 mb-3">
             <BarChart3 className="w-4 h-4 text-blue-500" />
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Ventas por Categoría</h3>
@@ -491,7 +505,7 @@ export default function Dashboard() {
           )}
         </motion.div>
 
-        <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Target className="w-4 h-4 text-violet-500" />
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Indicadores Clave</h3>
