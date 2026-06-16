@@ -4,6 +4,7 @@ import com.grupocordillera.bff.dto.TicketRequest;
 import com.grupocordillera.bff.dto.TicketResponse;
 import com.grupocordillera.bff.entity.Ticket;
 import com.grupocordillera.bff.repository.TicketRepository;
+import com.grupocordillera.bff.service.TicketClassificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,9 +21,12 @@ import java.util.Map;
 public class TicketController {
 
     private final TicketRepository ticketRepository;
+    private final TicketClassificationService classificationService;
 
-    public TicketController(TicketRepository ticketRepository) {
+    public TicketController(TicketRepository ticketRepository,
+                            TicketClassificationService classificationService) {
         this.ticketRepository = ticketRepository;
+        this.classificationService = classificationService;
     }
 
     @GetMapping
@@ -48,7 +52,7 @@ public class TicketController {
     }
 
     @PostMapping
-    @Operation(summary = "Crear ticket", description = "Crea un nuevo ticket de soporte")
+    @Operation(summary = "Crear ticket", description = "Crea un nuevo ticket de soporte con clasificación automática por IA")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Ticket creado exitosamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud invalida")
@@ -56,6 +60,8 @@ public class TicketController {
     public TicketResponse crear(@RequestBody TicketRequest req) {
         Ticket t = new Ticket(req.getTitulo(), req.getDescripcion(), req.getPrioridad(), req.getCreadoPor());
         t.setAsignadoA(req.getAsignadoA());
+        String categoria = classificationService.clasificar(req.getTitulo(), req.getDescripcion());
+        t.setCategoria(categoria);
         return TicketResponse.fromEntity(ticketRepository.save(t));
     }
 

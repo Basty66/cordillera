@@ -11,6 +11,7 @@ public class TicketResponse {
     private String prioridad;
     private String creadoPor;
     private String asignadoA;
+    private String categoria;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -23,6 +24,7 @@ public class TicketResponse {
         r.prioridad = t.getPrioridad().name();
         r.creadoPor = t.getCreadoPor();
         r.asignadoA = t.getAsignadoA();
+        r.categoria = t.getCategoria();
         r.createdAt = t.getCreatedAt();
         r.updatedAt = t.getUpdatedAt();
         return r;
@@ -35,6 +37,7 @@ public class TicketResponse {
     public String getPrioridad() { return prioridad; }
     public String getCreadoPor() { return creadoPor; }
     public String getAsignadoA() { return asignadoA; }
+    public String getCategoria() { return categoria; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

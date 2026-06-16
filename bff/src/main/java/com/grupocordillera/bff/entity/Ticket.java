@@ -34,6 +34,9 @@ public class Ticket {
     @Column(length = 50)
     private String asignadoA;
 
+    @Column(length = 30)
+    private String categoria;
+
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 
@@ -63,6 +66,8 @@ public class Ticket {
     public void setCreadoPor(String creadoPor) { this.creadoPor = creadoPor; }
     public String getAsignadoA() { return asignadoA; }
     public void setAsignadoA(String asignadoA) { this.asignadoA = asignadoA; }
+    public String getCategoria() { return categoria; }
+    public void setCategoria(String categoria) { this.categoria = categoria; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

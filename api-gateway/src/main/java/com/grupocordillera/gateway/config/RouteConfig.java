@@ -14,7 +14,7 @@ public class RouteConfig {
                 .route("ms-ventas", r -> r
                         .path("/api/ventas/**", "/api/productos/**", "/api/sucursales/**",
                               "/api/reportes/ventas-*", "/api/reportes/resumen-*",
-                              "/api/reportes/top-*")
+                              "/api/reportes/top-*", "/api/economico/**", "/api/clima/**")
                         .filters(f -> f.circuitBreaker(cb -> cb
                                 .setName("ms-ventas-cb")
                                 .setFallbackUri("forward:/fallback/ventas")))

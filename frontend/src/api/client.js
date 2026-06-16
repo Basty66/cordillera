@@ -64,6 +64,12 @@ export const getVentasMensuales = () => api.get('/reportes/ventas-mensuales').th
 export const getVentasPorCategoria = () => api.get('/reportes/ventas-por-categoria').then(r => r.data);
 export const getTopProductos = (limite = 10) => api.get(`/reportes/top-productos?limite=${limite}`).then(r => r.data);
 
+export const getIndicadoresEconomicos = () => api.get('/economico/indicadores').then(r => r.data);
+export const getClimaSucursales = () => api.get('/clima/sucursales').then(r => r.data);
+export const getTicketAnalytics = () => api.get('/tickets/analytics').then(r => r.data);
+export const clasificarTicket = (titulo, descripcion) =>
+  api.post('/tickets/clasificar', { titulo, descripcion }).then(r => r.data);
+
 export const exportJSON = (data, filename) => {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
