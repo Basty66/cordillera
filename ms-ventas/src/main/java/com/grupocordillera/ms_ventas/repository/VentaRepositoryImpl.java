@@ -103,11 +103,10 @@ public class VentaRepositoryImpl implements VentaRepositoryCustom {
     public List<VentaCategoriaDTO> ventasPorCategoria() {
         List<Object[]> resultados = entityManager
                 .createQuery("""
-                    SELECT SUBSTRING(p.nombre, 1, CASE WHEN POSITION(' ' IN p.nombre) > 0
-                        THEN POSITION(' ' IN p.nombre) - 1 ELSE LENGTH(p.nombre) END),
+                    SELECT COALESCE(p.categoria, 'Sin categoría'),
                            SUM(dv.cantidad), SUM(dv.cantidad * dv.precioUnitario)
                     FROM DetalleVenta dv JOIN dv.producto p
-                    GROUP BY 1
+                    GROUP BY p.categoria
                     ORDER BY 3 DESC
                     """, Object[].class)
                 .getResultList();

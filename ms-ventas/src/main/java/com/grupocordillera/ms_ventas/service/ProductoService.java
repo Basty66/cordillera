@@ -80,18 +80,29 @@ public class ProductoService {
 
     @CacheEvict(value = "productos", allEntries = true)
     public String generarProductosMasivos(int cantidad) {
-        String[] nombres = {"Laptop", "Mouse", "Teclado", "Monitor", "Impresora", "Webcam", "Auriculares"};
+        String[] categorias = {"Tecnología", "Electrodomésticos", "Moda", "Deportes", "Alimentos y Bebidas", "Libros y Editorial"};
+        String[][] nombres = {
+            {"Laptop", "Mouse", "Teclado", "Monitor", "Impresora", "Webcam", "Auriculares"},
+            {"Refrigerador", "Microondas", "Lavadora", "Aspiradora", "Cafetera", "Horno", "Ventilador"},
+            {"Polera", "Pantalón", "Chaqueta", "Zapatos", "Camisa", "Vestido", "Bufanda"},
+            {"Bicicleta", "Pesas", "Balón", "Cuerda", "Botella", "Colchoneta", "Termo"},
+            {"Café", "Té", "Arroz", "Fideos", "Aceite", "Harina", "Galletas"},
+            {"Libro", "Novela", "Cuaderno", "Revista", "Agenda", "Mapa", "Atlas"}
+        };
         List<Producto> lista = new ArrayList<>();
 
         for (int i = 0; i < cantidad; i++) {
-            String nombre = nombres[(int)(Math.random()*nombres.length)] + " " + (i+1);
-            String categoria = nombre.split(" ")[0].toLowerCase();
+            int catIdx = (int)(Math.random() * categorias.length);
+            String cat = categorias[catIdx];
+            String nombreBase = nombres[catIdx][(int)(Math.random() * nombres[catIdx].length)];
+            String nombre = nombreBase + " " + (i+1);
             Producto p = new Producto();
             p.setNombre(nombre);
+            p.setCategoria(cat);
             p.setDescripcion("Producto de alta calidad serie " + i);
-            p.setPrecio(BigDecimal.valueOf(Math.random() * 1000));
+            p.setPrecio(BigDecimal.valueOf(Math.random() * 500000 + 5000));
             p.setStock((int)(Math.random() * 500));
-            p.setImagenUrl("https://picsum.photos/seed/" + categoria + (i+1) + "/400/300");
+            p.setImagenUrl("https://picsum.photos/seed/" + cat.toLowerCase().replaceAll("\\s+", "") + (i+1) + "/400/300");
             lista.add(p);
         }
         productoRepository.saveAll(lista);

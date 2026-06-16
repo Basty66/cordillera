@@ -252,7 +252,11 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         private static final java.util.Map<Categoria, String> NOMBRES_MAP = java.util.Map.of(
-            ELECTRONICA, "Electrónica"
+            ELECTRONICA, "Tecnología",
+            HOGAR, "Electrodomésticos",
+            ROPA, "Moda",
+            ALIMENTOS, "Alimentos y Bebidas",
+            LIBROS, "Libros y Editorial"
         );
 
         BigDecimal[] getPrecios() {
