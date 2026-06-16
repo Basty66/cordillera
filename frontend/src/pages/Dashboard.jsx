@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getDashboard, getIndicadoresEconomicos, getClimaSucursales, getTicketAnalytics } from '../api/client';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, Cell, PieChart, Pie } from 'recharts';
 import {
   ShoppingCart, DollarSign, TrendingUp, RefreshCw, Package,
   AlertCircle, Users, Store, Server, Sun, Cloud, CloudRain,
@@ -451,30 +451,40 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-3">
             <BarChart3 className="w-4 h-4 text-blue-500" />
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Ventas por Categoría</h3>
             <span className="ml-auto text-[9px] font-mono text-slate-400">Distribución</span>
           </div>
           {ventasCategoria.length > 0 ? (
-            <div className="space-y-2.5">
-              {ventasCategoria.map((c, i) => {
-                const total = ventasCategoria.reduce((s, x) => s + x.montoTotal, 0) || 1;
-                const pct = ((c.montoTotal / total) * 100).toFixed(0);
-                const colors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316'];
-                return (
-                  <div key={i} className="space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <span className="font-semibold text-slate-700 dark:text-slate-300">{c.categoria}</span>
-                      <span className="text-slate-400 font-mono">{formatCLP(c.montoTotal)} ({pct}%)</span>
+            <div className="flex items-center gap-4">
+              <div className="h-[120px] w-[120px] shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={ventasCategoria.map((c, i) => ({ ...c, fill: monthColors[i % 12] }))}
+                      cx="50%" cy="50%" innerRadius={30} outerRadius={55} dataKey="montoTotal" paddingAngle={2}
+                    >
+                      {ventasCategoria.map((_, i) => (
+                        <Cell key={i} fill={monthColors[i % 12]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={v => formatCLP(v)} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1.5">
+                {ventasCategoria.map((c, i) => {
+                  const total = ventasCategoria.reduce((s, x) => s + x.montoTotal, 0) || 1;
+                  const pct = ((c.montoTotal / total) * 100).toFixed(0);
+                  return (
+                    <div key={i} className="flex items-center gap-2 text-[11px]">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: monthColors[i % 12] }} />
+                      <span className="font-semibold text-slate-700 dark:text-slate-300 truncate">{c.categoria}</span>
+                      <span className="text-slate-400 ml-auto font-mono">{pct}%</span>
                     </div>
-                    <div className="h-2 bg-slate-100 dark:bg-slate-700/50 rounded-full overflow-hidden">
-                      <motion.div initial={{ width: 0 }} animate={{ width: pct + '%' }} transition={{ duration: 0.8, delay: i * 0.05 }}
-                        className="h-full rounded-full" style={{ background: colors[i % 8] }} />
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           ) : (
             <p className="text-sm text-slate-400 text-center py-8">Cargando categorías...</p>

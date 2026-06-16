@@ -103,10 +103,20 @@ public class VentaRepositoryImpl implements VentaRepositoryCustom {
     public List<VentaCategoriaDTO> ventasPorCategoria() {
         List<Object[]> resultados = entityManager
                 .createQuery("""
-                    SELECT COALESCE(p.categoria, 'Sin categoría'),
+                    SELECT CASE
+                        WHEN p.categoria IN ('Tecnología', 'Electrodomésticos') THEN 'Electrodomésticos y Tecnología'
+                        WHEN p.categoria IN ('Moda', 'Deportes') THEN 'Moda y Deportes'
+                        WHEN p.categoria IN ('Alimentos y Bebidas', 'Libros y Editorial') THEN 'Alimentos, Libros y Bebidas'
+                        ELSE COALESCE(p.categoria, 'Sin categoría')
+                    END,
                            SUM(dv.cantidad), SUM(dv.cantidad * dv.precioUnitario)
                     FROM DetalleVenta dv JOIN dv.producto p
-                    GROUP BY p.categoria
+                    GROUP BY CASE
+                        WHEN p.categoria IN ('Tecnología', 'Electrodomésticos') THEN 'Electrodomésticos y Tecnología'
+                        WHEN p.categoria IN ('Moda', 'Deportes') THEN 'Moda y Deportes'
+                        WHEN p.categoria IN ('Alimentos y Bebidas', 'Libros y Editorial') THEN 'Alimentos, Libros y Bebidas'
+                        ELSE COALESCE(p.categoria, 'Sin categoría')
+                    END
                     ORDER BY 3 DESC
                     """, Object[].class)
                 .getResultList();
