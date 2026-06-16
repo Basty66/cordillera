@@ -104,17 +104,17 @@ public class VentaRepositoryImpl implements VentaRepositoryCustom {
         List<Object[]> resultados = entityManager
                 .createQuery("""
                     SELECT CASE
-                        WHEN p.categoria IN ('Tecnología', 'Electrodomésticos') THEN 'Electrodomésticos y Tecnología'
-                        WHEN p.categoria IN ('Moda', 'Deportes') THEN 'Moda y Deportes'
-                        WHEN p.categoria IN ('Alimentos y Bebidas', 'Libros y Editorial') THEN 'Alimentos, Libros y Bebidas'
+                        WHEN p.categoria IN ('Electrónica', 'Hogar', 'Tecnología', 'Electrodomésticos') THEN 'Electrodomésticos y Tecnología'
+                        WHEN p.categoria IN ('Ropa', 'Deportes', 'Moda') THEN 'Moda y Deportes'
+                        WHEN p.categoria IN ('Alimentos', 'Libros', 'Alimentos y Bebidas', 'Libros y Editorial') THEN 'Alimentos, Libros y Bebidas'
                         ELSE COALESCE(p.categoria, 'Sin categoría')
                     END,
                            SUM(dv.cantidad), SUM(dv.cantidad * dv.precioUnitario)
                     FROM DetalleVenta dv JOIN dv.producto p
                     GROUP BY CASE
-                        WHEN p.categoria IN ('Tecnología', 'Electrodomésticos') THEN 'Electrodomésticos y Tecnología'
-                        WHEN p.categoria IN ('Moda', 'Deportes') THEN 'Moda y Deportes'
-                        WHEN p.categoria IN ('Alimentos y Bebidas', 'Libros y Editorial') THEN 'Alimentos, Libros y Bebidas'
+                        WHEN p.categoria IN ('Electrónica', 'Hogar', 'Tecnología', 'Electrodomésticos') THEN 'Electrodomésticos y Tecnología'
+                        WHEN p.categoria IN ('Ropa', 'Deportes', 'Moda') THEN 'Moda y Deportes'
+                        WHEN p.categoria IN ('Alimentos', 'Libros', 'Alimentos y Bebidas', 'Libros y Editorial') THEN 'Alimentos, Libros y Bebidas'
                         ELSE COALESCE(p.categoria, 'Sin categoría')
                     END
                     ORDER BY 3 DESC
