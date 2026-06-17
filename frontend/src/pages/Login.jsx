@@ -1,301 +1,440 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LogIn, Eye, EyeOff, User, Lock, Sparkles, Store, TrendingUp,
-  ShieldCheck, BarChart3, Hexagon, Zap, Globe, DollarSign,
-  ShoppingCart, Users, ArrowRight, ChevronRight, Activity
+  LogIn, Eye, EyeOff, Hexagon,
+  ShieldCheck, ShoppingCart, Package,
+  Users, Zap, ArrowRight,
+  ChevronRight, Fingerprint, ArrowLeft,
+  Store, BarChart3, LineChart
 } from 'lucide-react';
 
-function AuroraBackground() {
-  return (
-    <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950" />
-      <motion.div className="absolute -top-48 -left-48 w-[700px] h-[700px] rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 60%)' }}
-        animate={{ x: [0, 40, -30, 0], y: [0, -30, 40, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div className="absolute -bottom-48 -right-48 w-[600px] h-[600px] rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 60%)' }}
-        animate={{ x: [0, -40, 30, 0], y: [0, 40, -30, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div className="absolute top-1/4 left-2/3 w-[400px] h-[400px] rounded-full"
-        style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.08) 0%, transparent 60%)' }}
-        animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.5, 0.2] }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <div className="absolute inset-0 opacity-[0.025]" style={{
-        backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.6) 1px, transparent 0)',
-        backgroundSize: '28px 28px',
-      }} />
-    </div>
-  );
-}
-
-function FloatingParticles() {
-  return (
-    <>
-      {[...Array(12)].map((_, i) => (
-        <motion.div key={i} className="absolute rounded-full pointer-events-none"
-          style={{
-            width: Math.random() * 5 + 2, height: Math.random() * 5 + 2,
-            left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`,
-            background: `rgba(16,185,129,${Math.random() * 0.25 + 0.08})`,
-            boxShadow: `0 0 ${Math.random() * 8 + 2}px rgba(16,185,129,0.2)`,
-          }}
-          animate={{ y: [0, -40 - Math.random() * 40, 0], opacity: [0.1, 0.5, 0.1] }}
-          transition={{ duration: Math.random() * 10 + 6, repeat: Infinity, delay: Math.random() * 5, ease: 'easeInOut' }}
-        />
-      ))}
-    </>
-  );
-}
-
-const slides = [
-  { icon: BarChart3, title: 'Dashboard en Tiempo Real', desc: 'Métrica de ventas, indicadores y KPIs actualizados al instante', color: 'from-emerald-500 to-emerald-600' },
-  { icon: Store, title: 'Múltiples Sucursales', desc: 'Gestión centralizada de 12 sucursales a nivel nacional', color: 'from-blue-500 to-blue-600' },
-  { icon: TrendingUp, title: 'Indicadores Económicos', desc: 'UF, Dólar, UTM e IPC integrados via mindicador.cl', color: 'from-violet-500 to-violet-600' },
-  { icon: ShoppingCart, title: 'Ventas y Productos', desc: 'Catálogo inteligente con +1,000 productos en tiempo real', color: 'from-amber-500 to-amber-600' },
-  { icon: ShieldCheck, title: 'Seguridad Empresarial', desc: 'Autenticación JWT con roles y permisos granulares', color: 'from-rose-500 to-rose-600' },
+const roles = [
+  { id: 'admin', user: 'admin', pass: 'admin123', label: 'Administrador', icon: ShieldCheck, color: 'from-violet-500 to-violet-600', desc: 'Control total del sistema' },
+  { id: 'ventas', user: 'vendedor', pass: 'ventas123', label: 'Vendedor', icon: ShoppingCart, color: 'from-emerald-500 to-emerald-600', desc: 'Gestión de ventas' },
+  { id: 'bodega', user: 'bodega', pass: 'bodega123', label: 'Bodeguero', icon: Package, color: 'from-amber-500 to-amber-600', desc: 'Control de inventario' },
 ];
 
-const slideAnim = {
-  enter: { x: 80, opacity: 0 },
-  center: { x: 0, opacity: 1 },
-  exit: { x: -80, opacity: 0 },
+function Background() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const c = canvasRef.current;
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    let w, h, mouse = { x: -999, y: -999 };
+    let t = 0;
+    let running = true;
+
+    function onMouseMove(e) { mouse.x = e.clientX; mouse.y = e.clientY; }
+    function onMouseLeave() { mouse.x = -999; mouse.y = -999; }
+
+    const resize = () => { w = c.width = innerWidth; h = c.height = innerHeight; };
+    resize();
+    addEventListener('resize', resize);
+    addEventListener('mousemove', onMouseMove);
+    addEventListener('mouseleave', onMouseLeave);
+
+    const particles = Array.from({ length: 90 }, () => ({
+      x: Math.random() * w, y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 2.5 + 0.5,
+      baseAlpha: Math.random() * 0.5 + 0.3,
+      pulseSpeed: Math.random() * 0.02 + 0.005,
+      pulseOffset: Math.random() * Math.PI * 2,
+      isBright: Math.random() > 0.85,
+    }));
+
+    let anim;
+    function draw() {
+      if (!running) return;
+      t += 0.005;
+      ctx.clearRect(0, 0, w, h);
+
+      for (let i = 0; i < 4; i++) {
+        const cx = w * (0.1 + 0.8 * Math.sin(t * 0.15 + i * 1.5));
+        const cy = h * (0.2 + 0.6 * Math.cos(t * 0.12 + i * 1.2));
+        const r = w * (0.3 + 0.12 * Math.sin(t * 0.08 + i * 0.7));
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        const alpha = 0.04 + 0.02 * Math.sin(t * 0.2 + i);
+        const colors = [[16, 185, 129], [59, 130, 246], [139, 92, 246], [16, 185, 129]];
+        const c2 = colors[i];
+        grad.addColorStop(0, `rgba(${c2[0]},${c2[1]},${c2[2]},${alpha})`);
+        grad.addColorStop(1, `rgba(${c2[0]},${c2[1]},${c2[2]},0)`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      particles.forEach(p => {
+        p.x += p.vx + (mouse.x !== -999 ? (mouse.x - p.x) * 0.00008 : 0);
+        p.y += p.vy + (mouse.y !== -999 ? (mouse.y - p.y) * 0.00008 : 0);
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+      });
+
+      particles.forEach((a, i) => {
+        particles.slice(i + 1).forEach(b => {
+          const dx = a.x - b.x, dy = a.y - b.y, d = Math.sqrt(dx * dx + dy * dy);
+          const maxDist = Math.min(w, h) * 0.15;
+          if (d < maxDist) {
+            const alpha = 0.15 * (1 - d / maxDist) * Math.sin(t + a.pulseOffset) * 0.5 + 0.5;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `rgba(16,185,129,${alpha * 0.15})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        });
+      });
+
+      particles.forEach(p => {
+        const pulse = Math.sin(t * 3 + p.pulseOffset) * 0.3 + 0.7;
+        const alpha = p.baseAlpha * pulse;
+        const r = p.isBright ? p.r * 1.5 : p.r;
+
+        if (p.isBright) {
+          const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 4);
+          glow.addColorStop(0, `rgba(16,185,129,${alpha * 0.3})`);
+          glow.addColorStop(1, 'rgba(16,185,129,0)');
+          ctx.fillStyle = glow;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r * 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = p.isBright
+          ? `rgba(255,255,255,${alpha * 0.9})`
+          : `rgba(16,185,129,${alpha})`;
+        ctx.fill();
+      });
+
+      if (mouse.x !== -999 && mouse.y !== -999) {
+        const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 120);
+        grad.addColorStop(0, 'rgba(16,185,129,0.06)');
+        grad.addColorStop(1, 'rgba(16,185,129,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, 120, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      anim = requestAnimationFrame(draw);
+    }
+    anim = requestAnimationFrame(draw);
+    return () => {
+      running = false;
+      if (anim) cancelAnimationFrame(anim);
+      removeEventListener('resize', resize);
+      removeEventListener('mousemove', onMouseMove);
+      removeEventListener('mouseleave', onMouseLeave);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none" />;
+}
+
+const stepVariants = {
+  enter: (dir) => ({ opacity: 0, y: dir > 0 ? 40 : -40, scale: 0.97 }),
+  center: { opacity: 1, y: 0, scale: 1 },
+  exit: (dir) => ({ opacity: 0, y: dir > 0 ? -40 : 40, scale: 0.97 }),
 };
 
 export default function Login() {
+  const [step, setStep] = useState(0);
+  const [dir, setDir] = useState(1);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [slideIdx, setSlideIdx] = useState(0);
-  const { login } = useAuth();
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [typedUser, setTypedUser] = useState('');
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const passRef = useRef(null);
+  const userRef = useRef(null);
+  const intervalRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
-    const timer = setInterval(() => setSlideIdx(p => (p + 1) % slides.length), 4500);
-    return () => clearInterval(timer);
+    const t = localStorage.getItem('token');
+    if (t) try { const p = JSON.parse((s=>{try{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return decodeURIComponent(atob(s).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''))}catch{return atob(s)}})(t.split('.')[1])); if (p.exp * 1000 < Date.now()) throw 'expired'; } catch { localStorage.removeItem('token'); localStorage.removeItem('user'); }
   }, []);
+  useEffect(() => { if (isAuthenticated) navigate('/', { replace: true }); }, [isAuthenticated, navigate]);
 
-  const validate = () => {
-    const errs = {};
-    if (!username.trim()) errs.username = 'El usuario es requerido';
-    if (!password.trim()) errs.password = 'La contraseña es requerida';
-    else if (password.length < 6) errs.password = 'Mínimo 6 caracteres';
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
+  const go = (s, d = 1) => { setDir(d); setStep(s); };
+
+  useEffect(() => { if (step === 2) passRef.current?.focus(); }, [step]);
+  useEffect(() => { if (step === 1) userRef.current?.focus(); }, [step]);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!validate()) return;
+    if (!password.trim()) { setError('Ingresa tu contraseña'); return; }
     setLoading(true);
     try {
       await login(username.trim(), password);
-      navigate('/');
+      navigate('/', { replace: true });
     } catch (err) {
-      setError(err.response?.data?.error || 'Credenciales inválidas. Intenta de nuevo.');
-    } finally {
-      setLoading(false);
-    }
+      setError(err.response?.data?.error || 'Credenciales inválidas');
+    } finally { setLoading(false); }
   };
 
-  const demoUsers = [
-    { user: 'admin', pass: 'admin123', role: 'Admin', color: 'from-emerald-500 to-emerald-600', icon: ShieldCheck },
-    { user: 'vendedor', pass: 'ventas123', role: 'Vendedor', color: 'from-blue-500 to-blue-600', icon: TrendingUp },
-    { user: 'bodega', pass: 'bodega123', role: 'Bodega', color: 'from-amber-500 to-amber-600', icon: Store },
-  ];
+  const selectRole = useCallback((r) => {
+    setSelectedRole(r.id);
+    setPassword(r.pass);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (username !== r.user) {
+      setUsername(r.user);
+      let i = 0;
+      setTypedUser('');
+      intervalRef.current = setInterval(() => {
+        setTypedUser(r.user.slice(0, i + 1));
+        i++;
+        if (i >= r.user.length) { clearInterval(intervalRef.current); intervalRef.current = null; }
+      }, 45);
+    }
+    timeoutRef.current = setTimeout(() => go(2, 1), 300);
+  }, [username]);
 
-  const fillDemo = (u, p) => { setUsername(u); setPassword(p); setErrors({}); setError(''); };
+  const splashToRoles = () => {
+    go(1, 1);
+  };
 
   return (
-    <div className="min-h-screen flex relative overflow-hidden">
-      <AuroraBackground />
-      <FloatingParticles />
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#070b14]">
+      <Background />
+      <div className="fixed inset-0 pointer-events-none opacity-[0.04]"
+        style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.2) 1px, transparent 0)', backgroundSize: '32px 32px' }}
+      />
+      <div className="fixed inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(7,11,20,0.6) 100%)' }} />
 
-      {/* Left: Brand + Auto-sliding showcase */}
-      <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center px-12">
-        <div className="w-full max-w-lg">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="flex items-center gap-3 mb-16">
-              <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: 'spring', stiffness: 150, damping: 15 }}
-                className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl shadow-2xl shadow-emerald-500/30">
-                <Hexagon className="w-7 h-7 text-white" />
-              </motion.div>
-              <div>
-                <h2 className="text-xl font-bold text-white tracking-tight">Grupo Cordillera</h2>
-                <p className="text-[10px] text-emerald-400/60 font-semibold uppercase tracking-[0.2em]">Monitoreo Inteligente</p>
-              </div>
+      {/* Main card container */}
+      <div className="relative w-full max-w-[420px] mx-auto px-4 z-10">
+        {/* Glow behind */}
+        <div className="absolute -inset-20 bg-gradient-to-b from-emerald-500/8 via-emerald-500/3 to-transparent rounded-[60px] blur-3xl pointer-events-none" />
+
+        {/* Card */}
+        <div className="relative bg-[#0c1124]/80 backdrop-blur-2xl rounded-3xl border border-white/[0.06] shadow-2xl p-8 sm:p-10 min-h-[460px] flex flex-col">
+          {/* Top logo bar */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2.5 mb-8">
+            <div className="p-1.5 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/20">
+              <Hexagon className="w-3.5 h-3.5 text-white" />
             </div>
+            <p className="text-sm font-bold text-white">Grupo Cordillera</p>
+          </motion.div>
 
-            {/* Tagline */}
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-              className="text-4xl font-bold text-white leading-tight tracking-tight mb-2">
-              Plataforma de<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-300 to-blue-400">
-                Monitoreo Corporativo
-              </span>
-            </motion.p>
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-              className="text-slate-400 text-sm leading-relaxed mb-10">
-              Gestión centralizada de ventas, indicadores, tickets y más.
-            </motion.p>
-
-            {/* Auto-sliding carousel */}
-            <div className="relative h-[140px]">
-              <AnimatePresence mode="wait">
-                <motion.div key={slideIdx} variants={slideAnim} initial="enter" animate="center" exit="exit"
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute inset-0"
+          {/* Animated steps */}
+          <div className="flex-1 relative">
+            <AnimatePresence mode="wait" custom={dir}>
+              {/* ===== STEP 0: SPLASH ===== */}
+              {step === 0 && (
+                <motion.div key="splash" custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit"
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex flex-col items-center text-center"
                 >
-                  {(() => {
-                    const s = slides[slideIdx];
-                    return (
-                      <div className="flex items-start gap-4 p-5 bg-white/[0.03] rounded-2xl border border-white/[0.06] backdrop-blur-sm">
-                        <div className={`p-3 bg-gradient-to-br ${s.color} rounded-xl shadow-lg shrink-0`}>
-                          <s.icon className="w-6 h-6 text-white" />
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-2xl shadow-emerald-500/25 mb-6"
+                  >
+                    <Hexagon className="w-10 h-10 text-white" />
+                  </motion.div>
+
+                  <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                    className="text-2xl font-bold text-white tracking-tight"
+                  >
+                    Plataforma de Monitoreo
+                  </motion.h1>
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+                    className="text-slate-500 text-sm mt-2 max-w-xs"
+                  >
+                    Gestión inteligente de ventas, sucursales e indicadores económicos para Grupo Cordillera.
+                  </motion.p>
+
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                    className="flex items-center gap-2 mt-6 mb-8"
+                  >
+                    {[Store, BarChart3, LineChart].map((Icon, i) => (
+                      <div key={i} className="flex items-center gap-1.5 text-xs text-slate-600">
+                        <Icon className="w-3 h-3 text-emerald-500/50" />
+                        {['12 Sucursales', '24 KPIs', '1.2K Prod.'][i]}
+                        {i < 2 && <span className="text-slate-700 mx-1">·</span>}
+                      </div>
+                    ))}
+                  </motion.div>
+
+                  <motion.button
+                    initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                    onClick={splashToRoles}
+                    className="flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/20 transition-all text-sm"
+                  >
+                    <Fingerprint className="w-4 h-4" />
+                    Iniciar sesión
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.button>
+                </motion.div>
+              )}
+
+              {/* ===== STEP 1: ROLE SELECTION ===== */}
+              {step === 1 && (
+                <motion.div key="roles" custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit"
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <motion.button onClick={() => go(0, -1)} whileHover={{ x: -2 }}
+                    className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors mb-6"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" /> Volver
+                  </motion.button>
+
+                  <h2 className="text-xl font-bold text-white tracking-tight mb-1">¿Quién eres?</h2>
+                  <p className="text-sm text-slate-500 mb-6">Selecciona tu perfil para acceder al sistema</p>
+
+                  <div className="space-y-3">
+                    {roles.map((r, i) => (
+                      <motion.button key={r.id}
+                        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.07 }}
+                        whileHover={{ scale: 1.01, x: 4 }} whileTap={{ scale: 0.98 }}
+                        onClick={() => selectRole(r)}
+                        className="w-full flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.04] hover:border-white/[0.08] transition-all duration-200 text-left group"
+                      >
+                        <div className={`w-12 h-12 bg-gradient-to-br ${r.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform`}>
+                          <r.icon className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-bold text-white">{r.user}</p>
+                          <p className="text-xs text-slate-500">{r.desc}</p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors" />
+                      </motion.button>
+                    ))}
+                  </div>
+
+                  <div className="mt-5 pt-4 border-t border-white/[0.04]">
+                    <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+                      onClick={() => { setSelectedRole(null); go(2, 1); }}
+                      className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] border border-dashed border-white/[0.06] hover:border-white/[0.1] transition-all text-sm text-slate-400 hover:text-white"
+                    >
+                      <Users className="w-4 h-4" /> Otro usuario
+                    </motion.button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* ===== STEP 2: PASSWORD ===== */}
+              {step === 2 && (
+                <motion.div key="pass" custom={dir} variants={stepVariants} initial="enter" animate="center" exit="exit"
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <motion.button onClick={() => go(1, -1)} whileHover={{ x: -2 }}
+                    className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors mb-6"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" /> Cambiar usuario
+                  </motion.button>
+
+                  <div className="flex items-center gap-3 mb-6">
+                    {selectedRole ? (
+                      <>
+                        <div className={`w-10 h-10 bg-gradient-to-br ${roles.find(r => r.id === selectedRole)?.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                          {(() => { const r = roles.find(rr => rr.id === selectedRole); return r ? <r.icon className="w-5 h-5 text-white" /> : <Users className="w-5 h-5 text-white" />; })()}
                         </div>
                         <div>
-                          <p className="text-lg font-bold text-white mb-1">{s.title}</p>
-                          <p className="text-sm text-slate-400">{s.desc}</p>
+                          <p className="text-sm font-bold text-white">{typedUser || username}</p>
+                          <p className="text-xs text-slate-500">{roles.find(r => r.id === selectedRole)?.label}</p>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center">
+                          <Users className="w-5 h-5 text-slate-300" />
+                        </div>
+                        <div className="flex-1">
+                          <input ref={userRef} type="text" value={typedUser || username}
+                            onChange={e => { setUsername(e.target.value); setTypedUser(''); }}
+                            className="w-full bg-transparent text-sm text-white outline-none placeholder-slate-600 border-b border-white/[0.06] pb-1 focus:border-emerald-500/40 transition-colors"
+                            placeholder="Ingresa tu usuario"
+                          />
                         </div>
                       </div>
-                    );
-                  })()}
+                    )}
+                  </div>
+
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {error && (
+                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        className="p-2.5 bg-red-500/10 border border-red-500/15 rounded-xl text-xs text-red-400 text-center"
+                      >
+                        {error}
+                      </motion.div>
+                    )}
+
+                    <div>
+                      <label className="block text-xs font-medium text-slate-400 mb-2">Contraseña</label>
+                      <div className="relative group">
+                        <Zap className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-emerald-400 transition-colors" />
+                        <input key={selectedRole || 'custom'} ref={passRef} type={showPassword ? 'text' : 'password'} value={password}
+                          onChange={e => setPassword(e.target.value)}
+                          className="w-full bg-[#070b14] pl-10 pr-10 py-3 text-sm text-white rounded-xl border border-white/[0.06] placeholder-slate-600 outline-none transition-all duration-200 focus:border-emerald-500/40 focus:ring-2 focus:ring-emerald-500/10"
+                          placeholder="Ingresa tu contraseña"
+                          autoComplete="new-password"
+                        />
+                        <button type="button" onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }} type="submit" disabled={loading}
+                      className="w-full relative flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-500/15 disabled:opacity-50 text-sm overflow-hidden group"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+                      {loading ? (
+                        <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
+                            <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round" className="opacity-75" />
+                          </svg>
+                        </motion.div>
+                      ) : (<><LogIn className="w-4 h-4" /> Ingresar al panel</>)}
+                    </motion.button>
+
+                    <div className="text-center">
+                      <button type="button" className="text-xs text-slate-600 hover:text-slate-400 transition-colors">
+                        ¿Olvidaste tu contraseña?
+                      </button>
+                    </div>
+                  </form>
                 </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Slide indicators */}
-            <div className="flex items-center gap-2 mt-4">
-              {slides.map((_, i) => (
-                <button key={i} onClick={() => setSlideIdx(i)}
-                  className={`h-1.5 rounded-full transition-all duration-500 ${i === slideIdx ? 'w-8 bg-emerald-400' : 'w-2 bg-slate-600 hover:bg-slate-500'}`} />
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Right: Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 relative">
-        <motion.div
-          initial={{ opacity: 0, x: 60 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full max-w-md relative z-10"
-        >
-          {/* Mobile logo */}
-          <div className="text-center mb-8 lg:hidden">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-              className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl shadow-2xl shadow-emerald-500/30 mb-4">
-              <Hexagon className="w-8 h-8 text-white" />
-            </motion.div>
-            <h1 className="text-2xl font-bold text-white">Grupo Cordillera</h1>
-            <p className="text-emerald-400/60 text-xs mt-1 font-medium tracking-wider uppercase">Monitoreo Inteligente</p>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Glass card */}
-          <motion.div className="relative"
-            initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}
-          >
-            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-70" />
-            <div className="relative bg-white/[0.04] backdrop-blur-2xl rounded-2xl border border-white/[0.08] shadow-2xl p-8 sm:p-10">
-              <motion.div className="mb-6"
-                initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.4 }}
-              >
-                <h2 className="text-xl font-semibold text-white tracking-tight">Bienvenido</h2>
-                <p className="text-sm text-slate-500 mt-0.5">Ingresa tus credenciales para continuar</p>
-              </motion.div>
+          {/* Bottom dots */}
+          <div className="flex items-center justify-center gap-1.5 mt-6 pt-4 border-t border-white/[0.03]">
+            {[0, 1, 2].map((s) => (
+              <motion.button key={s} onClick={() => go(s, s > step ? 1 : -1)}
+                className={`rounded-full transition-all duration-300 ${step === s ? 'w-6 h-1.5 bg-emerald-500' : 'w-1.5 h-1.5 bg-slate-700 hover:bg-slate-500'}`}
+              />
+            ))}
+          </div>
+        </div>
 
-              <AnimatePresence>
-                {error && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                    className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-sm text-red-400 flex items-center gap-2 overflow-hidden">
-                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full shrink-0 animate-pulse" />{error}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35, duration: 0.4 }}>
-                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Usuario</label>
-                  <div className="relative group">
-                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-emerald-400 transition-colors duration-300" />
-                    <input type="text" value={username} onChange={e => { setUsername(e.target.value); setErrors({ ...errors, username: '' }); }}
-                      className={`w-full pl-10 pr-4 py-3 bg-white/[0.05] border rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 input-glow ${errors.username ? 'border-red-400/40' : 'border-white/[0.08] hover:border-white/[0.18]'}`}
-                      placeholder="Ingresa tu usuario" />
-                  </div>
-                  {errors.username && <p className="text-xs text-red-400 mt-1.5 animate-slide-up">{errors.username}</p>}
-                </motion.div>
-
-                <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.4 }}>
-                  <label className="block text-xs font-medium text-slate-400 mb-1.5">Contraseña</label>
-                  <div className="relative group">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-emerald-400 transition-colors duration-300" />
-                    <input type={showPassword ? 'text' : 'password'} value={password}
-                      onChange={e => { setPassword(e.target.value); setErrors({ ...errors, password: '' }); }}
-                      className={`w-full pl-10 pr-12 py-3 bg-white/[0.05] border rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 input-glow ${errors.password ? 'border-red-400/40' : 'border-white/[0.08] hover:border-white/[0.18]'}`}
-                      placeholder="Ingresa tu contraseña" />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors p-0.5">
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  {errors.password && <p className="text-xs text-red-400 mt-1.5 animate-slide-up">{errors.password}</p>}
-                </motion.div>
-
-                <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} type="submit" disabled={loading}
-                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.4 }}
-                  className="w-full relative flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-900 font-semibold py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed mt-2 overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                  {loading ? (
-                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
-                        <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round" className="opacity-75" />
-                      </svg>
-                    </motion.div>
-                  ) : (<><LogIn className="w-4 h-4" /> Ingresar</>)}
-                </motion.button>
-              </form>
-
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.4 }}
-                className="mt-6 pt-5 border-t border-white/[0.06]">
-                <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-widest text-center mb-3">Acceso rápido de prueba</p>
-                <div className="grid grid-cols-3 gap-2.5">
-                  {demoUsers.map((d, i) => (
-                    <motion.button key={d.user} whileHover={{ y: -4, scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 + i * 0.1, duration: 0.3 }}
-                      onClick={() => fillDemo(d.user, d.pass)}
-                      className="p-3 bg-white/[0.03] hover:bg-white/[0.07] rounded-xl text-center transition-all duration-200 border border-white/[0.04] hover:border-white/[0.12] group relative overflow-hidden">
-                      <div className={`w-9 h-9 bg-gradient-to-br ${d.color} rounded-xl mx-auto mb-1.5 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                        <d.icon className="w-4 h-4 text-white" />
-                      </div>
-                      <p className="text-emerald-400 font-bold text-xs group-hover:text-emerald-300 transition-colors">{d.user}</p>
-                      <p className="text-slate-600 text-[9px] leading-tight">{d.role}</p>
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
-            className="text-center text-[10px] text-slate-700 mt-5 tracking-wide">
-            &copy; 2026 Grupo Cordillera &mdash; Plataforma de Monitoreo Inteligente
-          </motion.p>
-        </motion.div>
+        <p className="text-center text-[9px] text-slate-700/80 mt-5">&copy; 2026 Grupo Cordillera</p>
       </div>
     </div>
   );

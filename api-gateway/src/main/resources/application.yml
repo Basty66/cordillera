@@ -10,13 +10,23 @@ spring:
       default-filters:
         - name: Retry
           args:
-            retries: 3
+            retries: 2
             statuses: BAD_GATEWAY, SERVICE_UNAVAILABLE
             methods: GET
             backoff:
               firstBackoff: 500ms
               maxBackoff: 2s
               factor: 2
+      httpclient:
+        pool:
+          type: elastic
+        connect-timeout: 5000
+        response-timeout: 30s
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: DEBUG
 
 resilience4j:
   timelimiter:

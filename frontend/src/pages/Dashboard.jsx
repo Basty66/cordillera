@@ -4,11 +4,11 @@ import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, Cell, PieChart, Pie } from 'recharts';
 import {
   ShoppingCart, DollarSign, TrendingUp, RefreshCw, Package,
-  AlertCircle, Users, Store, Server, Sun, Cloud, CloudRain,
-  Thermometer, Droplets, TrendingDown, Wallet, BadgePercent,
-  TicketCheck, Clock, Target, Zap, HelpCircle, Activity, Wifi,
-  BarChart3, ArrowUpRight, ArrowDownRight, ChevronRight, Sparkles,
-  Layers, Hexagon, Globe
+  AlertCircle, Users, Store, Sun, Cloud, CloudRain,
+  Droplets, TrendingDown, Wallet, BadgePercent,
+  TicketCheck, Target, Zap, HelpCircle, Activity, Wifi,
+  BarChart3, ArrowUpRight, ArrowDownRight, ChevronRight,
+  Hexagon, Sparkles, Globe
 } from 'lucide-react';
 
 function formatCLP(n) {
@@ -33,18 +33,7 @@ const catIcons = {
 
 const monthColors = ['#3b82f6','#60a5fa','#818cf8','#a78bfa','#c084fc','#e879f9','#f472b6','#fb7185','#f87171','#fbbf24','#34d399','#10b981'];
 
-function Sparkline({ data, color = '#10b981' }) {
-  const max = Math.max(...data, 1);
-  return (
-    <div className="sparkline">
-      {data.map((v, i) => (
-        <div key={i} className="sparkline-bar" style={{ height: `${(v / max) * 100}%`, background: color }} />
-      ))}
-    </div>
-  );
-}
-
-function AnimatedCounter({ value, suffix = '', prefix = '' }) {
+function AnimatedCounter({ value, suffix = '', prefix = '', format = true }) {
   const [display, setDisplay] = useState(0);
   useEffect(() => {
     let start = 0;
@@ -52,19 +41,21 @@ function AnimatedCounter({ value, suffix = '', prefix = '' }) {
     if (end === 0) { setDisplay(0); return; }
     const duration = 800;
     const step = Math.max(1, Math.floor(end / (duration / 16)));
+    let running = true;
     const timer = setInterval(() => {
       start += step;
-      if (start >= end) { setDisplay(end); clearInterval(timer); }
-      else setDisplay(start);
+      if (start >= end) { if (running) setDisplay(end); clearInterval(timer); }
+      else if (running) setDisplay(start);
     }, 16);
-    return () => clearInterval(timer);
+    return () => { running = false; clearInterval(timer); };
   }, [value]);
-  return <>{prefix}{Number(display).toLocaleString('es-CL')}{suffix}</>;
+  const formatted = format ? Number(display).toLocaleString('es-CL') : display;
+  return <>{prefix}{formatted}{suffix}</>;
 }
 
 function HeroSection({ date }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl p-6 sm:p-8 mb-6 group"
+    <div className="relative overflow-hidden rounded-2xl p-5 sm:p-6 group"
       style={{background: 'linear-gradient(135deg, #020617 0%, #0f172a 40%, #064e3b 70%, #047857 100%)'}}>
       {/* Animated aurora */}
       <motion.div className="absolute -top-40 -right-20 w-[500px] h-[500px] rounded-full pointer-events-none"
@@ -108,20 +99,20 @@ function HeroSection({ date }) {
 
 function KpiCard({ label, value, icon: Icon, color, trend, delay = 0 }) {
   return (
-    <motion.div variants={itemAnim} custom={delay} whileHover={{ y: -4, scale: 1.01 }} className="premium-card-neon rounded-xl p-5 transition-all duration-200 group relative overflow-hidden">
-      <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${color} opacity-3 rounded-full -translate-y-8 translate-x-8 group-hover:opacity-5 transition-opacity`} />
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{label}</span>
-        <div className={`p-2.5 rounded-xl bg-gradient-to-br ${color} shadow-lg shadow-${color.split(' ')[1]}/20 group-hover:scale-110 transition-transform duration-300`}>
-          <Icon className="w-4 h-4 text-white" />
+    <motion.div variants={itemAnim} custom={delay} whileHover={{ y: -4, scale: 1.01 }} className="premium-card-neon rounded-xl p-3.5 transition-all duration-200 group relative overflow-hidden">
+      <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${color} opacity-3 rounded-full -translate-y-8 translate-x-8 group-hover:opacity-5 transition-opacity`} />
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{label}</span>
+        <div className={`p-2 rounded-xl bg-gradient-to-br ${color} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+          <Icon className="w-3.5 h-3.5 text-white" />
         </div>
       </div>
-      <p className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">
+      <p className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">
         <AnimatedCounter value={value} />
       </p>
       {trend !== undefined && (
-        <div className={`flex items-center gap-1 mt-1.5 text-[11px] font-medium ${trend >= 0 ? 'text-emerald-500' : 'text-red-400'}`}>
-          {trend >= 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+        <div className={`flex items-center gap-1 mt-1 text-[10px] font-medium ${trend >= 0 ? 'text-emerald-500' : 'text-red-400'}`}>
+          {trend >= 0 ? <ArrowUpRight className="w-2.5 h-2.5" /> : <ArrowDownRight className="w-2.5 h-2.5" />}
           <span>{Math.abs(trend)}% vs mes anterior</span>
         </div>
       )}
@@ -152,6 +143,18 @@ function LoadingSkeleton() {
   );
 }
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload?.length) return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 px-4 py-3">
+      <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{label}</p>
+      {payload.map((p, i) => (
+        <p key={i} className="text-sm font-bold text-slate-800 dark:text-white">{formatCLP(p.value)}</p>
+      ))}
+    </div>
+  );
+  return null;
+};
+
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [economico, setEconomico] = useState(null);
@@ -163,19 +166,24 @@ export default function Dashboard() {
   const load = async () => {
     try {
       setRefreshing(true);
-      const [d, ec, cl, ta] = await Promise.all([
+      const results = await Promise.allSettled([
         getDashboard(), getIndicadoresEconomicos(), getClimaSucursales(), getTicketAnalytics()
       ]);
-      setData(d); setEconomico(ec); setClima(cl); setTicketAnalytics(ta);
-      setError(null);
+      if (results[0].status === 'fulfilled') setData(results[0].value);
+      if (results[1].status === 'fulfilled') setEconomico(results[1].value);
+      if (results[2].status === 'fulfilled') setClima(results[2].value);
+      if (results[3].status === 'fulfilled') setTicketAnalytics(results[3].value);
+      const allFailed = results.every(r => r.status === 'rejected');
+      if (allFailed) setError('No se pudieron cargar los datos. Verifica que los servicios estén en ejecución.');
+      else setError(null);
     } catch (e) {
-      setError(e.response?.data?.message || e.message);
+      setError(e.message);
     } finally {
       setRefreshing(false);
     }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); return () => setRefreshing(false); }, []);
 
   if (error) return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center justify-center min-h-[50vh] gap-5">
@@ -223,31 +231,20 @@ export default function Dashboard() {
     { name: 'api-gateway', port: 8084, icon: Wifi, color: 'from-rose-500 to-rose-600', desc: 'Enrutamiento, CB' },
   ];
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload?.length) return (
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 px-4 py-3">
-        <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{label}</p>
-        {payload.map((p, i) => (
-          <p key={i} className="text-sm font-bold text-slate-800 dark:text-white">{formatCLP(p.value)}</p>
-        ))}
-      </div>
-    );
-    return null;
-  };
-
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-5">
+    <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
 
       <HeroSection date={new Date().toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} />
 
-      <div className="relative pt-2">
-        <div className="divider-gradient mb-4" />
+      <div className="relative">
+        <div className="divider-gradient mb-3" />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg shadow-lg shadow-emerald-500/20">
               <BadgePercent className="w-3.5 h-3.5 text-white" />
             </div>
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Indicadores Económicos</h3>
+            <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400">API Externa</span>
             <span className="text-[10px] text-slate-400 font-mono">mindicador.cl</span>
             {economico?.fecha === 'Simulado' && (
               <span className="text-[10px] text-amber-500 flex items-center gap-1"><Cloud className="w-3 h-3" /> Simulado</span>
@@ -267,26 +264,26 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <motion.div variants={itemAnim} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <motion.div variants={itemAnim} className="grid grid-cols-2 lg:grid-cols-4 gap-2">
         {ecoCards.map(({ key, label, icon: Icon, color }) => {
           const ind = ecoInd[key];
           if (!ind) return null;
           const isPositive = ind.valor >= 0;
           return (
-            <motion.div key={key} whileHover={{ y: -3 }} className="premium-card-neon rounded-xl p-4 relative overflow-hidden group">
+            <motion.div key={key} whileHover={{ y: -3 }} className="premium-card-neon rounded-xl p-3.5 relative overflow-hidden group">
               <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-[0.03] group-hover:opacity-[0.06] transition-opacity`} />
               <div className="relative">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-lg font-extrabold text-slate-800 dark:text-white tracking-tight">{key}</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-base font-extrabold text-slate-800 dark:text-white tracking-tight">{key}</span>
                   <div className={`p-1.5 rounded-lg bg-gradient-to-br ${color} shadow-md`}>
                     <Icon className="w-3 h-3 text-white" />
                   </div>
                 </div>
-                <p className="text-xl font-bold text-slate-800 dark:text-white mb-1">
+                <p className="text-lg font-bold text-slate-800 dark:text-white mb-0.5">
                   {key === 'IPC' ? ind.valor.toFixed(1) + '%' : formatCLP(ind.valor)}
                 </p>
                 <p className="text-[10px] text-slate-400 truncate">{label}</p>
-                <div className="mt-2 flex items-center gap-1">
+                <div className="mt-1.5 flex items-center gap-1">
                   {key === 'IPC' && (
                     isPositive
                       ? <><TrendingUp className="w-3 h-3 text-emerald-500" /><span className="text-[9px] text-emerald-500 font-medium">Alza</span></>
@@ -299,7 +296,7 @@ export default function Dashboard() {
         })}
       </motion.div>
 
-      <div className="divider-gradient my-2" />
+      <div className="divider-gradient my-1.5" />
       <div className="flex items-center gap-2">
         <div className="p-1.5 bg-gradient-to-br from-violet-500 to-violet-600 rounded-lg shadow-lg shadow-violet-500/20">
           <Hexagon className="w-3.5 h-3.5 text-white" />
@@ -307,10 +304,10 @@ export default function Dashboard() {
         <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Arquitectura de Microservicios</h3>
       </div>
 
-      <motion.div variants={itemAnim} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-        {microservices.map((ms, i) => (
+      <motion.div variants={itemAnim} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5">
+        {microservices.map((ms) => (
           <motion.div key={ms.name} whileHover={{ y: -3, scale: 1.02 }}
-            className="premium-card-neon rounded-lg p-3 flex items-center gap-2.5 group relative overflow-hidden">
+            className="premium-card-neon rounded-lg p-2.5 flex items-center gap-2 group relative overflow-hidden">
             <div className={`absolute inset-0 bg-gradient-to-br ${ms.color} opacity-[0.02] group-hover:opacity-[0.06] transition-opacity`} />
             <div className={`p-2 rounded-lg bg-gradient-to-br ${ms.color} shadow-lg shrink-0 group-hover:scale-110 transition-transform duration-300`}>
               <ms.icon className="w-3.5 h-3.5 text-white" />
@@ -324,26 +321,27 @@ export default function Dashboard() {
         ))}
       </motion.div>
 
-      <div className="divider-gradient my-2" />
-      <motion.div variants={container} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="divider-gradient my-1.5" />
+      <motion.div variants={container} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
         <KpiCard label="Total Ventas" value={data.ventas.totalVentas} icon={ShoppingCart} color="from-blue-500 to-blue-600" trend={12} />
-        <KpiCard label="Monto Total" value={formatCLP(data.ventas.montoTotal)} icon={DollarSign} color="from-emerald-500 to-emerald-600" trend={8} />
-        <KpiCard label="Ticket Promedio" value={formatCLP(data.ventas.promedioVenta)} icon={TrendingUp} color="from-violet-500 to-violet-600" />
+        <KpiCard label="Monto Total" value={data.ventas.montoTotal} icon={DollarSign} color="from-emerald-500 to-emerald-600" trend={8} />
+        <KpiCard label="Ticket Promedio" value={data.ventas.promedioVenta} icon={TrendingUp} color="from-violet-500 to-violet-600" />
         <KpiCard label="Empleados" value={data.totalEmpleados} icon={Users} color="from-amber-500 to-amber-600" />
         <KpiCard label="Sucursales" value={data.totalSucursales} icon={Store} color="from-rose-500 to-rose-600" />
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-4 lg:col-span-1">
-          <div className="flex items-center gap-2 mb-3">
-            <Globe className="w-4 h-4 text-amber-500" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-3.5 lg:col-span-1">
+          <div className="flex items-center gap-2 mb-2.5">
+            <Globe className="w-3.5 h-3.5 text-amber-500" />
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Clima · Sucursales</span>
+            <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400">API Externa</span>
             <span className="ml-auto text-[9px] font-mono text-slate-400">OpenWeatherMap</span>
           </div>
-          <div className="space-y-2 max-h-[340px] overflow-y-auto pr-1 scrollbar-thin">
+          <div className="space-y-1.5 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
             {climaList.length > 0 ? climaList.map((c, i) => (
               <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
-                className="flex items-center gap-3 p-2.5 rounded-xl bg-white/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group">
+                className="flex items-center gap-2.5 p-2 rounded-xl bg-white/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group">
                 <div className="p-2 rounded-xl bg-gradient-to-br from-amber-100 to-amber-50 dark:from-slate-700 dark:to-slate-700/50 group-hover:scale-110 transition-transform">{weatherIcon(c.descripcion)}</div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{c.ciudad}</p>
@@ -362,29 +360,29 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-4 lg:col-span-2">
-          <div className="flex items-center gap-2 mb-3">
-            <TicketCheck className="w-4 h-4 text-violet-500" />
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-3.5 lg:col-span-2">
+          <div className="flex items-center gap-2 mb-2.5">
+            <TicketCheck className="w-3.5 h-3.5 text-violet-500" />
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Analytics · Tickets</span>
             <span className="ml-auto text-[9px] font-mono text-slate-400">Clasificación IA</span>
           </div>
           {ta ? (
             <div className="space-y-3">
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-1.5">
                 {[
                   { label: 'Abiertos', value: ta.abiertos, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-500/10' },
                   { label: 'En Progreso', value: ta.enProgreso, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-500/10' },
                   { label: 'Críticos', value: ta.criticosAbiertos, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-50 dark:bg-red-500/10' },
                   { label: 'Tiempo Prom.', value: ta.tiempoPromedioResolucionHoras?.toFixed(0) + 'h', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
                 ].map(s => (
-                  <motion.div key={s.label} whileHover={{ y: -2 }} className={`${s.bg} rounded-xl p-3 text-center border border-slate-100 dark:border-slate-700/20`}>
+                  <motion.div key={s.label} whileHover={{ y: -2 }} className={`${s.bg} rounded-xl p-2 text-center border border-slate-100 dark:border-slate-700/20`}>
                     <p className={`text-lg font-extrabold ${s.color}`}>{s.value}</p>
                     <p className="text-[9px] text-slate-400 mt-0.5 font-medium uppercase tracking-wide">{s.label}</p>
                   </motion.div>
                 ))}
               </div>
               {ta.tendenciaUltimos7Dias?.length > 0 && (
-                <div className="h-12">
+                <div className="h-12" style={{ minWidth: 0, minHeight: 0 }}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={ta.tendenciaUltimos7Dias.map((d, i) => ({ ...d, idx: i }))}>
                       <defs>
@@ -422,47 +420,49 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-4 h-4 text-emerald-500" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-3.5 flex flex-col">
+          <div className="flex items-center gap-2 mb-3">
+            <BarChart3 className="w-3.5 h-3.5 text-emerald-500" />
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Tendencia de Ventas Mensuales</h3>
             <span className="ml-auto text-[9px] font-mono text-slate-400">Data Warehouse</span>
           </div>
           {rechartsBar.length > 0 ? (
-            <div className="h-[260px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={rechartsBar} barCategoryGap="20%">
-                  <XAxis dataKey="mes" axisLine={false} tickLine={false} />
-                  <YAxis axisLine={false} tickLine={false} tickFormatter={v => formatCLP(v)} />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(16,185,129,0.06)' }} />
-                  <Bar dataKey="monto" radius={[6, 6, 0, 0]} maxBarSize={40}>
-                    {rechartsBar.map((_, i) => (
-                      <Cell key={i} fill={monthColors[i % 12]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+            <div className="flex-1 relative" style={{ minWidth: 0, minHeight: 0 }}>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={rechartsBar} barCategoryGap="20%" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                    <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                    <YAxis axisLine={false} tickLine={false} width={50} tickFormatter={v => formatCLP(v)} tick={{ fontSize: 10 }} />
+                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(16,185,129,0.06)' }} />
+                    <Bar dataKey="monto" radius={[4, 4, 0, 0]} maxBarSize={32}>
+                      {rechartsBar.map((_, i) => (
+                        <Cell key={i} fill={monthColors[i % 12]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           ) : (
-            <p className="text-sm text-slate-400 text-center py-12">Cargando datos mensuales...</p>
+            <p className="text-sm text-slate-400 text-center py-8">Cargando datos mensuales...</p>
           )}
         </motion.div>
 
-        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Package className="w-4 h-4 text-violet-500" />
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-3.5">
+          <div className="flex items-center gap-2 mb-3">
+            <Package className="w-3.5 h-3.5 text-violet-500" />
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Top Productos Más Vendidos</h3>
             <span className="ml-auto text-[9px] font-mono text-slate-400">ms-ventas</span>
           </div>
           {topProductos.length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {topProductos.map((p, i) => {
                 const maxMonto = Math.max(...topProductos.map(x => x.montoTotal), 1);
                 const pct = (p.montoTotal / maxMonto) * 100;
                 return (
                   <motion.div key={p.productoId || i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
-                    className="relative overflow-hidden rounded-xl bg-white/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/20 p-3">
+                    className="relative overflow-hidden rounded-xl bg-white/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/20 p-2.5">
                     <motion.div initial={{ width: 0 }} animate={{ width: pct + '%' }}
                       className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 rounded-xl" transition={{ duration: 0.8, delay: i * 0.04 }} />
                     <div className="relative flex items-center gap-3">
@@ -488,18 +488,18 @@ export default function Dashboard() {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-3">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-3.5">
+          <div className="flex items-center gap-2 mb-2.5">
             <div className="p-1.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg shadow-blue-500/20">
-              <BarChart3 className="w-3.5 h-3.5 text-white" />
+              <BarChart3 className="w-3 h-3 text-white" />
             </div>
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Ventas por Categoría</h3>
             <span className="ml-auto text-[9px] font-mono text-slate-400">Distribución</span>
           </div>
           {ventasCategoria.length > 0 ? (
-            <div className="flex items-center gap-4">
-              <div className="h-[130px] w-[130px] shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="h-[120px] w-[120px] shrink-0" style={{ minWidth: 0, minHeight: 0 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={ventasCategoria.map((c, i) => ({ ...c, fill: monthColors[i % 12] }))}
@@ -532,19 +532,19 @@ export default function Dashboard() {
           )}
         </motion.div>
 
-        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-5">
-          <div className="flex items-center gap-2 mb-4">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-3.5">
+          <div className="flex items-center gap-2 mb-3">
             <div className="p-1.5 bg-gradient-to-br from-violet-500 to-violet-600 rounded-lg shadow-lg shadow-violet-500/20">
-              <Target className="w-3.5 h-3.5 text-white" />
+              <Target className="w-3 h-3 text-white" />
             </div>
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Indicadores Clave</h3>
             <span className="ml-auto text-[9px] font-mono text-slate-400">ms-indicadores</span>
           </div>
           {indicadoresList.length > 0 ? (
-            <div className="space-y-2.5">
+            <div className="space-y-1.5">
               {indicadoresList.map((ind, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group">
+                  className="flex items-center justify-between p-2.5 rounded-xl bg-white/50 dark:bg-slate-800/30 border border-slate-100 dark:border-slate-700/20 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group">
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 shadow-lg shadow-violet-500/30 group-hover:scale-125 transition-transform" />
                     <div>

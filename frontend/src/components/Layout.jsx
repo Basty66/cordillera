@@ -4,15 +4,13 @@ import Breadcrumbs from './Breadcrumbs';
 import NotificationBell from './NotificationBell';
 import SearchBar from './SearchBar';
 import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Layout() {
   const location = useLocation();
   const { hasRole } = useAuth();
-  const { dark, toggle } = useTheme();
   const [mobileSidebar, setMobileSidebar] = useState(false);
 
   return (
@@ -66,13 +64,6 @@ export default function Layout() {
               <SearchBar isAdmin={hasRole('ADMIN')} />
             </div>
             <div className="flex items-center gap-1">
-              <button
-                onClick={toggle}
-                className="p-2.5 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-300 transition-all duration-200 active:scale-95"
-                title={dark ? 'Modo claro' : 'Modo oscuro'}
-              >
-                {dark ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
-              </button>
               <NotificationBell />
             </div>
           </div>

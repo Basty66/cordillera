@@ -18,6 +18,7 @@ import java.util.List;
 @Service
 public class ClimaService {
 
+    /** EXTERNAL API — OpenWeatherMap (https://openweathermap.org) */
     private static final String API_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s,CL&appid=%s&units=metric&lang=es";
 
     @Value("${openweather.api.key:}")

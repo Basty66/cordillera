@@ -20,9 +20,9 @@ function formatCLP(n) {
 
 const iconMap = { Rentabilidad: DollarSign, Ventas: TrendingUp, Inventario: BarChart3 };
 const colorMap = {
-  Rentabilidad: { bg: 'from-emerald-500 to-emerald-600', light: 'bg-emerald-50', text: 'text-emerald-700', card: 'border-emerald-200/30' },
-  Ventas: { bg: 'from-blue-500 to-blue-600', light: 'bg-blue-50', text: 'text-blue-700', card: 'border-blue-200/30' },
-  Inventario: { bg: 'from-violet-500 to-violet-600', light: 'bg-violet-50', text: 'text-violet-700', card: 'border-violet-200/30' },
+  Rentabilidad: { bg: 'from-emerald-500 to-emerald-600', light: 'bg-emerald-100 dark:bg-emerald-900/40', text: 'text-emerald-800 dark:text-emerald-300', card: 'border-emerald-300/50 dark:border-emerald-700/30' },
+  Ventas: { bg: 'from-blue-500 to-blue-600', light: 'bg-blue-100 dark:bg-blue-900/40', text: 'text-blue-800 dark:text-blue-300', card: 'border-blue-300/50 dark:border-blue-700/30' },
+  Inventario: { bg: 'from-violet-500 to-violet-600', light: 'bg-violet-100 dark:bg-violet-900/40', text: 'text-violet-800 dark:text-violet-300', card: 'border-violet-300/50 dark:border-violet-700/30' },
 };
 
 export default function Indicadores() {
@@ -127,7 +127,7 @@ export default function Indicadores() {
                       const v = getValor(ind.id);
                       return (
                         <motion.div key={ind.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                          className="p-3 bg-white/80 dark:bg-slate-800/80 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                          className="p-3 rounded-xl transition-all hover:bg-black/[0.03] dark:hover:bg-white/[0.05]"
                         >
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{ind.nombre}</span>
@@ -156,7 +156,7 @@ export default function Indicadores() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
               <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Comparativa de Indicadores</h3>
-              <div className="h-[250px]">
+              <div className="w-full h-[250px]">
                 <Bar data={barData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }} />
               </div>
             </motion.div>
@@ -164,7 +164,7 @@ export default function Indicadores() {
             {lineData && (
               <motion.div variants={itemAnim} className="glass-card-neon rounded-xl p-5">
                 <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Evolución de Valores</h3>
-                <div className="h-[250px]">
+                <div className="w-full h-[250px]">
                   <Line data={lineData} options={{
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },

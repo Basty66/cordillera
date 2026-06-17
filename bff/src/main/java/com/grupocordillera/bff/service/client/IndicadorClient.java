@@ -43,11 +43,12 @@ public class IndicadorClient {
         return indicadores.stream()
                 .map(m -> {
                     Map<String, Object> ind = (Map<String, Object>) m.get("indicador");
+                    Object valorObj = m.get("valor");
                     return new KpiResumenDTO(
                             ind != null ? (Integer) ind.get("id") : null,
                             ind != null ? (String) ind.get("nombre") : null,
                             ind != null ? (String) ind.get("unidad") : null,
-                            new BigDecimal(m.get("valor").toString()),
+                            valorObj != null ? new BigDecimal(valorObj.toString()) : BigDecimal.ZERO,
                             (String) m.get("periodo")
                     );
                 })

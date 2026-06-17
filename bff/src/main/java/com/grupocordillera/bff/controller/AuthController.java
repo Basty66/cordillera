@@ -2,8 +2,11 @@ package com.grupocordillera.bff.controller;
 
 import com.grupocordillera.bff.dto.LoginRequest;
 import com.grupocordillera.bff.dto.LoginResponse;
+import com.grupocordillera.bff.dto.PasswordRequest;
+import com.grupocordillera.bff.dto.ProfileRequest;
 import com.grupocordillera.bff.dto.UsuarioRequest;
 import com.grupocordillera.bff.entity.Usuario;
+import com.grupocordillera.bff.security.JwtUtil;
 import com.grupocordillera.bff.repository.UsuarioRepository;
 import com.grupocordillera.bff.security.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,5 +92,40 @@ public class AuthController {
     })
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         return ResponseEntity.ok(usuarioRepository.findAll());
+    }
+
+    @PutMapping("/profile")
+    @Operation(summary = "Actualizar perfil", description = "Actualiza nombre y email del usuario autenticado")
+    public ResponseEntity<?> updateProfile(@RequestBody ProfileRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario user = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (request.getNombre() != null) {
+            user.setNombre(request.getNombre());
+        }
+        if (request.getEmail() != null) {
+            user.setEmail(request.getEmail());
+        }
+        usuarioRepository.save(user);
+        return ResponseEntity.ok(Map.of(
+                "mensaje", "Perfil actualizado exitosamente",
+                "username", user.getUsername(),
+                "nombre", user.getNombre(),
+                "email", user.getEmail()
+        ));
+    }
+
+    @PutMapping("/password")
+    @Operation(summary = "Cambiar contraseña", description = "Cambia la contraseña del usuario autenticado")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario user = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            return ResponseEntity.status(400).body(Map.of("error", "La contraseña actual no es correcta"));
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        usuarioRepository.save(user);
+        return ResponseEntity.ok(Map.of("mensaje", "Contraseña actualizada exitosamente"));
     }
 }

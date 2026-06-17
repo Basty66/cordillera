@@ -36,11 +36,6 @@ public class DetalleVenta {
     @Column(name = "precio_unitario", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioUnitario;
 
-    /**
-     * CRUCIAL: 'insertable = false, updatable = false'
-     * Esto soluciona el error: "subtotal is a generated column".
-     * Le dice a Hibernate: "Solo lee este valor, deja que la DB lo calcule".
-     */
-    @Column(name = "subtotal", precision = 10, scale = 2, insertable = false, updatable = false)
+    @Column(name = "subtotal", precision = 10, scale = 2)
     private BigDecimal subtotal;
 }

@@ -3,15 +3,18 @@ import axios from 'axios';
 const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
 
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  const isLogin = config.url?.includes('auth/login') || config.url?.includes('auth/register');
+  if (!isLogin) {
+    const token = localStorage.getItem('token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
 api.interceptors.response.use(
   res => res,
   err => {
-    if (err.response?.status === 401) {
+    if (err.response?.status === 401 && !err.config?.url?.includes('/auth/login')) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -22,6 +25,12 @@ api.interceptors.response.use(
 
 export const login = (username, password) =>
   api.post('/auth/login', { username, password }).then(r => r.data);
+
+export const updateProfile = (data) =>
+  api.put('/auth/profile', data).then(r => r.data);
+
+export const changePassword = (data) =>
+  api.put('/auth/password', data).then(r => r.data);
 
 export const getDashboard = () => api.get('/bff/dashboard').then(r => r.data);
 

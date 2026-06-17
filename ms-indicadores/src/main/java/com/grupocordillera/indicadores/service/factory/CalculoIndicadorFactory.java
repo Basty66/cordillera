@@ -8,6 +8,12 @@ import java.math.BigDecimal;
 public class CalculoIndicadorFactory {
 
     public CalculoStrategy crearStrategy(String tipo, Object... parametros) {
+        if (tipo == null) {
+            throw new IllegalArgumentException("El tipo de cálculo no puede ser null");
+        }
+        if (parametros == null || parametros.length < 2 || parametros[0] == null || parametros[1] == null) {
+            throw new IllegalArgumentException("Parámetros insuficientes o nulos para el cálculo: " + tipo);
+        }
         return switch (tipo.toUpperCase()) {
             case "VENTAS" -> {
                 BigDecimal totalVentas = (BigDecimal) parametros[0];

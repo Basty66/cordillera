@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { User, Lock, Save, CheckCircle, AtSign, AlertCircle } from 'lucide-react';
+import { User, Lock, Save, CheckCircle, AtSign, AlertCircle, Loader } from 'lucide-react';
+import { updateProfile, changePassword } from '../api/client';
 
 const container = {
   hidden: { opacity: 0 },
@@ -22,30 +23,48 @@ export default function Profile() {
   const { user } = useAuth();
   const [form, setForm] = useState({ nombre: user?.nombre || '', email: user?.email || '' });
   const [pw, setPw] = useState({ current: '', new: '', confirm: '' });
+  const [saving, setSaving] = useState(false);
+  const [pwSaving, setPwSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [pwSaved, setPwSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [pwError, setPwError] = useState('');
 
   const rm = roleMeta[user?.rol] || { label: 'Usuario', color: 'from-slate-500 to-slate-600', bg: 'bg-slate-100' };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setSaveError('');
+    setSaving(true);
+    try {
+      await updateProfile({ nombre: form.nombre, email: form.email });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setSaveError(err.response?.data?.error || 'Error al guardar');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handlePw = (e) => {
+  const handlePw = async (e) => {
     e.preventDefault();
     setPwError('');
-
     if (!pw.current.trim()) { setPwError('Ingresa tu contraseña actual'); return; }
     if (!pw.new.trim()) { setPwError('Ingresa una nueva contraseña'); return; }
     if (pw.new.length < 6) { setPwError('Mínimo 6 caracteres'); return; }
     if (pw.new !== pw.confirm) { setPwError('Las contraseñas no coinciden'); return; }
-
-    setPwSaved(true);
-    setPw({ current: '', new: '', confirm: '' });
-    setTimeout(() => setPwSaved(false), 2500);
+    setPwSaving(true);
+    try {
+      await changePassword({ currentPassword: pw.current, newPassword: pw.new });
+      setPwSaved(true);
+      setPw({ current: '', new: '', confirm: '' });
+      setTimeout(() => setPwSaved(false), 2500);
+    } catch (err) {
+      setPwError(err.response?.data?.error || 'Error al cambiar contraseña');
+    } finally {
+      setPwSaving(false);
+    }
   };
 
   return (
@@ -92,6 +111,12 @@ export default function Profile() {
             <h3 className="font-semibold text-[var(--text-primary)]">Información Personal</h3>
           </div>
           <form onSubmit={handleSave} className="space-y-3">
+            {saveError && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="flex items-center gap-2 text-xs text-red-500 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg border border-red-200 dark:border-red-500/20">
+                <AlertCircle className="w-3.5 h-3.5" />{saveError}
+              </motion.div>
+            )}
             <div>
               <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Nombre</label>
               <input type="text" value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })}
@@ -102,9 +127,9 @@ export default function Profile() {
               <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
                 className="w-full px-3 py-2 border border-[var(--input-border)] rounded-lg text-sm bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-500 input-neon" />
             </div>
-            <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-lg shadow-emerald-600/20">
-              <Save className="w-4 h-4" /> Guardar Cambios
+            <motion.button type="submit" disabled={saving} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50">
+              {saving ? <Loader className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Guardar Cambios
             </motion.button>
             {saved && (
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -142,9 +167,9 @@ export default function Profile() {
               <input type="password" value={pw.confirm} onChange={e => setPw({ ...pw, confirm: e.target.value })}
                 className="w-full px-3 py-2 border border-[var(--input-border)] rounded-lg text-sm bg-[var(--input-bg)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-emerald-500 input-neon" />
             </div>
-            <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-lg shadow-emerald-600/20">
-              <Save className="w-4 h-4" /> Actualizar Contraseña
+            <motion.button type="submit" disabled={pwSaving} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50">
+              {pwSaving ? <Loader className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Actualizar Contraseña
             </motion.button>
             {pwSaved && (
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}

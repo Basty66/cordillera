@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getTickets, createTicket, updateTicketStatus, deleteTicket, getTicketAnalytics, clasificarTicket } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   TicketCheck, Plus, X, AlertCircle, CheckCircle, Clock, Loader, Trash2, MessageSquare,
-  BarChart3, TrendingUp, Target, Zap, HelpCircle, DollarSign, Brain, RefreshCw,
-  ChevronDown, Filter, Search
+  BarChart3, Target, Zap, HelpCircle, DollarSign, Brain, RefreshCw,
+  ChevronDown, Search
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, Cell } from 'recharts';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.035 } } };
 const itemAnim = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 200, damping: 25 } } };
@@ -35,11 +35,20 @@ const categoryConfig = {
 
 const statusFlow = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO', 'CERRADO'];
 
-const categoryColors = ['#8b5cf6', '#10b981', '#f59e0b', '#3b82f6', '#ef4444'];
+const CustomAnalyticsTooltip = ({ active, payload, label }) => {
+  if (active && payload?.length) return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 px-3 py-2">
+      <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{label}</p>
+      {payload.map((p, i) => (
+        <p key={i} className="text-sm font-bold" style={{ color: p.color }}>{p.name}: {p.value}</p>
+      ))}
+    </div>
+  );
+  return null;
+};
 
 export default function Tickets() {
   const { user } = useAuth();
-  const [tab, setTab] = useState('listar');
   const [tickets, setTickets] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,6 +56,7 @@ export default function Tickets() {
   const [showModal, setShowModal] = useState(false);
   const [filter, setFilter] = useState('TODOS');
   const [search, setSearch] = useState('');
+  const [tab, setTab] = useState('listar');
   const [form, setForm] = useState({ titulo: '', descripcion: '', prioridad: 'MEDIA' });
   const [formErrors, setFormErrors] = useState({});
   const [categoriaSugerida, setCategoriaSugerida] = useState(null);
@@ -63,10 +73,15 @@ export default function Tickets() {
     return Object.keys(errs).length === 0;
   };
 
+  const toastRef = useRef(null);
+
   const showToast = (msg, type = 'success') => {
     setToast({ msg, type });
-    setTimeout(() => setToast(null), 3000);
+    if (toastRef.current) clearTimeout(toastRef.current);
+    toastRef.current = setTimeout(() => { setToast(null); toastRef.current = null; }, 3000);
   };
+
+  useEffect(() => { return () => { if (toastRef.current) clearTimeout(toastRef.current); }; }, []);
 
   const load = async () => {
     try { setLoading(true); const [data, an] = await Promise.all([getTickets(), getTicketAnalytics()]); setTickets(data); setAnalytics(an); }
@@ -114,18 +129,6 @@ export default function Tickets() {
   const stats = {
     total: tickets.length, abiertos: tickets.filter(t => t.status === 'ABIERTO').length,
     enProgreso: tickets.filter(t => t.status === 'EN_PROGRESO').length, resueltos: tickets.filter(t => t.status === 'RESUELTO').length,
-  };
-
-  const CustomAnalyticsTooltip = ({ active, payload, label }) => {
-    if (active && payload?.length) return (
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 px-3 py-2">
-        <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{label}</p>
-        {payload.map((p, i) => (
-          <p key={i} className="text-sm font-bold" style={{ color: p.color }}>{p.name}: {p.value}</p>
-        ))}
-      </div>
-    );
-    return null;
   };
 
   return (
@@ -256,7 +259,7 @@ export default function Tickets() {
                   {analytics.tendenciaUltimos7Dias?.length > 0 && (
                     <div className="mt-4">
                       <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Tendencia 7 días</p>
-                      <div className="h-20">
+                      <div className="h-20" style={{ minWidth: 0, minHeight: 0 }}>
                         <ResponsiveContainer width="100%" height="100%">
                           <AreaChart data={analytics.tendenciaUltimos7Dias}>
                             <defs>

@@ -19,6 +19,7 @@ import java.util.Map;
 @Service
 public class MindicadorService {
 
+    /** EXTERNAL API — mindicador.cl (https://mindicador.cl) */
     private static final String API_URL = "https://mindicador.cl/api";
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
