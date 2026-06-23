@@ -4,8 +4,15 @@
 
 **Asignatura:** Desarrollo Fullstack III — Duoc UC  
 **Equipo:** Cristian Cerda, Gonzalo Berríos, Jaime Manzo  
-**Repositorio:** https://github.com/Basty66/cordillera  
-**Versión del sistema:** 1.0.2  
+**Repositorio principal:** https://github.com/Basty66/cordillera  
+**Frontend:** https://github.com/Basty66/cordillera-frontend  
+**BFF:** https://github.com/Basty66/cordillera-bff  
+**ms-ventas:** https://github.com/Basty66/cordillera-ms-ventas  
+**ms-datos-org:** https://github.com/Basty66/cordillera-ms-datos-org  
+**ms-indicadores:** https://github.com/Basty66/cordillera-ms-indicadores  
+**api-gateway:** https://github.com/Basty66/cordillera-api-gateway  
+**Versión del sistema:** 1.0.0  
+**Release ZIP:** https://github.com/Basty66/cordillera/releases/tag/v1.0.0  
 
 ---
 
@@ -25,7 +32,7 @@
 | 10 | Estructura de Ramas Git | Branching Git | 15% |
 | 11 | Conventional Commits | Branching Git | 15% |
 | 12 | Conflicto Real Resuelto | Branching Git | 15% |
-| 13 | 124 Tests — Resultados | Pruebas | 15% |
+| 13 | 198 Tests — Resultados | Pruebas | 15% |
 | 14 | Patrones de Diseño Probados | Pruebas | 15% |
 | 15 | Buenas Prácticas con Resultados | Pruebas | 15% |
 | 16 | Cierre | — | — |
@@ -46,7 +53,7 @@
 ## Guion del orador
 > Buenos días, soy [tu nombre] y junto a Gonzalo Berríos y Jaime Manzo conformamos el equipo de desarrollo. Hoy presentamos nuestra plataforma de monitoreo inteligente para Grupo Cordillera, una solución basada en microservicios Spring Boot que consolida información de ventas, datos organizacionales e indicadores KPI en un solo panel ejecutivo.
 >
-> A lo largo de esta presentación demostraremos cómo aplicamos patrones de diseño, una arquitectura BFF con microservicios, Git Flow adaptado con resolución de conflictos reales, y una estrategia de pruebas con 124 tests automatizados y cobertura del 60%+.
+> A lo largo de esta presentación demostraremos cómo aplicamos patrones de diseño, una arquitectura BFF con microservicios, Git Flow adaptado con resolución de conflictos reales, y una estrategia de pruebas con 198 tests automatizados (180 backend + 18 frontend) y cobertura del 60%+.
 
 ---
 
@@ -70,7 +77,7 @@ Cuatro bloques numerados con iconos:
    Git Flow adaptado · 9 ramas · 3 conflictos resueltos
 
 4️⃣ ✅ PRUEBAS Y BUENAS PRÁCTICAS (15%)
-   124 tests · 60%+ cobertura · N+1 · Caché · Paralelización
+    198 tests (180 backend + 18 frontend) · 60%+ cobertura · N+1 · Caché · Paralelización
 ```
 
 ## Guion del orador
@@ -334,7 +341,7 @@ const { user, token, login, logout } = useAuth();
                            ▼
 ┌──────────────────────────────────────────────────────────────┐
 │              API GATEWAY (Spring Cloud Gateway)               │
-│              http://localhost:8084                             │
+│              http://localhost:9084                             │
 │         Circuit Breaker + CORS abierto (CorsWebFilter)        │
 └──┬──────────┬──────────┬──────────┬──────────┬───────────────┘
    │          │          │          │          │
@@ -345,23 +352,23 @@ const { user, token, login, logout } = useAuth();
 └──┬───┘ └────────┘ └──────────┘ └────────┘ └──────┬───────┘
    │                                                 │
    ▼                                                 ▼
-┌──────────┐                                    ┌──────────────┐
-│ ms-org   │                                    │ ms-indic     │
-│:8082     │                                    │:8083         │
-└──────────┘                                    └──────────────┘
-   │                    PostgreSQL (Neon.tech)        │
-   └──────────────────────┬───────────────────────────┘
+┌──────────────┐                              ┌──────────────┐
+│ ms-datos-org │                              │ ms-indicador │
+│:8082         │                              │:8083         │
+└──────┬───────┘                              └──────┬───────┘
+       │                                              │
+       └──────────────────┬───────────────────────────┘
                           ▼
-              ┌────────────────────────┐
-              │  PostgreSQL 14         │
-              │  ┌──────────┐          │
-              │  │ ventas   │          │
-              │  ├──────────┤          │
-              │  │ datos_org│          │
-              │  ├──────────┤          │
-              │  │ indicadores│        │
-              │  └──────────┘          │
-              └────────────────────────┘
+              ┌──────────────────────────────────┐
+              │  PostgreSQL 14 (Neon.tech Cloud)  │
+              │  ┌──────────────┐                 │
+              │  │ ventas       │ ← ms-ventas     │
+              │  ├──────────────┤                 │
+              │  │ datos_org    │ ← ms-datos-org  │
+              │  ├──────────────┤                 │
+              │  │ indicadores  │ ← ms-indicadores│
+              │  └──────────────┘                 │
+              └──────────────────────────────────┘
 ```
 
 **Stack tecnológico:**
@@ -460,13 +467,13 @@ public DashboardDTO obtenerDashboard() {
 ## Contenido visual sugerido
 
 **Tabla de microservicios:**
-| Servicio | Puerto | Schema DB | Tecnología | Cache | Responsabilidad |
-|----------|--------|-----------|------------|-------|-----------------|
-| **ms-ventas** | 8081 | `ventas` | Spring Boot + JPA | @Cacheable | Ventas, productos, sucursales |
-| **ms-datos-org** | 8082 | `datos_org` | Spring Boot + JPA | @Cacheable | Empleados, departamentos |
-| **ms-indicadores** | 8083 | `indicadores` | Spring Boot + JPA | @Cacheable | KPIs, categorías, valores |
-| **bff** | 8090 | H2 (memoria) | Spring Boot + Security + JWT | @Cacheable | Auth, tickets, dashboard, reportes |
-| **api-gateway** | 8084 | — | Spring Cloud Gateway | — | Enrutamiento, Circuit Breaker |
+| Servicio | Puerto Interno | Puerto Host | Schema DB | Tecnología | Cache | Responsabilidad |
+|----------|:-------------:|:----------:|-----------|------------|-------|-----------------|
+| **ms-ventas** | 8081 | 9081 | `ventas` (Neon) | Spring Boot + JPA | @Cacheable | Ventas, productos, sucursales |
+| **ms-datos-org** | 8082 | 9082 | `datos_org` (Neon) | Spring Boot + JPA | @Cacheable | Empleados, departamentos |
+| **ms-indicadores** | 8083 | 9083 | `indicadores` (Neon) | Spring Boot + JPA | @Cacheable | KPIs, categorías, valores |
+| **bff** | 8090 | 9080 | H2 (memoria) | Spring Boot + Security + JWT | @Cacheable | Auth, tickets, dashboard, reportes |
+| **api-gateway** | 8084 | 9084 | — | Spring Cloud Gateway | — | Enrutamiento, Circuit Breaker |
 
 **Optimizaciones de rendimiento:**
 | Técnica | Resultado |
@@ -566,7 +573,7 @@ fix:    optimizar consulta paginada de ventas con JPQL directo
 fix:    eliminar N+1 en empleados e indicadores
 fix:    acento en categoria Electronica para filtros frontend
 
-test:   agregar 9 nuevos archivos de test y plan de pruebas (124 tests)
+test:   agregar 9 nuevos archivos de test y plan de pruebas (198 tests)
 
 docs:   agregar conflictos resueltos y actualizar documentacion (tag v1.0.1)
 docs:   agregar documentacion PDF de patrones y plan de branching
@@ -662,14 +669,16 @@ CONFLICT (content): Merge conflict in VentaService.java
 ## Contenido visual sugerido
 
 **Tabla principal:**
-| Módulo | Tests | Unitarios | Integración | Estado |
-|--------|:-----:|:---------:|:-----------:|:------:|
-| **ms-ventas** | **47** | 46 | 1 | ✅ |
-| **ms-datos-org** | **13** | 12 | 1 | ✅ |
-| **ms-indicadores** | **30** | 29 | 1 | ✅ |
-| **bff** | **28** | 18 | 10 | ✅ |
-| **api-gateway** | **6** | 5 | 1 | ✅ |
-| **TOTAL** | **124** | **110** | **14** | **✅ BUILD SUCCESS** |
+| Módulo | Tests | Unitarios | Integración | Cobertura JaCoCo | Estado |
+|--------|:-----:|:---------:|:-----------:|:-----------------:|:------:|
+| **ms-ventas** | **86** | 84 | 2 | **91%** | ✅ |
+| **ms-datos-org** | **22** | 20 | 2 | **99%** | ✅ |
+| **ms-indicadores** | **38** | 36 | 2 | **62%** | ✅ |
+| **bff** | **28** | 18 | 10 | **62%** | ✅ |
+| **api-gateway** | **6** | 5 | 1 | **89%** | ✅ |
+| **SUBTOTAL Backend** | **180** | **163** | **17** | **—** | **✅** |
+| **Frontend (Vitest)** | **18** | 18 | 0 | — | **✅** |
+| **TOTAL** | **198** | **181** | **17** | **≥60% en todos** | **✅ BUILD SUCCESS** |
 
 **Herramientas:**
 ```
@@ -683,16 +692,17 @@ Maven         → Build y ejecución de tests
 
 **Comando de ejecución (todos los módulos):**
 ```bash
-cd ms-ventas && mvn test        # 47 tests ✅
-cd ms-datos-org && mvn test     # 13 tests ✅
-cd ms-indicadores && mvn test   # 30 tests ✅
-cd bff && mvn test              # 28 tests ✅
-cd api-gateway && mvn test      # 6 tests ✅
-# Total: 124 tests, 0 fallos, BUILD SUCCESS
+cd ms-ventas && mvn test        # 86 tests ✅ (cobertura 91%)
+cd ms-datos-org && mvn test     # 22 tests ✅ (cobertura 99%)
+cd ms-indicadores && mvn test   # 38 tests ✅ (cobertura 62%)
+cd bff && mvn test              # 28 tests ✅ (cobertura 62%)
+cd api-gateway && mvn test      # 6 tests ✅ (cobertura 89%)
+cd frontend && npm run test     # 18 tests ✅ (Vitest)
+# Total: 180 tests backend, 18 tests frontend, 0 fallos, BUILD SUCCESS
 ```
 
 ## Guion del orador
-> Ejecutamos **124 tests automatizados** distribuidos en los 5 módulos del backend: 110 tests unitarios y 14 de integración. Todos pasan sin errores ni fallos. Cada módulo tiene su propio `mvn test` y todos reportan BUILD SUCCESS.
+> Ejecutamos **198 tests automatizados** (180 backend + 18 frontend) distribuidos en los 5 módulos del backend y 7 archivos del frontend. Todos pasan sin errores ni fallos. La cobertura JaCoCo supera el 60% en todos los módulos, destacando ms-ventas con 91% y ms-datos-org con 99%.
 >
 > Usamos **JUnit 5** con **Mockito** para los tests unitarios de servicios y repositorios. Para los controladores REST usamos **MockMvc** con standalone setup. Para el API Gateway, que usa WebFlux, usamos **WebTestClient**. Y la cobertura mínima del 60% por paquete se valida automáticamente con **JaCoCo** en cada build de Maven.
 
@@ -837,7 +847,7 @@ CompletableFuture.allOf(ventas, kpis, empleados, ...).join(); // esperar todas
 ┌─────────────────────┐  ┌─────────────────────┐
 │ 🌿 GIT FLOW         │  │ ✅ PRUEBAS          │
 │                     │  │                     │
-│ 9 ramas             │  │ 124 tests           │
+│ 9 ramas             │  │ 198 tests           │
 │ 40+ commits         │  │ 0 fallos            │
 │ 3 conflictos        │  │ 60%+ cobertura      │
 │ Conventional Commits│  │ JUnit + Mockito     │
@@ -847,10 +857,18 @@ CompletableFuture.allOf(ventas, kpis, empleados, ...).join(); // esperar todas
 
 **Enlaces:**
 ```
-📦 Repositorio: https://github.com/Basty66/cordillera
+📦 Repo principal: https://github.com/Basty66/cordillera
+📦 Frontend: https://github.com/Basty66/cordillera-frontend
+📦 BFF: https://github.com/Basty66/cordillera-bff
+📦 ms-ventas: https://github.com/Basty66/cordillera-ms-ventas
+📦 ms-datos-org: https://github.com/Basty66/cordillera-ms-datos-org
+📦 ms-indicadores: https://github.com/Basty66/cordillera-ms-indicadores
+📦 api-gateway: https://github.com/Basty66/cordillera-api-gateway
+📦 Release ZIP: https://github.com/Basty66/cordillera/releases/tag/v1.0.0
 🐳 Docker Hub: https://hub.docker.com/u/bootstian
-📄 Informe técnico: docs/informe-tecnico-final.md
-📋 Plan de pruebas: docs/plan-pruebas.md
+📄 Postman Collection: docs/grupo-cordillera.postman_collection.json
+📋 Informe pruebas: docs/informe-pruebas.md
+📋 Repositorios: docs/repositorios.txt
 ```
 
 ## Guion del orador
@@ -862,7 +880,7 @@ CompletableFuture.allOf(ventas, kpis, empleados, ...).join(); // esperar todas
 >
 > Sigue una **estrategia Git Flow adaptada** con 9 ramas, 40+ commits bajo Conventional Commits, 3 conflictos resueltos y documentados, y versionamiento semántico v1.0.0 y v1.0.1.
 >
-> Y garantiza la **calidad del código** con 124 tests automatizados, cobertura mínima del 60% validada con JaCoCo, y buenas prácticas que redujeron los tiempos de respuesta de 10 segundos a menos de 70 milisegundos.
+> Y garantiza la **calidad del código** con 198 tests automatizados (180 backend + 18 frontend), cobertura JaCoCo del 91% en ms-ventas y 99% en ms-datos-org, mínima del 60% validada en todos los módulos, y buenas prácticas que redujeron los tiempos de respuesta de 10 segundos a menos de 70 milisegundos.
 >
 > Estamos preparados para responder sus preguntas. Muchas gracias.
 

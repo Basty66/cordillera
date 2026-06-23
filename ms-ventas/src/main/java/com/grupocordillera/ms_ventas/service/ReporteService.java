@@ -27,8 +27,8 @@ public class ReporteService {
                         (String) m.get("sucursal"),
                         (String) m.get("ciudad"),
                         (Long) m.get("totalVentas"),
-                        (BigDecimal) m.get("montoTotal"),
-                        (BigDecimal) m.get("promedioVenta")
+                        BigDecimal.valueOf(((Number) m.get("montoTotal")).doubleValue()),
+                        BigDecimal.valueOf(((Number) m.get("promedioVenta")).doubleValue())
                 ))
                 .collect(Collectors.toList());
     }

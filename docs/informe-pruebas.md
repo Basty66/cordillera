@@ -9,10 +9,10 @@
 
 | Métrica | Resultado |
 |---|---|---|
-| **Total de tests ejecutados** | 196 (18 frontend + 178 backend) |
-| **Tests pasados** | 196 |
+| **Total de tests ejecutados** | 198 (18 frontend + 180 backend) |
+| **Tests pasados** | 198 |
 | **Tests fallidos** | 0 |
-| **Archivos de test** | 60 (18 frontend + 42 backend) |
+| **Archivos de test** | 62 (18 frontend + 44 backend) |
 | **Cobertura backend** | Ver tabla por módulo |
 
 ---
@@ -110,13 +110,15 @@
 ### Microservicios Backend
 
 | Módulo | Tests | Instrucciones | Cobertura (Instrucciones) | Estado |
-|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 | ms-ventas | 86 | 3.852 | **91.1%** | ✅ |
 | ms-datos-org | 22 | 1.396 | **99.2%** | ✅ |
 | ms-indicadores | 38 | 737 | **62.9%** | ✅ |
 | bff | 28 | 3.195 | **62.3%** | ✅ |
 | api-gateway | 6 | 390 | **89.5%** | ✅ |
-| **Total** | **180** | **9.570** | **—** | ✅ **100% ≥ 60%** |
+| **Subtotal Backend** | **180** | **9.570** | **—** | ✅ **100% ≥ 60%** |
+| Frontend (Vitest) | **18** | — | — | ✅ |
+| **Total General** | **198** | **9.570 + Frontend** | **—** | ✅ **100% OK** |
 
 ### Cobertura por Paquete (ms-ventas) — Actualizada
 
@@ -140,6 +142,13 @@
 - **Eventos:** Verificación de publicación y escucha de eventos
 
 ---
+
+## Documentación Adicional
+
+- **Postman Collection:** `docs/grupo-cordillera.postman_collection.json` (58 endpoints, todos los módulos)
+- **Release ZIP:** Repositorio principal, Release v1.0.0 (173 MB)
+- **Repositorios GitHub:** 6 repos separados por componente (ver `docs/repositorios.txt`)
+- **JaCoCo Reports:** `docs/jacoco-reports/` (reportes HTML actualizados)
 
 ## Observaciones
 

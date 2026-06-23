@@ -10,7 +10,16 @@
 **Integrantes:** Cristian Cerda, Gonzalo Berrios, Jaime Manzo  
 **Fecha:** 2026  
 **Version del sistema:** 1.0.2  
-**Repositorio:** https://github.com/Basty66/cordillera
+**Repositorio principal:** https://github.com/Basty66/cordillera  
+**Repositorios individuales por componente:**  
+- Frontend: https://github.com/Basty66/cordillera-frontend  
+- BFF: https://github.com/Basty66/cordillera-bff  
+- ms-ventas: https://github.com/Basty66/cordillera-ms-ventas  
+- ms-datos-org: https://github.com/Basty66/cordillera-ms-datos-org  
+- ms-indicadores: https://github.com/Basty66/cordillera-ms-indicadores  
+- api-gateway: https://github.com/Basty66/cordillera-api-gateway  
+**Release ZIP:** https://github.com/Basty66/cordillera/releases/tag/v1.0.0  
+**Lista completa:** `docs/repositorios.txt`
 
 ---
 
@@ -115,13 +124,13 @@ Estas limitaciones afectan directamente la eficiencia operativa y generan riesgo
 
 ### 4.2 Tabla de Microservicios
 
-| Servicio | Puerto | Base de Datos | Schema | Tecnologia | Responsabilidad |
-|----------|--------|---------------|--------|------------|-----------------|
-| **ms-ventas** | 8081 | PostgreSQL (Neon.tech) | `ventas` | Spring Boot 3.2.5 + JPA | Gestion de ventas, productos, sucursales |
-| **ms-datos-org** | 8082 | PostgreSQL (Neon.tech) | `datos_org` | Spring Boot 3.2.5 + JPA | Empleados, departamentos, estructura organizacional |
-| **ms-indicadores** | 8083 | PostgreSQL (Neon.tech) | `indicadores` | Spring Boot 3.2.5 + JPA | KPIs, categorias, valores de indicadores |
-| **bff** | 8090 | H2 (memoria) | — | Spring Boot 3.2.5 + Security + JWT | BFF + Auth + Tickets + Reportes |
-| **api-gateway** | 8084 | — | — | Spring Cloud Gateway 2023.0.3 | Enrutamiento, Circuit Breaker, CORS |
+| Servicio | Puerto Interno | Puerto Host | Base de Datos | Schema | Tecnologia | Responsabilidad |
+|----------|:-------------:|:----------:|---------------|--------|------------|-----------------|
+| **ms-ventas** | 8081 | 9081 | PostgreSQL (Neon.tech) | `ventas` | Spring Boot 3.2.5 + JPA | Gestion de ventas, productos, sucursales |
+| **ms-datos-org** | 8082 | 9082 | PostgreSQL (Neon.tech) | `datos_org` | Spring Boot 3.2.5 + JPA | Empleados, departamentos, estructura organizacional |
+| **ms-indicadores** | 8083 | 9083 | PostgreSQL (Neon.tech) | `indicadores` | Spring Boot 3.2.5 + JPA | KPIs, categorias, valores de indicadores |
+| **bff** | 8090 | 9080 | H2 (memoria) | — | Spring Boot 3.2.5 + Security + JWT | BFF + Auth + Tickets + Reportes |
+| **api-gateway** | 8084 | 9084 | — | — | Spring Cloud Gateway 2023.0.3 | Enrutamiento, Circuit Breaker, CORS |
 
 ### 4.3 Stack Tecnologico
 
@@ -445,15 +454,17 @@ El sistema se despliega con 6 servicios definidos en `docker-compose.yml`:
 
 ```yaml
 services:
-  ms-ventas:       puerto 8081, schema ventas
-  ms-datos-org:    puerto 8082, schema datos_org
-  ms-indicadores:  puerto 8083, schema indicadores
-  bff:             puerto 8090, depende de los 3 microservicios
-  api-gateway:     puerto 8084, depende de todos los anteriores
-  frontend:        puerto 5173:80, depende de api-gateway
+  ms-ventas:       9081:8081, schema ventas (Neon cloud)
+  ms-datos-org:    9082:8082, schema datos_org (Neon cloud)
+  ms-indicadores:  9083:8083, schema indicadores (Neon cloud)
+  bff:             9080:8090, depende de los 3 microservicios
+  api-gateway:     9084:8084, depende de todos los anteriores
+  frontend:        5173:80, depende de api-gateway
 ```
 
-Todos los servicios tienen `restart: unless-stopped` y se pasan las variables de entorno de Neon.tech.
+Todos los servicios tienen `restart: unless-stopped`. Las variables de entorno de Neon.tech se pasan directamente en el `docker-compose.yml`. No se utiliza PostgreSQL local; toda la persistencia es en Neon cloud.
+
+**Nota:** Los puertos host utilizan la serie 908x (9081-9084, 9080) para evitar conflictos con Docker Desktop, que reserva los puertos 8081-8090 internamente.
 
 ### 10.2 Dockerfiles
 
@@ -481,14 +492,16 @@ DB_PASSWORD=your_password
 
 ### 11.1 Resumen de Tests
 
-| Modulo | Tests Unitarios | Tests Integracion | Total | Estado |
-|--------|:---------------:|:-----------------:|:-----:|:------:|
-| ms-ventas | 46 | 1 | **47** | ✅ |
-| ms-datos-org | 12 | 1 | **13** | ✅ |
-| ms-indicadores | 29 | 1 | **30** | ✅ |
-| bff | 18 | 10 | **28** | ✅ |
-| api-gateway | 5 | 1 | **6** | ✅ |
-| **Total** | **110** | **14** | **124** | ✅ |
+| Modulo | Tests | Cobertura JaCoCo | Estado |
+|--------|:-----:|:-----------------:|:------:|
+| ms-ventas | **86** | **91%** | ✅ |
+| ms-datos-org | **22** | **99%** | ✅ |
+| ms-indicadores | **38** | **62%** | ✅ |
+| bff | **28** | **62%** | ✅ |
+| api-gateway | **6** | **89%** | ✅ |
+| **Subtotal Backend** | **180** | **—** | **✅** |
+| Frontend (Vitest) | **18** | **—** | **✅** |
+| **Total** | **198** | **≥60% en todos** | **✅** |
 
 ### 11.2 Framework y Herramientas
 
@@ -510,7 +523,7 @@ DB_PASSWORD=your_password
 
 ### 11.4 Casos de Prueba por Modulo
 
-**ms-ventas (47 tests):**
+**ms-ventas (86 tests):**
 - VentaService: registro exitoso, sin detalles, stock insuficiente, cantidad cero, sucursal inexistente
 - ProductoService: generacion masiva
 - SucursalService: listar, guardar, generar masivos
@@ -521,13 +534,13 @@ DB_PASSWORD=your_password
 - Repository: VentaRepositoryImpl (JPQL + stored procedure)
 - Exception: GlobalExceptionHandler (400, 404)
 
-**ms-datos-org (13 tests):**
+**ms-datos-org (22 tests):**
 - EmpleadoService: generar masivos
 - DepartamentoService: listar, guardar
 - Controller: EmpleadoController, DepartamentoController
 - Factory: EmpleadoFactory individual y masivo
 
-**ms-indicadores (30 tests):**
+**ms-indicadores (38 tests):**
 - IndicadorService: calcular valor, generar indicadores por defecto
 - Factory: CalculoIndicadorFactory (VENTAS, INVENTARIO, RENTABILIDAD, tipo no soportado)
 - Strategy: CalculoVentasStrategy, CalculoInventarioStrategy, CalculoRentabilidadStrategy
@@ -546,12 +559,13 @@ DB_PASSWORD=your_password
 ### 11.5 Ejecucion
 
 ```bash
-# Todos los modulos pasan 124 tests
-cd ms-ventas && .\mvnw.cmd test        # 47 tests ✅
-cd ms-datos-org && .\mvnw.cmd test      # 13 tests ✅
-cd ms-indicadores && .\mvnw.cmd test    # 30 tests ✅
-cd bff && .\mvnw.cmd test              # 28 tests ✅
-cd api-gateway && .\mvnw.cmd test       # 6 tests ✅
+# Todos los modulos pasan 198 tests (180 backend + 18 frontend)
+cd ms-ventas && .\mvnw.cmd test        # 86 tests ✅ (cobertura 91%)
+cd ms-datos-org && .\mvnw.cmd test      # 22 tests ✅ (cobertura 99%)
+cd ms-indicadores && .\mvnw.cmd test    # 38 tests ✅ (cobertura 62%)
+cd bff && .\mvnw.cmd test              # 28 tests ✅ (cobertura 62%)
+cd api-gateway && .\mvnw.cmd test       # 6 tests ✅ (cobertura 89%)
+cd frontend && npm run test             # 18 tests ✅ (Vitest)
 ```
 
 ### 11.6 Plan de Pruebas

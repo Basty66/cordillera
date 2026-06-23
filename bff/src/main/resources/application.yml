@@ -23,11 +23,11 @@ jwt:
   expiration: 86400000
 
 ms-ventas:
-  url: http://localhost:8081
+  url: ${MS_VENTAS_URL:http://localhost:8081}
 ms-datos-org:
-  url: http://localhost:8082
+  url: ${MS_DATOS_ORG_URL:http://localhost:8082}
 ms-indicadores:
-  url: http://localhost:8083
+  url: ${MS_INDICADORES_URL:http://localhost:8083}
 
 resilience4j:
   circuitbreaker:

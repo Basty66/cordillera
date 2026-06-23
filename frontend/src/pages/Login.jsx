@@ -47,7 +47,7 @@ function Background() {
 
     let anim;
     function draw() {
-      if (!running) return;
+      if (!running || !ctx) return;
       t += 0.005;
       ctx.clearRect(0, 0, w, h);
 

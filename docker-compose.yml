@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.ms-ventas
     image: bootstian/ms-ventas:latest
     ports:
-      - "8081:8081"
+      - "9081:8081"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ep-lucky-cloud-ami42tlw-pooler.c-5.us-east-1.aws.neon.tech/neondb?currentSchema=ventas&sslmode=require
       - SPRING_DATASOURCE_USERNAME=neondb_owner
@@ -19,7 +19,7 @@ services:
       dockerfile: Dockerfile.ms-datos-org
     image: bootstian/ms-datos-org:latest
     ports:
-      - "8082:8082"
+      - "9082:8082"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ep-lucky-cloud-ami42tlw-pooler.c-5.us-east-1.aws.neon.tech/neondb?currentSchema=datos_org&sslmode=require
       - SPRING_DATASOURCE_USERNAME=neondb_owner
@@ -33,7 +33,7 @@ services:
       dockerfile: Dockerfile.ms-indicadores
     image: bootstian/ms-indicadores:latest
     ports:
-      - "8083:8083"
+      - "9083:8083"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ep-lucky-cloud-ami42tlw-pooler.c-5.us-east-1.aws.neon.tech/neondb?currentSchema=indicadores&sslmode=require
       - SPRING_DATASOURCE_USERNAME=neondb_owner
@@ -47,12 +47,12 @@ services:
       dockerfile: Dockerfile.bff
     image: bootstian/bff:latest
     ports:
-      - "8090:8090"
+      - "9080:8090"
     environment:
       - SERVER_PORT=8090
-      - MS-VENTAS_URL=http://ms-ventas:8081
-      - MS-DATOS-ORG_URL=http://ms-datos-org:8082
-      - MS-INDICADORES_URL=http://ms-indicadores:8083
+      - MS_VENTAS_URL=http://ms-ventas:8081
+      - MS_DATOS_ORG_URL=http://ms-datos-org:8082
+      - MS_INDICADORES_URL=http://ms-indicadores:8083
     depends_on:
       ms-ventas:
         condition: service_started
@@ -68,7 +68,7 @@ services:
       dockerfile: Dockerfile.api-gateway
     image: bootstian/api-gateway:latest
     ports:
-      - "8084:8084"
+      - "9084:8084"
     environment:
       - SERVER_PORT=8084
     depends_on:

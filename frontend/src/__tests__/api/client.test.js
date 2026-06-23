@@ -54,18 +54,21 @@ describe('API client exports', () => {
     expect(exportCSV).toBeDefined()
   })
 
-  it('login returns a promise', () => {
+  it('login returns a promise', async () => {
     const result = login('test', 'test')
     expect(result).toBeInstanceOf(Promise)
+    try { await result } catch { /* expected network error in test env */ }
   })
 
-  it('getVentasPaginadas returns a promise', () => {
+  it('getVentasPaginadas returns a promise', async () => {
     const result = getVentasPaginadas(0, 20)
     expect(result).toBeInstanceOf(Promise)
+    try { await result } catch { /* expected network error in test env */ }
   })
 
-  it('getDashboard returns a promise', () => {
+  it('getDashboard returns a promise', async () => {
     const result = getDashboard()
     expect(result).toBeInstanceOf(Promise)
+    try { await result } catch { /* expected network error in test env */ }
   })
 })
