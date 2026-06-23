@@ -2,6 +2,7 @@ package com.grupocordillera.datosorg.service;
 
 import com.grupocordillera.datosorg.repository.EmpleadoRepository;
 import com.grupocordillera.datosorg.service.factory.EmpleadoFactory;
+import com.grupocordillera.datosorg.entity.Empleado;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,35 @@ class EmpleadoServiceTest {
 
     @InjectMocks
     private EmpleadoService empleadoService;
+
+    @Test
+    void testObtenerTodos() {
+        when(empleadoRepository.findAll()).thenReturn(List.of(new Empleado(), new Empleado()));
+
+        var result = empleadoService.obtenerTodos();
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void testContarActivos() {
+        when(empleadoRepository.countByActivoTrue()).thenReturn(5L);
+
+        long result = empleadoService.contarActivos();
+
+        assertEquals(5L, result);
+    }
+
+    @Test
+    void testGuardar() {
+        Empleado emp = new Empleado();
+        emp.setNombre("Test");
+        when(empleadoRepository.save(any())).thenReturn(emp);
+
+        Empleado result = empleadoService.guardar(emp);
+
+        assertEquals("Test", result.getNombre());
+    }
 
     @Test
     void testGenerarMasivos() {
