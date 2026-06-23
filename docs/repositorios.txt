@@ -1,76 +1,26 @@
-======================================================================
- REPOSITORIOS DEL PROYECTO — GRUPO CORDILLERA
- Plataforma de Monitoreo Inteligente
- Desarrollo Fullstack III — Duoc UC
-======================================================================
+REPOSITORIOS GITHUB — GRUPO CORDILLERA
+========================================
 
-1. REPOSITORIO PRINCIPAL
-   URL: https://github.com/Basty66/cordillera
-   Proposito: Documentacion general, guias del proyecto, diagramas,
-              docker-compose.yml, y este archivo de referencias.
-   Incluye: - Docs (informes, presentacion, plan de pruebas)
-            - Postman Collection (58 endpoints)
-            - JaCoCo reports HTML
-            - Docker Compose con Neon DB
-            - Release ZIP v1.0.0
+1. Repositorio Principal (documentación, docker-compose, README global)
+   https://github.com/Basty66/cordillera
 
-2. FRONTEND
-   URL: https://github.com/Basty66/cordillera-frontend
-   Proposito: Interfaz de usuario React 19 + Vite 8 + Tailwind CSS v4
-   Incluye: - Componentes, paginas, hooks, contextos
-            - Pruebas unitarias con Vitest (18 tests)
-            - Configuracion Axios, React Router, Framer Motion, Recharts
+2. Frontend (React 19 + Vite + Tailwind)
+   https://github.com/Basty66/ms-ventas-frontend
 
-3. BFF — BACKEND FOR FRONTEND
-   URL: https://github.com/Basty66/cordillera-bff
-   Proposito: Backend que actua como intermediario entre frontend
-              y microservicios internos.
-   Incluye: - Autenticacion JWT (Spring Security)
-            - Gestion de Tickets (CRUD completo)
-            - Dashboard consolidado (7 llamadas paralelas)
-            - Reportes del sistema
-            - Pruebas unitarias (28 tests, cobertura 62%)
+3. Backend For Frontend — BFF (Spring Boot + Security + JWT)
+   https://github.com/Basty66/ms-ventas-bff
 
-4. MICROSERVICIO VENTAS
-   URL: https://github.com/Basty66/cordillera-ms-ventas
-   Proposito: Gestion de ventas, productos, sucursales
-              y reportes comerciales.
-   Incluye: - Entidades: Venta, DetalleVenta, Producto, Sucursal
-            - Patrones: Builder (VentaBuilder), Observer (Eventos)
-            - Cache en memoria con @Cacheable
-            - Pruebas unitarias (86 tests, cobertura 91%)
-            - OpenAPI/Swagger
+4. Microservicio Ventas (Spring Boot + JPA + PostgreSQL)
+   https://github.com/Basty66/ms-ventas
 
-5. MICROSERVICIO DATOS ORGANIZACIONALES
-   URL: https://github.com/Basty66/cordillera-ms-datos-org
-   Proposito: Gestion de empleados y departamentos.
-   Incluye: - Entidades: Empleado, Departamento
-            - Patron: Factory Method (EmpleadoFactory)
-            - Cache en memoria con @Cacheable
-            - Pruebas unitarias (22 tests, cobertura 99%)
+5. Microservicio Datos Organizacionales (Spring Boot + JPA + PostgreSQL)
+   https://github.com/Basty66/ms-datos-org
 
-6. MICROSERVICIO INDICADORES
-   URL: https://github.com/Basty66/cordillera-ms-indicadores
-   Proposito: Calculo de KPIs e indicadores del negocio.
-   Incluye: - Entidades: Indicador, ValorIndicador, Categoria
-            - Patrones: Strategy (3 implementaciones),
-                        Factory Method (CalculoIndicadorFactory)
-            - Cache en memoria con @Cacheable
-            - Pruebas unitarias (38 tests, cobertura 62%)
-            - Integracion con API externa mindicador.cl
+6. Microservicio Indicadores (Spring Boot + Strategy Pattern)
+   https://github.com/Basty66/ms-indicadores
 
-7. API GATEWAY
-   URL: https://github.com/Basty66/cordillera-api-gateway
-   Proposito: Punto de entrada unico para el frontend.
-   Incluye: - Spring Cloud Gateway con rutas hacia cada servicio
-            - Circuit Breaker con Resilience4j
-            - Fallbacks para todos los microservicios
-            - Configuracion CORS global
-            - Pruebas unitarias (6 tests, cobertura 89%)
+7. API Gateway (Spring Cloud Gateway)
+   https://github.com/Basty66/ms-ventas-gateway
 
-======================================================================
- RELEASE
-======================================================================
-   ZIP: https://github.com/Basty66/cordillera/releases/tag/v1.0.0
-   Peso: ~173 MB (excluye node_modules/, .git/, target/)
-======================================================================
+8. Release v1.0.0 (ZIP 173 MB)
+   https://github.com/Basty66/cordillera/releases/tag/v1.0.0
