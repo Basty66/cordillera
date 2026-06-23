@@ -1,0 +1,935 @@
+{
+  "info": {
+    "name": "MS Ventas — Plataforma de Monitoreo Inteligente",
+    "description": "Colección completa de endpoints para la Plataforma de Monitoreo Inteligente. Grupo Cordillera. Incluye API Gateway, BFF, ms-ventas, ms-datos-org y ms-indicadores.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "grupo-cordillera"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8084",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth (BFF)",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var json = pm.response.json();",
+                  "    pm.collectionVariables.set('token', json.token || json.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Autentica un usuario y retorna un token JWT"
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"nuevousuario\",\n  \"password\": \"password123\",\n  \"nombre\": \"Nuevo Usuario\",\n  \"email\": \"nuevo@example.com\",\n  \"rol\": \"VENDEDOR\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Registra un nuevo usuario en el sistema"
+          }
+        },
+        {
+          "name": "Listar Usuarios",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/auth/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "usuarios"]
+            },
+            "description": "Lista todos los usuarios registrados (solo ADMIN)"
+          }
+        },
+        {
+          "name": "Actualizar Perfil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Admin Actualizado\",\n  \"email\": \"admin@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile"]
+            },
+            "description": "Actualiza nombre y email del usuario autenticado"
+          }
+        },
+        {
+          "name": "Cambiar Contraseña",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passwordActual\": \"admin123\",\n  \"passwordNueva\": \"nuevapassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "password"]
+            },
+            "description": "Cambia la contraseña del usuario autenticado"
+          }
+        },
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/auth/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "health"]
+            },
+            "description": "Health check del BFF"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard (BFF)",
+      "item": [
+        {
+          "name": "Dashboard Consolidado",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/bff/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bff", "dashboard"]
+            },
+            "description": "Dashboard consolidado con datos de todos los microservicios"
+          }
+        },
+        {
+          "name": "Reportes Dashboard",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/reportes/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reportes", "dashboard"]
+            },
+            "description": "Estadísticas de tickets y usuarios"
+          }
+        },
+        {
+          "name": "Reportes Tickets",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/reportes/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reportes", "tickets"]
+            },
+            "description": "Exportación de tickets"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tickets (BFF)",
+      "item": [
+        {
+          "name": "Listar Tickets",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tickets"]
+            },
+            "description": "Lista todos los tickets de soporte"
+          }
+        },
+        {
+          "name": "Obtener Ticket por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tickets/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tickets", "1"]
+            },
+            "description": "Obtiene un ticket específico por ID"
+          }
+        },
+        {
+          "name": "Crear Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Problema con producto\",\n  \"descripcion\": \"El producto X no aparece en el catálogo de la sucursal Centro\",\n  \"prioridad\": \"ALTA\",\n  \"sucursalId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tickets",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tickets"]
+            },
+            "description": "Crea un nuevo ticket de soporte (con clasificación automática IA)"
+          }
+        },
+        {
+          "name": "Actualizar Estado Ticket",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"RESUELTO\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tickets/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tickets", "1", "status"]
+            },
+            "description": "Actualiza el estado de un ticket"
+          }
+        },
+        {
+          "name": "Actualizar Ticket",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Título actualizado\",\n  \"descripcion\": \"Descripción actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tickets/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tickets", "1"]
+            },
+            "description": "Actualiza campos de un ticket existente"
+          }
+        },
+        {
+          "name": "Eliminar Ticket",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/tickets/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tickets", "1"]
+            },
+            "description": "Elimina un ticket del sistema"
+          }
+        },
+        {
+          "name": "Analytics Tickets",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tickets/analytics",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tickets", "analytics"]
+            },
+            "description": "Datos analíticos de tickets: estadísticas, tendencias y clasificación"
+          }
+        },
+        {
+          "name": "Clasificar Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": \"El sistema de ventas no carga los productos correctamente\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/tickets/clasificar",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tickets", "clasificar"]
+            },
+            "description": "Clasifica automáticamente un texto de ticket por categoría"
+          }
+        },
+        {
+          "name": "Categorías Tickets",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/tickets/categorias",
+              "host": ["{{base_url}}"],
+              "path": ["api", "tickets", "categorias"]
+            },
+            "description": "Lista las categorías disponibles para clasificación de tickets"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ventas (ms-ventas)",
+      "item": [
+        {
+          "name": "Listar Ventas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/ventas?pagina=0&tamaño=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ventas"],
+              "query": [
+                { "key": "pagina", "value": "0" },
+                { "key": "tamaño", "value": "20" }
+              ]
+            },
+            "description": "Lista todas las ventas con paginación opcional"
+          }
+        },
+        {
+          "name": "Registrar Venta",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sucursalId\": 1,\n  \"fecha\": \"2026-06-23\",\n  \"detalles\": [\n    {\n      \"productoId\": 1,\n      \"cantidad\": 2,\n      \"precioUnitario\": 15000\n    },\n    {\n      \"productoId\": 2,\n      \"cantidad\": 1,\n      \"precioUnitario\": 25000\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ventas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ventas"]
+            },
+            "description": "Registra una nueva venta en el sistema"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Productos (ms-ventas)",
+      "item": [
+        {
+          "name": "Listar Productos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/productos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos"]
+            },
+            "description": "Lista todos los productos disponibles"
+          }
+        },
+        {
+          "name": "Obtener Producto por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/productos/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos", "1"]
+            },
+            "description": "Obtiene un producto por su ID"
+          }
+        },
+        {
+          "name": "Crear Producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nuevo Producto\",\n  \"precio\": 19990,\n  \"stock\": 100,\n  \"categoria\": \"Electrónica\",\n  \"descripcion\": \"Descripción del nuevo producto\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/productos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos"]
+            },
+            "description": "Crea un nuevo producto"
+          }
+        },
+        {
+          "name": "Actualizar Producto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto Actualizado\",\n  \"precio\": 24990,\n  \"stock\": 150,\n  \"categoria\": \"Electrónica\",\n  \"descripcion\": \"Descripción actualizada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/productos/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos", "1"]
+            },
+            "description": "Actualiza un producto existente"
+          }
+        },
+        {
+          "name": "Eliminar Producto",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/productos/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos", "1"]
+            },
+            "description": "Elimina un producto"
+          }
+        },
+        {
+          "name": "Generar Productos",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/productos/generar/10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "productos", "generar", "10"]
+            },
+            "description": "Genera automáticamente una cantidad especificada de productos"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sucursales (ms-ventas)",
+      "item": [
+        {
+          "name": "Listar Sucursales",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/sucursales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sucursales"]
+            },
+            "description": "Lista todas las sucursales"
+          }
+        },
+        {
+          "name": "Contar Sucursales",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/sucursales/count",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sucursales", "count"]
+            },
+            "description": "Retorna el número total de sucursales"
+          }
+        },
+        {
+          "name": "Crear Sucursal",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nueva Sucursal\",\n  \"direccion\": \"Av. Principal 123\",\n  \"ciudad\": \"Santiago\",\n  \"telefono\": \"+56 2 1234 5678\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sucursales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sucursales"]
+            },
+            "description": "Crea una nueva sucursal manualmente"
+          }
+        },
+        {
+          "name": "Generar Sucursales",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/sucursales/generar/5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sucursales", "generar", "5"]
+            },
+            "description": "Genera automáticamente una cantidad especificada de sucursales"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reportes (ms-ventas)",
+      "item": [
+        {
+          "name": "Ventas por Sucursal",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/reportes/ventas-por-sucursal",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reportes", "ventas-por-sucursal"]
+            },
+            "description": "Reporte de ventas agrupado por sucursal"
+          }
+        },
+        {
+          "name": "Resumen Ventas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/reportes/resumen-ventas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reportes", "resumen-ventas"]
+            },
+            "description": "Resumen con cifras totales de ventas"
+          }
+        },
+        {
+          "name": "Ventas por Período",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/reportes/ventas-periodo?inicio=2026-01-01&fin=2026-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reportes", "ventas-periodo"],
+              "query": [
+                { "key": "inicio", "value": "2026-01-01" },
+                { "key": "fin", "value": "2026-12-31" }
+              ]
+            },
+            "description": "Ventas dentro de un rango de fechas"
+          }
+        },
+        {
+          "name": "Ventas Mensuales",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/reportes/ventas-mensuales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reportes", "ventas-mensuales"]
+            },
+            "description": "Data warehouse: ventas agregadas por mes para gráficos de tendencia"
+          }
+        },
+        {
+          "name": "Ventas por Categoría",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/reportes/ventas-por-categoria",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reportes", "ventas-por-categoria"]
+            },
+            "description": "Data warehouse: ventas agrupadas por categoría de producto"
+          }
+        },
+        {
+          "name": "Top Productos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/reportes/top-productos?limite=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reportes", "top-productos"],
+              "query": [
+                { "key": "limite", "value": "10" }
+              ]
+            },
+            "description": "Ranking de productos más vendidos"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clima y Economía (ms-ventas)",
+      "item": [
+        {
+          "name": "Clima Sucursales",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/clima/sucursales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clima", "sucursales"]
+            },
+            "description": "Clima actual para todas las ciudades de sucursales"
+          }
+        },
+        {
+          "name": "Clima por Ciudad",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/clima/ciudad/Santiago",
+              "host": ["{{base_url}}"],
+              "path": ["api", "clima", "ciudad", "Santiago"]
+            },
+            "description": "Clima actual para una ciudad específica"
+          }
+        },
+        {
+          "name": "Indicadores Económicos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/economico/indicadores",
+              "host": ["{{base_url}}"],
+              "path": ["api", "economico", "indicadores"]
+            },
+            "description": "Indicadores económicos chilenos (UF, USD, UTM, IPC) desde mindicador.cl"
+          }
+        },
+        {
+          "name": "Ajustar Precios por UF",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/economico/ajustar-precios-uf",
+              "host": ["{{base_url}}"],
+              "path": ["api", "economico", "ajustar-precios-uf"]
+            },
+            "description": "Actualiza todos los precios de productos según variación de la UF"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Empleados (ms-datos-org)",
+      "item": [
+        {
+          "name": "Listar Empleados",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/empleados",
+              "host": ["{{base_url}}"],
+              "path": ["api", "empleados"]
+            },
+            "description": "Lista todos los empleados"
+          }
+        },
+        {
+          "name": "Contar Empleados",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/empleados/count",
+              "host": ["{{base_url}}"],
+              "path": ["api", "empleados", "count"]
+            },
+            "description": "Retorna el total de empleados activos"
+          }
+        },
+        {
+          "name": "Crear Empleado",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rut\": \"12.345.678-9\",\n  \"nombre\": \"Juan Pérez\",\n  \"email\": \"juan.perez@example.com\",\n  \"cargo\": \"Vendedor\",\n  \"departamentoId\": 1,\n  \"sucursalId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/empleados",
+              "host": ["{{base_url}}"],
+              "path": ["api", "empleados"]
+            },
+            "description": "Crea un nuevo empleado"
+          }
+        },
+        {
+          "name": "Generar Empleados",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/empleados/generar/20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "empleados", "generar", "20"]
+            },
+            "description": "Genera automáticamente una cantidad especificada de empleados"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Departamentos (ms-datos-org)",
+      "item": [
+        {
+          "name": "Listar Departamentos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/departamentos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departamentos"]
+            },
+            "description": "Lista todos los departamentos"
+          }
+        },
+        {
+          "name": "Crear Departamento",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nuevo Departamento\",\n  \"descripcion\": \"Descripción del departamento\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/departamentos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "departamentos"]
+            },
+            "description": "Crea un nuevo departamento"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Indicadores KPI (ms-indicadores)",
+      "item": [
+        {
+          "name": "Listar Indicadores",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/indicadores",
+              "host": ["{{base_url}}"],
+              "path": ["api", "indicadores"]
+            },
+            "description": "Lista todos los indicadores KPI"
+          }
+        },
+        {
+          "name": "Crear Indicador",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ventas del Mes\",\n  \"descripcion\": \"Total de ventas del mes actual\",\n  \"unidad\": \"CLP\",\n  \"categoriaId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/indicadores",
+              "host": ["{{base_url}}"],
+              "path": ["api", "indicadores"]
+            },
+            "description": "Crea un nuevo indicador KPI"
+          }
+        },
+        {
+          "name": "Categorías de Indicadores",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/indicadores/categorias",
+              "host": ["{{base_url}}"],
+              "path": ["api", "indicadores", "categorias"]
+            },
+            "description": "Lista las categorías de indicadores"
+          }
+        },
+        {
+          "name": "Crear Categoría",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ventas\",\n  \"descripcion\": \"Indicadores relacionados con ventas\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/indicadores/categorias",
+              "host": ["{{base_url}}"],
+              "path": ["api", "indicadores", "categorias"]
+            },
+            "description": "Crea una nueva categoría de indicador"
+          }
+        },
+        {
+          "name": "Valores Actuales",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/indicadores/valores/actuales",
+              "host": ["{{base_url}}"],
+              "path": ["api", "indicadores", "valores", "actuales"]
+            },
+            "description": "Valores actuales de todos los indicadores"
+          }
+        },
+        {
+          "name": "Calcular Indicador",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/indicadores/calcular?tipo=VENTAS_MENSUALES",
+              "host": ["{{base_url}}"],
+              "path": ["api", "indicadores", "calcular"],
+              "query": [
+                { "key": "tipo", "value": "VENTAS_MENSUALES" }
+              ]
+            },
+            "description": "Calcula el valor de un indicador según su tipo y parámetros"
+          }
+        },
+        {
+          "name": "Inicializar Indicadores",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/indicadores/inicializar",
+              "host": ["{{base_url}}"],
+              "path": ["api", "indicadores", "inicializar"]
+            },
+            "description": "Genera los indicadores por defecto del sistema"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gateway",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Health check del API Gateway"
+          }
+        },
+        {
+          "name": "Fallback Ventas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/fallback/ventas",
+              "host": ["{{base_url}}"],
+              "path": ["fallback", "ventas"]
+            },
+            "description": "Circuit breaker fallback para ms-ventas"
+          }
+        },
+        {
+          "name": "Fallback Datos Org",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/fallback/datos-org",
+              "host": ["{{base_url}}"],
+              "path": ["fallback", "datos-org"]
+            },
+            "description": "Circuit breaker fallback para ms-datos-org"
+          }
+        },
+        {
+          "name": "Fallback Indicadores",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/fallback/indicadores",
+              "host": ["{{base_url}}"],
+              "path": ["fallback", "indicadores"]
+            },
+            "description": "Circuit breaker fallback para ms-indicadores"
+          }
+        },
+        {
+          "name": "Fallback BFF",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/fallback/bff",
+              "host": ["{{base_url}}"],
+              "path": ["fallback", "bff"]
+            },
+            "description": "Circuit breaker fallback para BFF"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -421,28 +421,26 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-3.5 flex flex-col">
+        <motion.div variants={itemAnim} className="premium-card-neon rounded-xl p-3.5">
           <div className="flex items-center gap-2 mb-3">
             <BarChart3 className="w-3.5 h-3.5 text-emerald-500" />
             <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">Tendencia de Ventas Mensuales</h3>
             <span className="ml-auto text-[9px] font-mono text-slate-400">Data Warehouse</span>
           </div>
           {rechartsBar.length > 0 ? (
-            <div className="flex-1 relative" style={{ minWidth: 0, minHeight: 0 }}>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={rechartsBar} barCategoryGap="20%" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                    <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
-                    <YAxis axisLine={false} tickLine={false} width={50} tickFormatter={v => formatCLP(v)} tick={{ fontSize: 10 }} />
-                    <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(16,185,129,0.06)' }} />
-                    <Bar dataKey="monto" radius={[4, 4, 0, 0]} maxBarSize={32}>
-                      {rechartsBar.map((_, i) => (
-                        <Cell key={i} fill={monthColors[i % 12]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+            <div className="h-[230px]" style={{ minWidth: 0, minHeight: 0 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={rechartsBar} barCategoryGap="20%" margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                  <XAxis dataKey="mes" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                  <YAxis axisLine={false} tickLine={false} width={50} tickFormatter={v => formatCLP(v)} tick={{ fontSize: 10 }} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(16,185,129,0.06)' }} />
+                  <Bar dataKey="monto" radius={[4, 4, 0, 0]} maxBarSize={32}>
+                    {rechartsBar.map((_, i) => (
+                      <Cell key={i} fill={monthColors[i % 12]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           ) : (
             <p className="text-sm text-slate-400 text-center py-8">Cargando datos mensuales...</p>

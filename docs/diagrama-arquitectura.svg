@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="gw" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="100%" style="stop-color:#764ba2"/>
+    </linearGradient>
+    <linearGradient id="bff" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f093fb"/>
+      <stop offset="100%" style="stop-color:#f5576c"/>
+    </linearGradient>
+    <linearGradient id="ms" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe"/>
+      <stop offset="100%" style="stop-color:#00f2fe"/>
+    </linearGradient>
+    <linearGradient id="fe" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#43e97b"/>
+      <stop offset="100%" style="stop-color:#38f9d7"/>
+    </linearGradient>
+    <linearGradient id="db" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fa709a"/>
+      <stop offset="100%" style="stop-color:#fee140"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="900" fill="#f8f9fa" rx="8"/>
+
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#2c3e50">Arquitectura — Plataforma de Monitoreo Inteligente</text>
+  <text x="600" y="62" text-anchor="middle" font-size="13" fill="#7f8c8d">Grupo Cordillera | Microservicios Spring Boot + React + PostgreSQL</text>
+
+  <!-- Layer labels -->
+  <text x="30" y="95" font-size="11" fill="#999" font-weight="bold" transform="rotate(-90, 30, 500)">CAPA PRESENTACIÓN</text>
+  <text x="30" y="320" font-size="11" fill="#999" font-weight="bold" transform="rotate(-90, 30, 500)">CAPA BFF / GATEWAY</text>
+  <text x="30" y="580" font-size="11" fill="#999" font-weight="bold" transform="rotate(-90, 30, 500)">CAPA MICROSERVICIOS</text>
+  <text x="30" y="760" font-size="11" fill="#999" font-weight="bold" transform="rotate(-90, 30, 500)">CAPA DATOS</text>
+
+  <!-- ===== LAYER 1: FRONTEND ===== -->
+  <!-- Frontend card -->
+  <rect x="60" y="85" width="1080" height="130" rx="8" fill="#fff" stroke="#43e97b" stroke-width="1.5" filter="url(#shadow)" opacity="0.5"/>
+
+  <rect x="100" y="100" width="180" height="100" rx="10" fill="url(#fe)" filter="url(#shadow)"/>
+  <text x="190" y="135" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">Frontend</text>
+  <text x="190" y="155" text-anchor="middle" font-size="11" fill="#fff">React 19 + Vite 8</text>
+  <text x="190" y="172" text-anchor="middle" font-size="11" fill="#fff">Tailwind CSS v4</text>
+  <text x="190" y="189" text-anchor="middle" font-size="10" fill="#fff" opacity="0.8">Puerto 5173 / 80</text>
+
+  <rect x="330" y="105" width="130" height="35" rx="6" fill="#e8f8f0" stroke="#43e97b"/>
+  <text x="395" y="128" text-anchor="middle" font-size="11" fill="#27ae60">Router DOM</text>
+  <rect x="330" y="148" width="130" height="35" rx="6" fill="#e8f8f0" stroke="#43e97b"/>
+  <text x="395" y="171" text-anchor="middle" font-size="11" fill="#27ae60">AuthContext</text>
+
+  <rect x="490" y="105" width="130" height="35" rx="6" fill="#e8f8f0" stroke="#43e97b"/>
+  <text x="555" y="128" text-anchor="middle" font-size="11" fill="#27ae60">ThemeContext</text>
+  <rect x="490" y="148" width="130" height="35" rx="6" fill="#e8f8f0" stroke="#43e97b"/>
+  <text x="555" y="171" text-anchor="middle" font-size="11" fill="#27ae60">useApi / useMutation</text>
+
+  <rect x="660" y="105" width="130" height="35" rx="6" fill="#e8f8f0" stroke="#43e97b"/>
+  <text x="725" y="128" text-anchor="middle" font-size="11" fill="#27ae60">Chart.js / Recharts</text>
+  <rect x="660" y="148" width="130" height="35" rx="6" fill="#e8f8f0" stroke="#43e97b"/>
+  <text x="725" y="171" text-anchor="middle" font-size="11" fill="#27ae60">Framer Motion</text>
+
+  <rect x="840" y="105" width="130" height="35" rx="6" fill="#e8f8f0" stroke="#43e97b"/>
+  <text x="905" y="128" text-anchor="middle" font-size="11" fill="#27ae60">Axios HTTP</text>
+  <rect x="840" y="148" width="130" height="35" rx="6" fill="#e8f8f0" stroke="#43e97b"/>
+  <text x="905" y="171" text-anchor="middle" font-size="11" fill="#27ae60">nginx (prod)</text>
+
+  <!-- Arrow from frontend to gateway -->
+  <line x1="190" y1="200" x2="190" y2="260" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ===== LAYER 2: BFF + GATEWAY ===== -->
+  <rect x="60" y="240" width="1080" height="130" rx="8" fill="#fff" stroke="#f5576c" stroke-width="1.5" filter="url(#shadow)" opacity="0.5"/>
+
+  <!-- API Gateway -->
+  <rect x="100" y="260" width="200" height="95" rx="10" fill="url(#gw)" filter="url(#shadow)"/>
+  <text x="200" y="290" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">API Gateway</text>
+  <text x="200" y="308" text-anchor="middle" font-size="11" fill="#fff">Spring Cloud Gateway</text>
+  <text x="200" y="324" text-anchor="middle" font-size="11" fill="#fff">Circuit Breaker</text>
+  <text x="200" y="340" text-anchor="middle" font-size="10" fill="#fff" opacity="0.8">Puerto 8084</text>
+
+  <!-- Arrow from gateway to BFF -->
+  <line x1="300" y1="307" x2="360" y2="307" stroke="#666" stroke-width="1.5"/>
+
+  <!-- BFF -->
+  <rect x="370" y="260" width="220" height="95" rx="10" fill="url(#bff)" filter="url(#shadow)"/>
+  <text x="480" y="290" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">BFF</text>
+  <text x="480" y="308" text-anchor="middle" font-size="11" fill="#fff">Spring Boot 3.2.5</text>
+  <text x="480" y="324" text-anchor="middle" font-size="11" fill="#fff">JWT Auth + Resilience4j</text>
+  <text x="480" y="340" text-anchor="middle" font-size="10" fill="#fff" opacity="0.8">Puerto 8090</text>
+
+  <rect x="640" y="270" width="130" height="30" rx="6" fill="#fef0f0" stroke="#f5576c"/>
+  <text x="705" y="290" text-anchor="middle" font-size="10" fill="#e74c3c">Auth (/api/auth)</text>
+  <rect x="640" y="308" width="130" height="30" rx="6" fill="#fef0f0" stroke="#f5576c"/>
+  <text x="705" y="328" text-anchor="middle" font-size="10" fill="#e74c3c">Tickets / Reportes</text>
+
+  <rect x="810" y="270" width="130" height="30" rx="6" fill="#fef0f0" stroke="#f5576c"/>
+  <text x="875" y="290" text-anchor="middle" font-size="10" fill="#e74c3c">Dashboard</text>
+  <rect x="810" y="308" width="130" height="30" rx="6" fill="#fef0f0" stroke="#f5576c"/>
+  <text x="875" y="328" text-anchor="middle" font-size="10" fill="#e74c3c">Clientes Feign</text>
+
+  <!-- Arrows from BFF/Gateway to microservices -->
+  <line x1="200" y1="355" x2="200" y2="470" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="340" y1="355" x2="340" y2="470" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="480" y1="355" x2="480" y2="470" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ===== LAYER 3: MICROSERVICES ===== -->
+  <rect x="60" y="440" width="1080" height="170" rx="8" fill="#fff" stroke="#4facfe" stroke-width="1.5" filter="url(#shadow)" opacity="0.5"/>
+
+  <!-- MS-Ventas -->
+  <rect x="90" y="465" width="230" height="120" rx="10" fill="url(#ms)" filter="url(#shadow)"/>
+  <text x="205" y="498" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">ms-ventas</text>
+  <text x="205" y="516" text-anchor="middle" font-size="11" fill="#fff">API Ventas, Productos</text>
+  <text x="205" y="533" text-anchor="middle" font-size="11" fill="#fff">Sucursales, Reportes</text>
+  <text x="205" y="550" text-anchor="middle" font-size="11" fill="#fff">Eventos / Builder</text>
+  <text x="205" y="570" text-anchor="middle" font-size="10" fill="#fff" opacity="0.8">Puerto 8081</text>
+
+  <!-- MS-Datos-Org -->
+  <rect x="370" y="465" width="230" height="120" rx="10" fill="url(#ms)" filter="url(#shadow)"/>
+  <text x="485" y="498" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">ms-datos-org</text>
+  <text x="485" y="516" text-anchor="middle" font-size="11" fill="#fff">API Empleados</text>
+  <text x="485" y="533" text-anchor="middle" font-size="11" fill="#fff">API Departamentos</text>
+  <text x="485" y="550" text-anchor="middle" font-size="11" fill="#fff">Factory Method</text>
+  <text x="485" y="570" text-anchor="middle" font-size="10" fill="#fff" opacity="0.8">Puerto 8082</text>
+
+  <!-- MS-Indicadores -->
+  <rect x="650" y="465" width="230" height="120" rx="10" fill="url(#ms)" filter="url(#shadow)"/>
+  <text x="765" y="498" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">ms-indicadores</text>
+  <text x="765" y="516" text-anchor="middle" font-size="11" fill="#fff">API KPI / Indicadores</text>
+  <text x="765" y="533" text-anchor="middle" font-size="11" fill="#fff">Cálculo de Métricas</text>
+  <text x="765" y="550" text-anchor="middle" font-size="11" fill="#fff">Strategy Pattern</text>
+  <text x="765" y="570" text-anchor="middle" font-size="10" fill="#fff" opacity="0.8">Puerto 8083</text>
+
+  <!-- External APIs -->
+  <rect x="930" y="480" width="180" height="90" rx="10" fill="#fff3e0" stroke="#ff9800" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="1020" y="508" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">APIs Externas</text>
+  <text x="1020" y="528" text-anchor="middle" font-size="10" fill="#e65100">Clima (OpenWeather)</text>
+  <text x="1020" y="545" text-anchor="middle" font-size="10" fill="#e65100">Indicadores Económicos</text>
+  <text x="1020" y="562" text-anchor="middle" font-size="10" fill="#e65100">(Mindicador.cl)</text>
+  <line x1="930" y1="525" x2="880" y2="525" stroke="#e65100" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Arrows from microservices to DB -->
+  <line x1="205" y1="585" x2="205" y2="680" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="485" y1="585" x2="485" y2="680" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="765" y1="585" x2="765" y2="680" stroke="#666" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ===== LAYER 4: DATABASE ===== -->
+  <rect x="60" y="660" width="1080" height="130" rx="8" fill="#fff" stroke="#fa709a" stroke-width="1.5" filter="url(#shadow)" opacity="0.5"/>
+
+  <!-- PostgreSQL -->
+  <rect x="200" y="690" width="300" height="80" rx="10" fill="url(#db)" filter="url(#shadow)"/>
+  <text x="350" y="720" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">PostgreSQL 14 (Neon.tech)</text>
+  <text x="350" y="740" text-anchor="middle" font-size="11" fill="#fff">3 esquemas: ventas, datos_org, indicadores</text>
+  <text x="350" y="758" text-anchor="middle" font-size="10" fill="#fff" opacity="0.8">Base de datos compartida</text>
+
+  <!-- Schema boxes -->
+  <rect x="560" y="695" width="150" height="35" rx="6" fill="#fff" stroke="#fa709a" opacity="0.8"/>
+  <text x="635" y="718" text-anchor="middle" font-size="11" fill="#c0392b" font-weight="bold">Schema: ventas</text>
+  <rect x="560" y="735" width="150" height="30" rx="6" fill="#fff" stroke="#fa709a" opacity="0.8"/>
+  <text x="635" y="755" text-anchor="middle" font-size="10" fill="#c0392b">Ventas, Productos</text>
+
+  <rect x="740" y="695" width="170" height="35" rx="6" fill="#fff" stroke="#fa709a" opacity="0.8"/>
+  <text x="825" y="718" text-anchor="middle" font-size="11" fill="#c0392b" font-weight="bold">Schema: datos_org</text>
+  <rect x="740" y="735" width="170" height="30" rx="6" fill="#fff" stroke="#fa709a" opacity="0.8"/>
+  <text x="825" y="755" text-anchor="middle" font-size="10" fill="#c0392b">Empleados, Departamentos</text>
+
+  <rect x="940" y="695" width="170" height="35" rx="6" fill="#fff" stroke="#fa709a" opacity="0.8"/>
+  <text x="1025" y="718" text-anchor="middle" font-size="11" fill="#c0392b" font-weight="bold">Schema: indicadores</text>
+  <rect x="940" y="735" width="170" height="30" rx="6" fill="#fff" stroke="#fa709a" opacity="0.8"/>
+  <text x="1025" y="755" text-anchor="middle" font-size="10" fill="#c0392b">Indicadores, Valores</text>
+
+  <!-- Bottom metadata -->
+  <text x="600" y="860" text-anchor="middle" font-size="11" fill="#bdc3c7">Docker Compose • GitHub Actions CI • JaCoCo 60%+ • Java 21 • Node 20</text>
+
+  <!-- BFF DB (H2) small indicator -->
+  <rect x="640" y="600" width="120" height="25" rx="4" fill="#fce4ec" stroke="#f5576c" stroke-width="1"/>
+  <text x="700" y="617" text-anchor="middle" font-size="9" fill="#e74c3c">BFF: H2 (auth + tickets)</text>
+</svg>
