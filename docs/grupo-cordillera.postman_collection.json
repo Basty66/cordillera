@@ -1,0 +1,584 @@
+{
+	"info": {
+		"name": "Grupo Cordillera - API Collection",
+		"description": "Colección completa de APIs del proyecto Grupo Cordillera. Incluye todos los microservicios: API Gateway, BFF, ms-ventas, ms-datos-org, ms-indicadores.\n\nBase URL por defecto: http://localhost:8084 (Gateway)\n\nAutenticación: JWT Bearer token (obtener via POST /api/auth/login)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "API Gateway",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/health"
+					}
+				},
+				{
+					"name": "Fallback - Ventas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/fallback/ventas"
+					}
+				},
+				{
+					"name": "Fallback - Datos Org",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/fallback/datos-org"
+					}
+				},
+				{
+					"name": "Fallback - Indicadores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/fallback/indicadores"
+					}
+				},
+				{
+					"name": "Fallback - BFF",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/fallback/bff"
+					}
+				}
+			]
+		},
+		{
+			"name": "BFF - Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": "http://localhost:8084/api/auth/login"
+					}
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"nuevo\",\n  \"password\": \"pass123\",\n  \"email\": \"nuevo@correo.cl\",\n  \"nombre\": \"Nuevo Usuario\",\n  \"rol\": \"VENDEDOR\"\n}"
+						},
+						"url": "http://localhost:8084/api/auth/register"
+					}
+				},
+				{
+					"name": "Listar Usuarios",
+					"request": {
+						"method": "GET",
+						"header": ["Authorization: Bearer {{token}}"],
+						"url": "http://localhost:8084/api/auth/usuarios"
+					}
+				},
+				{
+					"name": "Actualizar Perfil",
+					"request": {
+						"method": "PUT",
+						"header": ["Content-Type: application/json", "Authorization: Bearer {{token}}"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Admin Actualizado\",\n  \"email\": \"admin@correo.cl\"\n}"
+						},
+						"url": "http://localhost:8084/api/auth/profile"
+					}
+				},
+				{
+					"name": "Cambiar Password",
+					"request": {
+						"method": "PUT",
+						"header": ["Content-Type: application/json", "Authorization: Bearer {{token}}"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"passwordActual\": \"admin123\",\n  \"nuevaPassword\": \"admin123\"\n}"
+						},
+						"url": "http://localhost:8084/api/auth/password"
+					}
+				}
+			]
+		},
+		{
+			"name": "BFF - Dashboard & Reportes",
+			"item": [
+				{
+					"name": "Dashboard Consolidado",
+					"request": {
+						"method": "GET",
+						"header": ["Authorization: Bearer {{token}}"],
+						"url": "http://localhost:8084/api/bff/dashboard"
+					}
+				},
+				{
+					"name": "Dashboard Reportes",
+					"request": {
+						"method": "GET",
+						"header": ["Authorization: Bearer {{token}}"],
+						"url": "http://localhost:8084/api/reportes/dashboard"
+					}
+				},
+				{
+					"name": "Exportar Tickets",
+					"request": {
+						"method": "GET",
+						"header": ["Authorization: Bearer {{token}}"],
+						"url": "http://localhost:8084/api/reportes/tickets"
+					}
+				}
+			]
+		},
+		{
+			"name": "BFF - Tickets",
+			"item": [
+				{
+					"name": "Listar Tickets",
+					"request": {
+						"method": "GET",
+						"header": ["Authorization: Bearer {{token}}"],
+						"url": "http://localhost:8084/api/tickets"
+					}
+				},
+				{
+					"name": "Crear Ticket",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json", "Authorization: Bearer {{token}}"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Problema con producto\",\n  \"descripcion\": \"El producto llega en mal estado\",\n  \"prioridad\": \"ALTA\"\n}"
+						},
+						"url": "http://localhost:8084/api/tickets"
+					}
+				},
+				{
+					"name": "Obtener Ticket por ID",
+					"request": {
+						"method": "GET",
+						"header": ["Authorization: Bearer {{token}}"],
+						"url": "http://localhost:8084/api/tickets/1"
+					}
+				},
+				{
+					"name": "Actualizar Ticket",
+					"request": {
+						"method": "PUT",
+						"header": ["Content-Type: application/json", "Authorization: Bearer {{token}}"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Titulo actualizado\",\n  \"descripcion\": \"Descripcion actualizada\",\n  \"prioridad\": \"MEDIA\"\n}"
+						},
+						"url": "http://localhost:8084/api/tickets/1"
+					}
+				},
+				{
+					"name": "Actualizar Estado Ticket",
+					"request": {
+						"method": "PUT",
+						"header": ["Content-Type: application/json", "Authorization: Bearer {{token}}"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"estado\": \"RESUELTO\"\n}"
+						},
+						"url": "http://localhost:8084/api/tickets/1/status"
+					}
+				},
+				{
+					"name": "Eliminar Ticket",
+					"request": {
+						"method": "DELETE",
+						"header": ["Authorization: Bearer {{token}}"],
+						"url": "http://localhost:8084/api/tickets/1"
+					}
+				},
+				{
+					"name": "Analytics Tickets",
+					"request": {
+						"method": "GET",
+						"header": ["Authorization: Bearer {{token}}"],
+						"url": "http://localhost:8084/api/tickets/analytics"
+					}
+				},
+				{
+					"name": "Clasificar Ticket (IA)",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json", "Authorization: Bearer {{token}}"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"texto\": \"El sistema no me deja iniciar sesion\"\n}"
+						},
+						"url": "http://localhost:8084/api/tickets/clasificar"
+					}
+				},
+				{
+					"name": "Categorias Tickets",
+					"request": {
+						"method": "GET",
+						"header": ["Authorization: Bearer {{token}}"],
+						"url": "http://localhost:8084/api/tickets/categorias"
+					}
+				}
+			]
+		},
+		{
+			"name": "ms-ventas - Productos",
+			"item": [
+				{
+					"name": "Listar Productos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/productos"
+					}
+				},
+				{
+					"name": "Obtener Producto por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/productos/1"
+					}
+				},
+				{
+					"name": "Crear Producto",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Nuevo Producto\",\n  \"precio\": 19990,\n  \"stock\": 100,\n  \"categoria\": \"Electronica\",\n  \"descripcion\": \"Descripcion del producto\"\n}"
+						},
+						"url": "http://localhost:8084/api/ventas/productos"
+					}
+				},
+				{
+					"name": "Actualizar Producto",
+					"request": {
+						"method": "PUT",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"precio\": 24990,\n  \"stock\": 150\n}"
+						},
+						"url": "http://localhost:8084/api/ventas/productos/1"
+					}
+				},
+				{
+					"name": "Eliminar Producto",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/productos/1"
+					}
+				}
+			]
+		},
+		{
+			"name": "ms-ventas - Ventas",
+			"item": [
+				{
+					"name": "Listar Ventas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/ventas"
+					}
+				},
+				{
+					"name": "Crear Venta",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productoId\": 1,\n  \"cantidad\": 2,\n  \"sucursalId\": 1\n}"
+						},
+						"url": "http://localhost:8084/api/ventas/ventas"
+					}
+				}
+			]
+		},
+		{
+			"name": "ms-ventas - Sucursales",
+			"item": [
+				{
+					"name": "Listar Sucursales",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/sucursales"
+					}
+				},
+				{
+					"name": "Contar Sucursales",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/sucursales/count"
+					}
+				},
+				{
+					"name": "Crear Sucursal",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Sucursal Nueva\",\n  \"ciudad\": \"Santiago\"\n}"
+						},
+						"url": "http://localhost:8084/api/ventas/sucursales"
+					}
+				}
+			]
+		},
+		{
+			"name": "ms-ventas - Clima",
+			"item": [
+				{
+					"name": "Clima por Sucursales",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/clima/sucursales"
+					}
+				},
+				{
+					"name": "Clima por Ciudad",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/clima/ciudad/Santiago"
+					}
+				}
+			]
+		},
+		{
+			"name": "ms-ventas - Economico",
+			"item": [
+				{
+					"name": "Indicadores Economicos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/economico/indicadores"
+					}
+				},
+				{
+					"name": "Ajustar Precios por UF",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ufAnterior\": 38000,\n  \"ufActual\": 38500\n}"
+						},
+						"url": "http://localhost:8084/api/ventas/economico/ajustar-precios-uf"
+					}
+				}
+			]
+		},
+		{
+			"name": "ms-ventas - Reportes",
+			"item": [
+				{
+					"name": "Ventas por Sucursal",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/reportes/ventas-por-sucursal"
+					}
+				},
+				{
+					"name": "Resumen Ventas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/reportes/resumen-ventas"
+					}
+				},
+				{
+					"name": "Ventas por Periodo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/reportes/ventas-periodo?inicio=2026-01-01&fin=2026-12-31"
+					}
+				},
+				{
+					"name": "Ventas Mensuales",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/reportes/ventas-mensuales"
+					}
+				},
+				{
+					"name": "Ventas por Categoria",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/reportes/ventas-por-categoria"
+					}
+				},
+				{
+					"name": "Top Productos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/ventas/reportes/top-productos"
+					}
+				}
+			]
+		},
+		{
+			"name": "ms-datos-org - Empleados",
+			"item": [
+				{
+					"name": "Listar Empleados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/datos-org/empleados"
+					}
+				},
+				{
+					"name": "Contar Empleados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/datos-org/empleados/count"
+					}
+				},
+				{
+					"name": "Crear Empleado",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Juan Perez\",\n  \"email\": \"juan@correo.cl\",\n  \"departamentoId\": 1\n}"
+						},
+						"url": "http://localhost:8084/api/datos-org/empleados"
+					}
+				}
+			]
+		},
+		{
+			"name": "ms-datos-org - Departamentos",
+			"item": [
+				{
+					"name": "Listar Departamentos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/datos-org/departamentos"
+					}
+				},
+				{
+					"name": "Crear Departamento",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Nuevo Departamento\",\n  \"descripcion\": \"Descripcion del departamento\"\n}"
+						},
+						"url": "http://localhost:8084/api/datos-org/departamentos"
+					}
+				}
+			]
+		},
+		{
+			"name": "ms-indicadores",
+			"item": [
+				{
+					"name": "Listar Indicadores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/indicadores"
+					}
+				},
+				{
+					"name": "Crear Indicador",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Ventas del Mes\",\n  \"tipoCalculo\": \"SUMA\",\n  \"categoriaId\": 1\n}"
+						},
+						"url": "http://localhost:8084/api/indicadores"
+					}
+				},
+				{
+					"name": "Categorias",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/indicadores/categorias"
+					}
+				},
+				{
+					"name": "Crear Categoria",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Nueva Categoria\",\n  \"descripcion\": \"Descripcion de la categoria\"\n}"
+						},
+						"url": "http://localhost:8084/api/indicadores/categorias"
+					}
+				},
+				{
+					"name": "Valores Actuales",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8084/api/indicadores/valores/actuales"
+					}
+				},
+				{
+					"name": "Calcular Indicador",
+					"request": {
+						"method": "POST",
+						"header": ["Content-Type: application/json"],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"indicadorId\": 1,\n  \"parametros\": {}\n}"
+						},
+						"url": "http://localhost:8084/api/indicadores/calcular"
+					}
+				},
+				{
+					"name": "Inicializar Indicadores",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "http://localhost:8084/api/indicadores/inicializar"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc0OTYwMDAwMCwiZXhwIjoxOTkwMDAwMDAwfQ.example"
+		}
+	]
+}

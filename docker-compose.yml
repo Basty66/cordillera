@@ -1,22 +1,4 @@
 services:
-  postgres:
-    image: postgres:14-alpine
-    container_name: pg-cordillera
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: neondb
-      POSTGRES_USER: neondb_owner
-      POSTGRES_PASSWORD: npg_RkUIf1wX4uDx
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U neondb_owner -d neondb"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    restart: unless-stopped
-
   ms-ventas:
     build:
       context: .
@@ -25,13 +7,10 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/neondb?currentSchema=ventas
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ep-lucky-cloud-ami42tlw-pooler.c-5.us-east-1.aws.neon.tech/neondb?currentSchema=ventas&sslmode=require
       - SPRING_DATASOURCE_USERNAME=neondb_owner
       - SPRING_DATASOURCE_PASSWORD=npg_RkUIf1wX4uDx
       - SERVER_PORT=8081
-    depends_on:
-      postgres:
-        condition: service_healthy
     restart: unless-stopped
 
   ms-datos-org:
@@ -42,13 +21,10 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/neondb?currentSchema=datos_org
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ep-lucky-cloud-ami42tlw-pooler.c-5.us-east-1.aws.neon.tech/neondb?currentSchema=datos_org&sslmode=require
       - SPRING_DATASOURCE_USERNAME=neondb_owner
       - SPRING_DATASOURCE_PASSWORD=npg_RkUIf1wX4uDx
       - SERVER_PORT=8082
-    depends_on:
-      postgres:
-        condition: service_healthy
     restart: unless-stopped
 
   ms-indicadores:
@@ -59,13 +35,10 @@ services:
     ports:
       - "8083:8083"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/neondb?currentSchema=indicadores
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ep-lucky-cloud-ami42tlw-pooler.c-5.us-east-1.aws.neon.tech/neondb?currentSchema=indicadores&sslmode=require
       - SPRING_DATASOURCE_USERNAME=neondb_owner
       - SPRING_DATASOURCE_PASSWORD=npg_RkUIf1wX4uDx
       - SERVER_PORT=8083
-    depends_on:
-      postgres:
-        condition: service_healthy
     restart: unless-stopped
 
   bff:
@@ -81,8 +54,6 @@ services:
       - MS-DATOS-ORG_URL=http://ms-datos-org:8082
       - MS-INDICADORES_URL=http://ms-indicadores:8083
     depends_on:
-      postgres:
-        condition: service_healthy
       ms-ventas:
         condition: service_started
       ms-datos-org:
@@ -121,6 +92,3 @@ services:
     depends_on:
       - api-gateway
     restart: unless-stopped
-
-volumes:
-  pgdata:

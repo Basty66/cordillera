@@ -8,9 +8,9 @@
 ## Resumen
 
 | Métrica | Resultado |
-|---|---|
-| **Total de tests ejecutados** | 194 |
-| **Tests pasados** | 194 |
+|---|---|---|
+| **Total de tests ejecutados** | 196 (18 frontend + 178 backend) |
+| **Tests pasados** | 196 |
 | **Tests fallidos** | 0 |
 | **Archivos de test** | 60 (18 frontend + 42 backend) |
 | **Cobertura backend** | Ver tabla por módulo |
@@ -109,16 +109,16 @@
 
 ### Microservicios Backend
 
-| Módulo | Tests | Líneas | Cobertura | Estado |
-|---|---|---|---|---|
-| ms-ventas | 64 | 550 | 56.5% | ⚠️ (bajo 60%) |
-| ms-datos-org | 13 | 101 | 63.4% | ✅ |
-| ms-indicadores | 38 | 174 | 64.4% | ✅ |
-| bff | 28 | 608 | 62.5% | ✅ |
-| api-gateway | 6 | 84 | 90.5% | ✅ |
-| **Total** | **149** | **1,517** | **—** | |
+| Módulo | Tests | Instrucciones | Cobertura (Instrucciones) | Estado |
+|---|---|---|---|---|---|
+| ms-ventas | 86 | 3.852 | **91.1%** | ✅ |
+| ms-datos-org | 22 | 1.396 | **99.2%** | ✅ |
+| ms-indicadores | 38 | 737 | **62.9%** | ✅ |
+| bff | 28 | 3.195 | **62.3%** | ✅ |
+| api-gateway | 6 | 390 | **89.5%** | ✅ |
+| **Total** | **180** | **9.570** | **—** | ✅ **100% ≥ 60%** |
 
-### Cobertura por Paquete (ms-ventas)
+### Cobertura por Paquete (ms-ventas) — Actualizada
 
 | Paquete | Cobertura | Observación |
 |---|---|---|
@@ -127,10 +127,10 @@
 | event (Observer) | 100% | Eventos de dominio |
 | exception | 100% | Manejo global de errores |
 | repository | 98% | Consultas personalizadas |
-| service | 61% | ClimaService y MindicadorService al 5-7% |
-| dto | 60% | Algunos DTOs sin testear |
-| controller | 53% | Algunos controllers sin cobertura |
-| config | 5% | DataInitializer sin test unitario |
+| service | **97%** | Añadidos tests para MindicadorService, ClimaService, AjustePrecioService |
+| dto | 60% | DTOs restantes |
+| controller | **96%** | Añadidos tests para ClimaController y EconomicoController |
+| config | **97%** | Añadido DataInitializerTest con 6 casos |
 
 ### Tipos de Tests Backend
 
