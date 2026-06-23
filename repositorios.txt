@@ -1,6 +1,10 @@
 REPOSITORIOS DEL PROYECTO - GRUPO CORDILLERA
 ===============================================
 
+Repositorio Principal (monorepo con documentacion e infraestructura):
+- https://github.com/Basty66/cordillera
+- Release ZIP: https://github.com/Basty66/cordillera/releases/tag/v1.0.0
+
 Repositorios por Componente (repositorios separados):
 
 1. Frontend (React 19 + Vite 8 + Tailwind CSS v4)
